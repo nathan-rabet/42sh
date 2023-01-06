@@ -1,6 +1,8 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <stddef.h>
+
 typedef int token_t;
 
 typedef struct
@@ -8,6 +10,14 @@ typedef struct
     token_t type;
     char *value;
 } token;
+
+typedef struct
+{
+    const char *str;
+    size_t str_i;
+    token *current_token;
+    token *peek_token;
+} lexer;
 
 // Conformorming to the SCL (Shell Command Language) standard
 enum token_types
@@ -70,5 +80,13 @@ enum token_types
     /// @brief `in` reserved word
     IN, // in
 };
+
+/**
+ * @brief Initialize a lexer with a string
+ *
+ * @param str The string to tokenize
+ * @return lexer* The lexer
+ */
+lexer *lexer_init(const char *str);
 
 #endif /* LEXER_H */
