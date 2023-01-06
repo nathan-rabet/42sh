@@ -5,7 +5,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-extern xalloc *xalloc_dlist;
+extern struct xalloc *xalloc_dlist;
+
 /**
  * @brief Structure of the memory allocation
  * @param data the data pointer
@@ -32,6 +33,7 @@ struct xalloc
     struct xalloc_item *tail;
 };
 
+
 /**
  * @return the initialize dlist of pointer
  */
@@ -44,6 +46,12 @@ struct xalloc *xalloc_init(void);
  * @return the pointer to the new location
  */
 void *to_data(void *data, size_t size);
+
+/**
+ * @brief push the item into the stack
+ * @param temp the item to push
+ */
+void push_back(struct xalloc_item *temp);
 
 /**
  * @brief Malloc wrapper that exits the program if the allocation fails
