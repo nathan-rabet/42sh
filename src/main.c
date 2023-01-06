@@ -1,7 +1,6 @@
-#include "dep/dep.h"
+#include "std.h"
 
 int main(void) {
-  test_dep();
   printf("Hello, World!\n");
   return 0;
 }
