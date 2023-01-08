@@ -2,20 +2,20 @@
 #define XALLOC_H
 
 #include <err.h>
+#include <pthread.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 
-extern struct xalloc *xalloc_dlist;
-
 /**
  * @brief Structure of the memory allocation
- * @param data the data pointer
+ * @param ptr the data pointer returned by malloc, calloc or realloc
  * @param next pointer to the next block of memory
  * @param prev pointer to the previous block of memory
  */
 struct xalloc_item
 {
-    void *data;
+    void *ptr;
     struct xalloc_item *next;
     struct xalloc_item *prev;
 };
@@ -28,30 +28,23 @@ struct xalloc_item
  */
 struct xalloc
 {
-    size_t size;
+    bool initialized;
+    pthread_mutex_t mutex;
     struct xalloc_item *head;
     struct xalloc_item *tail;
 };
 
+/**
+ * @brief Initialize the xalloc linked list
+ * (nullify the head and tail and create the mutex)
+ */
+void xalloc_init(void);
 
 /**
- * @return the initialize dlist of pointer
+ * @brief Deinitialize the xalloc linked list
+ * (free all the pointers and delete the mutex)
  */
-struct xalloc *xalloc_init(void);
-
-/**
- * @brief change the location of the pointer
- * @param data the pointer to convert
- * @param size the distance
- * @return the pointer to the new location
- */
-void *to_data(void *data, size_t size);
-
-/**
- * @brief push the item into the stack
- * @param temp the item to push
- */
-void push_back(struct xalloc_item *temp);
+void xalloc_deinit(void);
 
 /**
  * @brief Malloc wrapper that exits the program if the allocation fails
