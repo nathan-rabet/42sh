@@ -8,4 +8,8 @@ criterion_lib = criterion_lib + '/libcriterion.so'
 criterion_lib = cc.find_library('criterion', dirs: criterion_lib)
 dep += [criterion_lib]
 
+# Adding ASAN
+c_args += ['-fsanitize=address']
+link_args += ['-fsanitize=address']
+
 sources += ['tests/xalloc/xalloc_tests.c']
