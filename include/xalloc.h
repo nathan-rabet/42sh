@@ -22,21 +22,17 @@ struct xalloc_item
 
 /**
  * @brief The doubled linked list
- * @param size The size of the double linked list
- * @param head The first block of the linked list
- * @param tail The last block of the linked list
  */
 struct xalloc
 {
-    bool initialized;
-    pthread_mutex_t mutex;
-    struct xalloc_item *head;
-    struct xalloc_item *tail;
+    bool initialized; // true if the list is initialized, false otherwise
+    pthread_mutex_t mutex; // mutex to lock the list
+    struct xalloc_item *head; // head of the list
 };
 
 /**
  * @brief Initialize the xalloc linked list
- * (nullify the head and tail and create the mutex)
+ * (nullify the head and create the mutex)
  */
 void xalloc_init(void);
 

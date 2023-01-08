@@ -5,8 +5,7 @@ static
 #endif
     struct xalloc xalloc_dlist = { .initialized = false,
                                    .mutex = PTHREAD_MUTEX_INITIALIZER,
-                                   .head = NULL,
-                                   .tail = NULL };
+                                   .head = NULL };
 
 #define LOCK_MUTEX()                                                           \
     if (pthread_mutex_lock(&xalloc_dlist.mutex) != 0)                          \
@@ -23,18 +22,17 @@ static
 void xalloc_init(void)
 {
     xalloc_dlist.head = NULL;
-    xalloc_dlist.tail = NULL;
 
     // Initialize linked-list mutex
     if (pthread_mutex_init(&xalloc_dlist.mutex, NULL) != 0)
         err(EXIT_FAILURE, "xalloc_init: Failed to initialize mutex.");
+
+    xalloc_dlist.initialized = true;
 }
 
 void xalloc_deinit(void)
 {
     CHECK_INITIALIZED("xalloc_deinit");
-
-    LOCK_MUTEX();
 
     xfree_all();
 
@@ -44,31 +42,28 @@ void xalloc_deinit(void)
 }
 
 /**
- * @brief push the item into the linked list
+ * @brief push the item into the top of the linked list
  * @param ptr the item to push
  */
-static void push_back(void *ptr)
+static void push_top(void *ptr)
 {
-    struct xalloc_item *item = malloc(sizeof(struct xalloc_item));
+    struct xalloc_item *item = calloc(1, sizeof(struct xalloc_item));
     if (item == NULL)
         err(EXIT_FAILURE, "push_back: Failed to push back.");
 
     item->ptr = ptr;
-    item->next = NULL;
 
     LOCK_MUTEX();
-    if (xalloc_dlist.tail == NULL) // || xalloc_dlist.head == NULL)
+    if (xalloc_dlist.head == NULL)
     {
-        item->prev = NULL;
-        xalloc_dlist.head = xalloc_dlist.tail = item;
+        xalloc_dlist.head = item;
     }
     else
     {
-        xalloc_dlist.tail->next = item;
-        item->prev = xalloc_dlist.tail;
-        xalloc_dlist.tail = item;
+        xalloc_dlist.head->prev = item;
+        item->next = xalloc_dlist.head;
+        xalloc_dlist.head = item;
     }
-
     UNLOCK_MUTEX();
 }
 
@@ -93,7 +88,6 @@ static bool delete_ptr(void *ptr)
             }
             else if (item->next == NULL)
             {
-                xalloc_dlist.tail = item->prev;
                 if (item->prev != NULL)
                     item->prev->next = NULL;
             }
@@ -121,7 +115,7 @@ void *xmalloc(size_t nmemb, size_t size)
     struct xalloc_item *ptr = malloc(total_size);
     if (!ptr)
         err(EXIT_FAILURE, "xmalloc: malloc failed, size: %zu", total_size);
-    push_back(ptr);
+    push_top(ptr);
     return ptr;
 }
 
@@ -138,7 +132,7 @@ void *xcalloc(size_t nmemb, size_t size)
     if (!ptr)
         err(EXIT_FAILURE, "xcalloc: calloc failed, nmemb: %zu, size: %zu",
             nmemb, size);
-    push_back(ptr);
+    push_top(ptr);
     return ptr;
 }
 
@@ -154,7 +148,7 @@ void *xrealloc(void *ptr, size_t nmemb, size_t size)
     if (!delete_ptr(ptr))
         errx(EXIT_FAILURE, "xrealloc: pointer '%p' not found in linked-list",
              ptr);
-    push_back(new_ptr);
+    push_top(new_ptr);
     return new_ptr;
 }
 
@@ -162,11 +156,12 @@ void xfree(void *ptr)
 {
     CHECK_INITIALIZED("xfree");
     if (ptr != NULL)
-        return;
-
-    if (!delete_ptr(ptr))
-        errx(EXIT_FAILURE, "xfree: pointer '%p' not found in linked-list", ptr);
-    free(ptr);
+    {
+        if (!delete_ptr(ptr))
+            errx(EXIT_FAILURE, "xfree: pointer '%p' not found in linked-list",
+                 ptr);
+        free(ptr);
+    }
 }
 
 void xfree_all(void)
@@ -182,6 +177,5 @@ void xfree_all(void)
         free(tmp);
     }
     xalloc_dlist.head = NULL;
-    xalloc_dlist.tail = NULL;
     UNLOCK_MUTEX();
 }
