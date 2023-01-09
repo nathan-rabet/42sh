@@ -11,23 +11,27 @@ typedef struct
     char *value;
 } token;
 
+#define LEXER_TOKENS_BUF_SIZE 4
 typedef struct
 {
     const char *str;
     size_t str_i;
-    token *current_token;
-    token *peek_token;
+    token last_tokens[LEXER_TOKENS_BUF_SIZE];
+    size_t last_tokens_i;
 } lexer;
+
+extern char *IFS;
 
 // Conformorming to the SCL (Shell Command Language) standard
 enum token_types
 {
+    UNDEFINED = 0, // Undefined token
     /// @brief Tokens global
-    WORD,
-    ASSIGNMENT_WORD,
-    NAME,
-    NEWLINE,
-    IO_NUMBER,
+    WORD, // Any word
+    ASSIGNMENT_WORD, // Any word that is an assignment
+    NAME, // Any word that is a name
+    NEWLINE, // \n
+    IO_NUMBER, // /[<>]\d+/
 
     /// @brief Tokens separator
     AND_IF, // &&

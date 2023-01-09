@@ -1,121 +1,11 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <stdbool.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
-#define BUFFER_SIZE 1024
-
-/// Lexer /////////////
-enum TokenType
-{
-  IF,
-  THEN,
-  ELIF,
-  ELSE,
-  FI,
-  SEMICOLON,
-  NEWLINE,
-  STRING,
-  WORD
-};
-
-struct Token
-{
-  enum TokenType type;
-  char *value;
-};
-
-struct Token get_next_token(const char *input)
-{
-  static int i = 0;
-  static int len = 0;
-  char c;
-  char buffer[BUFFER_SIZE];
-  int buffer_i = 0;
-
-  if (i == 0)
-  {
-    len = strlen(input);
-  }
-
-  while (i < len)
-  {
-    c = input[i++];
-    if (c == ' ' || c == '\t')
-    {
-      continue;
-    }
-    else if (c == '\n')
-    {
-      return (struct Token){.type = NEWLINE};
-    }
-    else if (c == '\'')
-    {
-      buffer_i = 0;
-      buffer[buffer_i++] = c;
-      while (i < len)
-      {
-        c = input[i++];
-        if (c == '\'')
-        {
-          buffer[buffer_i++] = c;
-          break;
-        }
-        buffer[buffer_i++] = c;
-      }
-      buffer[buffer_i] = '\0';
-      return (struct Token){.type = STRING, .value = strdup(buffer)};
-    }
-    else if (c == ';')
-    {
-      return (struct Token){.type = SEMICOLON};
-    }
-    else
-    {
-      buffer_i = 0;
-      buffer[buffer_i++] = c;
-      while (i < len)
-      {
-        c = input[i++];
-        if (c == ' ' || c == '\t' || c == '\n' || c == ';')
-        {
-          --i;
-          break;
-        }
-        buffer[buffer_i++] = c;
-      }
-      buffer[buffer_i] = '\0';
-      if (strcmp(buffer, "if") == 0)
-      {
-        return (struct Token){.type = IF};
-      }
-      else if (strcmp(buffer, "then") == 0)
-      {
-        return (struct Token){.type = THEN};
-      }
-      else if (strcmp(buffer, "elif") == 0)
-      {
-        return (struct Token){.type = ELIF};
-      }
-      else if (strcmp(buffer, "else") == 0)
-      {
-        return (struct Token){.type = ELSE};
-      }
-      else if (strcmp(buffer, "fi") == 0)
-      {
-        return (struct Token){.type = FI};
-      }
-      else
-      {
-        return (struct Token){.type = WORD, .value = strdup(buffer)};
-      }
-    }
-  }
-  i = 0;
-  return (struct Token){.type=EOF, .value=NULL};
-}
+#include "lexer.h"
 
 /// Parser /////////////
 
@@ -128,18 +18,20 @@ struct Node
 
 struct Node *parse_simple_command(char *input)
 {
-  struct Token token = get_next_token(input); // call the lexer's get_next_token function
-  struct Node *node = malloc(sizeof(struct Node));
-  node->type = "SIMPLE_COMMAND";
-  node->words = malloc(sizeof(char *));
-  node->words[0] = token.value;
-  node->num_words = 1;
+    token token =
+        get_next_token(input); // call the lexer's get_next_token function
+    struct Node *node = malloc(sizeof(struct Node));
+    node->type = "SIMPLE_COMMAND";
+    node->words = malloc(sizeof(char *));
+    node->words[0] = token.value;
+    node->num_words = 1;
 
-  while ((token = get_next_token(input)).value != NULL)
-  { // use the NULL token value from the lexer
-    node->words = realloc(node->words, (node->num_words + 1) * sizeof(char *));
-    node->words[node->num_words++] = token.value;
-  }
+    while ((token = get_next_token(input)).value != NULL)
+    { // use the NULL token value from the lexer
+        node->words =
+            realloc(node->words, (node->num_words + 1) * sizeof(char *));
+        node->words[node->num_words++] = token.value;
+    }
 
   return node;
 }
