@@ -5,7 +5,7 @@
 
 #define BUFFER_SIZE 1024
 
-extern char *IFS = " \t\n";
+char *IFS = " \t\n";
 
 static void find_next_char(const char *str, char fond_char)
 {

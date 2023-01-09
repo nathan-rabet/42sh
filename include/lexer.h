@@ -8,16 +8,16 @@ typedef int token_t;
 typedef struct
 {
     token_t type;
-    char *value;
+    bool is_in_dquote;
+    bool is_in_squote;
+    void *value;
 } token;
 
-#define LEXER_TOKENS_BUF_SIZE 4
 typedef struct
 {
     const char *str;
-    size_t str_i;
-    token last_tokens[LEXER_TOKENS_BUF_SIZE];
-    size_t last_tokens_i;
+    size_t value_start;
+    size_t value_end;
 } lexer;
 
 extern char *IFS;
@@ -82,8 +82,60 @@ enum token_types
     BANG, // !
 
     /// @brief `in` reserved word
-    IN, // in
+    IN // in
 };
+
+char *tokens_mapping = {
+    NULL, // UNDEFINED
+    NULL, // WORD
+    NULL, // ASSIGNMENT_WORD
+    NULL, // NAME
+    "\n", // NEWLINE
+    NULL, // IO_NUMBER
+
+    "&&", // AND_IF
+    "||", // OR_IF
+    ";;", // DSEMI
+
+    "<<", // DLESS
+    ">>", // DGREAT
+    "<&", // LESSAND
+    ">&", // GREATAND
+    "<>", // LESSGREAT
+    "<<-", // DLESSDASH
+
+    ">|", // CLOBBER
+
+    "if", // IF
+    "then", // THEN
+    "else", // ELSE
+    "elif", // ELIF
+    "fi", // FI
+
+    "case", // CASE
+    "esac", // ESAC
+
+    "while" // WHILE
+    "until", // UNTIL
+
+    "do", // DO
+    "done", // DONE
+
+    "for", // FOR
+
+    "{", // LBRACE
+    "}", // RBRACE
+
+    "!", // BANG
+
+    "in", // IN
+};
+
+#define FIRST_OPERATOR AND_IF
+#define LAST_OPERATOR CLOBBER
+#define IS_OPERATOR(type) (type >= FIRST_OPERATOR && type <= LAST_OPERATOR)
+#define IS_RESERVED_WORD(type) (type >= IF && type <= IN)
+#define IS_IN_QUOTES(t) (t.is_in_dquote || t.is_in_squote)
 
 /**
  * @brief Initialize a lexer with a string
