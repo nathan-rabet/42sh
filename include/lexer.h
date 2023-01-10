@@ -87,7 +87,15 @@ enum token_types
     BANG, // !
 
     /// @brief `in` reserved word
-    IN // in
+    IN, // in
+
+    LESS, // <
+    GREAT, // >
+
+    /// @brief out of SCL tokens
+    SEMI, // ;
+    PIPE, // |
+    COMMAND // Any executable command ("ls -l", "./42sh")
 };
 
 char *tokens_mapping = {
@@ -134,6 +142,12 @@ char *tokens_mapping = {
     "!", // BANG
 
     "in", // IN
+    "<", // LESS
+    ">", // GREAT
+
+    ";", // GREAT
+    "|", // PIPE
+
 };
 
 // Operators utils
