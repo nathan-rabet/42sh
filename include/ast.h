@@ -18,6 +18,7 @@ enum ast_type {
     AST_FOR,
     AST_FUNC,
     AST_CASE,
+    AST_PIPE,
 };
 struct ast_vtable;
 
@@ -27,7 +28,7 @@ struct ast {
 };
 
 struct ast_vtable {
-    void (*run)(struct ast *ast);
+    bool (*run)(struct ast *ast);
     void (*free)(struct ast *ast);
     void (*pretty_print)(struct ast *ast);
 };
@@ -38,7 +39,7 @@ struct ast_cmd {
 };
 
 struct ast *ast_cmd_init(char **word);
-void cmd_run(struct ast *ast);
+bool cmd_run(struct ast *ast);
 void cmd_free(struct ast *ast);
 void cmd_pretty_print(struct ast *ast);
 
@@ -51,7 +52,7 @@ struct ast_if {
 
 struct ast *ast_if_init(struct ast *condition,
                         struct ast *then_body, struct ast *else_body);
-void if_run(struct ast *ast);
+bool if_run(struct ast *ast);
 void if_free(struct ast *ast);
 void if_pretty_print(struct ast *ast);
 
@@ -62,7 +63,7 @@ struct ast_list {
 };
 
 struct ast *ast_list_init(size_t nb_children, struct ast **children);
-void list_run(struct ast *ast);
+bool list_run(struct ast *ast);
 void list_free(struct ast *ast);
 void list_pretty_print(struct ast *ast);
 
@@ -90,5 +91,75 @@ struct ast *ast_redir_init(enum ast_redir_type type,char *IONumber, char *target
 bool redir_run(struct ast *ast);
 void redir_free(struct ast *ast);
 void redir_pretty_print(struct ast *ast);
+
+struct ast_and {
+    struct ast base;
+    struct ast *ast_left;
+    struct ast *ast_right;
+
+};
+
+struct ast *ast_and_init(struct ast *ast_left, struct ast *ast_right);
+bool and_run(struct ast *ast);
+void and_free(struct ast *ast);
+void and_pretty_print(struct ast *ast);
+
+struct ast_or {
+    struct ast base;
+    struct ast *ast_left;
+    struct ast *ast_right;
+
+};
+
+struct ast *ast_or_init(struct ast *ast_left, struct ast *ast_right);
+bool or_run(struct ast *ast);
+void or_free(struct ast *ast);
+void or_pretty_print(struct ast *ast);
+
+struct ast_not {
+    struct ast base;
+    struct ast *ast_not;
+
+};
+
+struct ast *ast_not_init(struct ast *ast_not);
+bool not_run(struct ast *ast);
+void not_free(struct ast *ast);
+void not_pretty_print(struct ast *ast);
+
+struct ast_while {
+    struct ast base;
+    struct ast *condition;
+    struct ast *to_execute;
+
+};
+
+struct ast *ast_while_init(struct ast *condition, struct ast *to_execute);
+bool while_run(struct ast *ast);
+void while_free(struct ast *ast);
+void while_pretty_print(struct ast *ast);
+
+struct ast_until {
+    struct ast base;
+    struct ast *condition;
+    struct ast *to_execute;
+
+};
+
+struct ast *ast_until_init(struct ast *condition, struct ast *to_execute);
+bool until_run(struct ast *ast);
+void until_free(struct ast *ast);
+void until_pretty_print(struct ast *ast);
+
+struct ast_for {
+    struct ast base;
+    struct ast *word;
+    struct ast *to_execute;
+};
+
+struct ast *ast_for_init(char *name, struct ast *word, struct ast *to_execute);
+bool for_run(struct ast *ast);
+void for_free(struct ast *ast);
+void for_pretty_print(struct ast *ast);
 
 #endif //AST_H

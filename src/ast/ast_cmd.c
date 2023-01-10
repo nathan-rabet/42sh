@@ -17,11 +17,12 @@ struct ast *ast_cmd_init(char **word)
     return &cmd->base;
 }
 
-void cmd_run(struct ast *ast) {
+bool cmd_run(struct ast *ast) {
     assert(ast && ast->type == AST_CMD);
     struct ast_cmd *cmd = (struct ast_cmd *)ast;
     //TODO(clara) run_command:
     // (cmd->words);
+    return true;
 }
 
 void cmd_free(struct ast *ast)

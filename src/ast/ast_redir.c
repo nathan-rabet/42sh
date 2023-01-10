@@ -5,7 +5,7 @@
 struct ast *ast_redir_init(enum ast_redir_type type,char *IONumber, char *target)
 {
     static struct ast_vtable vtable = {
-            .run = (void (*)(struct ast *)) &redir_run,
+            .run = &redir_run,
             .free = &redir_free,
             .pretty_print = &redir_pretty_print,
     };

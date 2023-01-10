@@ -19,23 +19,22 @@ struct ast *ast_if_init(struct ast *condition,
     return &if_ast->base;
 }
 
-void if_run(struct ast *ast) {
+bool if_run(struct ast *ast) {
     assert(ast && ast->type == AST_IF);
     struct ast_if *if_ast = (struct ast_if *)ast;
     if (if_ast->condition)
-        if_ast->then_body->vtable->run(if_ast->then_body);
+        return if_ast->then_body->vtable->run(if_ast->then_body);
     else if (if_ast->else_body != NULL)
-        if_ast->else_body->vtable->run(if_ast->else_body);
+        return if_ast->else_body->vtable->run(if_ast->else_body);
 }
 
 void if_free(struct ast *ast)
 {
     assert(ast && ast->type == AST_IF);
     struct ast_if *if_ast = (struct ast_if*) ast;
-    xfree(if_ast->condition);
-    xfree(if_ast->then_body);
+    if_ast->then_body->vtable->free(if_ast->then_body);
     if (if_ast->else_body != NULL)
-        xfree(if_ast->else_body);
+        if_ast->else_body->vtable->free(if_ast->else_body);
     xfree(ast);
 }
 
@@ -45,6 +44,14 @@ void if_pretty_print(struct ast *ast)
     struct ast_if *if_ast = (struct ast_if*) ast;
     printf("IF condition: ");
     if_ast->condition->vtable->pretty_print(if_ast->condition);
+    printf("\nTHEN [ ");
     if_ast->then_body->vtable->pretty_print(if_ast->then_body);
-    if_ast->else_body->vtable->pretty_print(if_ast->else_body);
+    printf(" ]\n");
+    if (if_ast->else_body)
+    {
+        printf("\nELSE [ ");
+        if_ast->else_body->vtable->pretty_print(if_ast->else_body);
+        printf("]\n");
+    }
+
 }

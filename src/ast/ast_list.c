@@ -17,11 +17,12 @@ struct ast *ast_list_init(size_t nb_children, struct ast **children)
     return &list_ast->base;
 }
 
-void list_run(struct ast *ast) {
+bool list_run(struct ast *ast) {
     assert(ast && ast->type == AST_LIST);
     struct ast_list *list_ast = (struct ast_list *)ast;
     for (size_t i = 0; i < list_ast->nb_children; i++)
         list_ast->children[i]->vtable->run(list_ast->children[i]);
+    return true;
 }
 
 void list_free(struct ast *ast)
