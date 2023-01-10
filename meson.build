@@ -18,7 +18,7 @@ endif
 
 dep = []
 link_args = []
-sources = ['src/utils/xalloc.c']
+sources = ['src/utils/xalloc.c', 'src/ast/ast_cmd.c','src/ast/ast_if.c','src/ast/ast_list.c','src/ast/ast_redir.c']
 inc = include_directories('include')
 
 # 42sh
