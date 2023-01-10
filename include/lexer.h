@@ -1,6 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
 typedef int token_t;
@@ -16,8 +17,12 @@ typedef struct
 typedef struct
 {
     const char *str;
-    size_t value_start;
-    size_t value_end;
+    size_t str_token_start;
+    size_t str_token_end;
+    bool str_is_in_dquote;
+    bool str_is_in_squote;
+    size_t nb_tokens;
+    token *tokens;
 } lexer;
 
 extern char *IFS;
@@ -25,7 +30,7 @@ extern char *IFS;
 // Conformorming to the SCL (Shell Command Language) standard
 enum token_types
 {
-    UNDEFINED = 0, // Undefined token
+    TOKEN_UNDEFINED = 0, // Undefined token
     /// @brief Tokens global
     WORD, // Any word
     ASSIGNMENT_WORD, // Any word that is an assignment
@@ -131,18 +136,32 @@ char *tokens_mapping = {
     "in", // IN
 };
 
+// Operators utils
 #define FIRST_OPERATOR AND_IF
 #define LAST_OPERATOR CLOBBER
-#define IS_OPERATOR(type) (type >= FIRST_OPERATOR && type <= LAST_OPERATOR)
+#define IS_TOKEN_OPERATOR(token)                                               \
+    (toekn.type >= FIRST_OPERATOR && token.type <= LAST_OPERATOR)
+
+inline token_t get_string_operator(char *str, size_t len)
+{
+    for (int i = FIRST_OPERATOR; i <= LAST_OPERATOR; i++)
+        if (strncmp(str, tokens_mapping[i], len) == 0)
+            return i;
+    return TOKEN_ERROR;
+}
+
 #define IS_RESERVED_WORD(type) (type >= IF && type <= IN)
-#define IS_IN_QUOTES(t) (t.is_in_dquote || t.is_in_squote)
+#define IS_TOKEN_IN_QUOTES(t) (t.is_in_dquote || t.is_in_squote)
+#define IS_CURRENT_IN_QUOTES(lexer)                                            \
+    (lexer.str_is_in_dquote || lexer.str_is_in_squote)
 
 /**
- * @brief Initialize a lexer with a string
+ * @brief Create tokens from input string
  *
- * @param str The string to tokenize
- * @return lexer* The lexer
+ * @param input The input string
+ * @param tokens_len The length of the returned array
+ * @return token* The array of tokens
  */
-lexer *lexer_init(const char *str);
+token *get_tokens(const char *input, size_t *tokens_len);
 
 #endif /* LEXER_H */
