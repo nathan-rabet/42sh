@@ -12,18 +12,6 @@ static bool is_prefix(const char *pre, const char *str, size_t pre_size)
     return strncmp(pre, str, pre_size) == 0;
 }
 
-static void find_next_char(const char *str, char fond_char)
-{
-    size_t i = 0;
-    while (str[i] != '\0')
-    {
-        if (str[i] == fond_char)
-            return i;
-        i++;
-    }
-    return -1;
-}
-
 token *get_tokens(const char *input, size_t *tokens_len)
 {
     lexer lexer = { 0 };
