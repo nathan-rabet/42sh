@@ -72,6 +72,59 @@ token *get_tokens(const char *input, size_t *tokens_len)
                 }
             }
         }
+
+        // Rule 2.3.4: If the current character is <backslash>, single-quote, or
+        // double-quote and it is not quoted, it shall affect quoting for
+        // subsequent characters up to the end of the quoted text. The rules for
+        // quoting are as described in Quoting . During token recognition no
+        // substitutions shall be actually performed, and the result token shall
+        // contain exactly the characters that appear in the input (except for
+        // <newline> joining), unmodified, including any embedded or enclosing
+        // quotes or substitution operators, between the <quotation-mark> and
+        // the end of the quoted text. The token shall not be delimited by the
+        // end of the quoted field.
+        bool is_quote_or_backslash = lexer.str[lexer.str_token_end] == '\\'
+            || lexer.str[lexer.str_token_end] == '\''
+            || lexer.str[lexer.str_token_end] == '"';
+        if (!IS_CURRENT_IN_QUOTES(lexer))
+        {
+            switch (lexer.str[lexer.str_token_end])
+            {
+            case '"':
+            case '\'':
+                char quote = lexer.str[lexer.str_token_end];
+
+                lexer.str_is_in_dquote =
+                    (quote == '"' ? !lexer.str_is_in_dquote
+                                  : lexer.str_is_in_dquote);
+                lexer.str_is_in_squote = !lexer.str_is_in_dquote;
+
+                for (; lexer.str[lexer.str_token_end] != '\0'
+                     && lexer.str[lexer.str_token_end] != quote;
+                     lexer.str_token_end++)
+                {
+                    if (quote == '"')
+                }
+                break;
+
+            case '\\':
+                lexer.str_token_end++;
+                break;
+            default:
+                break;
+            }
+
+            if (lexer.str[lexer.str_token_end] == '"')
+            {}
+
+            else if (lexer.str[lexer.str_token_end] == '\'')
+                lexer.str_is_in_squote = !lexer.str_is_in_squote;
+
+            else if (lexer.str[lexer.str_token_end] == '\\')
+                lexer.str_token_end++;
+            // TODO(robertnant): maybe indicate that next characters will be
+            // quoted(except if current is \)
+        }
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if any)
