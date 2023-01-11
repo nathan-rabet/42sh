@@ -11,6 +11,7 @@ typedef struct
     bool is_in_dquote;
     bool is_in_squote;
     void *value;
+    struct token *next;
 } token;
 
 typedef struct
@@ -25,7 +26,7 @@ extern char *IFS;
 // Conformorming to the SCL (Shell Command Language) standard
 enum token_types
 {
-    UNDEFINED = 0, // Undefined token
+    TOKEN_UNDEFINED = 0, // Undefined token
     /// @brief Tokens global
     WORD, // Any word
     ASSIGNMENT_WORD, // Any word that is an assignment
@@ -82,7 +83,15 @@ enum token_types
     BANG, // !
 
     /// @brief `in` reserved word
-    IN // in
+    IN, // in
+
+    LESS, // <
+    GREAT, // >
+
+    /// @brief out of SCL tokens
+    SEMI, // ;
+    PIPE, // |
+    COMMAND // Any executable command ("ls -l", "./42sh")
 };
 
 char *tokens_mapping = {

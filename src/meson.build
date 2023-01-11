@@ -1,4 +1,5 @@
 subdir('ast')
 subdir('lexer')
 subdir('utils')
+subdir('parser')
 sources += files('main.c')
