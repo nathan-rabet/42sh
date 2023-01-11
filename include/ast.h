@@ -153,6 +153,7 @@ void until_pretty_print(struct ast *ast);
 
 struct ast_for {
     struct ast base;
+    char *name;
     struct ast *word;
     struct ast *to_execute;
 };
@@ -161,5 +162,37 @@ struct ast *ast_for_init(char *name, struct ast *word, struct ast *to_execute);
 bool for_run(struct ast *ast);
 void for_free(struct ast *ast);
 void for_pretty_print(struct ast *ast);
+
+struct ast_func {
+    struct ast base;
+    char *name;
+    struct ast *to_execute;
+};
+
+struct ast *ast_func_init(char *name, struct ast *to_execute);
+bool func_run(struct ast *ast);
+void func_free(struct ast *ast);
+void func_pretty_print(struct ast *ast);
+
+struct ast_case {
+    struct ast base;
+    char *name;
+    struct ast *case_clause;
+};
+
+struct ast *ast_case_init(char *name, struct ast *case_clause);
+bool case_run(struct ast *ast);
+void case_free(struct ast *ast);
+void case_pretty_print(struct ast *ast);
+
+struct ast_pipe {
+    struct ast base;
+    struct ast *command;
+};
+
+struct ast *ast_pipe_init(struct ast *command);
+bool pipe_run(struct ast *ast);
+void pipe_free(struct ast *ast);
+void pipe_pretty_print(struct ast *ast);
 
 #endif //AST_H

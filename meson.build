@@ -18,11 +18,13 @@ endif
 
 dep = []
 link_args = []
-sources = ['src/utils/xalloc.c', 'src/ast/ast_cmd.c','src/ast/ast_if.c','src/ast/ast_list.c','src/ast/ast_redir.c']
+sources = []
+subdir('src')
+#subdir('tests')
 inc = include_directories('include')
 
 # 42sh
-executable('42sh', sources + ['src/main.c'], include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
+executable('42sh', sources, include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
 
 if get_option('enable_tests') == true
     # Tests main

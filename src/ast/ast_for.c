@@ -21,9 +21,8 @@ struct ast *ast_for_init(char *name, struct ast *word, struct ast *to_execute)
 bool for_run(struct ast *ast) {
     assert(ast && ast->type == AST_FOR);
     struct ast_for *for_ast = (struct ast_for *)ast;
-    for (for_ast->name)
+    //TODO(clara)
         for_ast->to_execute->vtable->run(for_ast->to_execute);
-    while (for_ast->condition->vtable->run(for_ast->condition));
     return false;
 }
 
