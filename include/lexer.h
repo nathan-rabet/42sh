@@ -6,11 +6,26 @@
 
 typedef int token_t;
 
+enum token_types
+{
+    QUOTE_NONE = 0,
+    QUOTE_SINGLE,
+    QUOTE_DOUBLE
+};
+
+typedef char param_exp_type_t;
+
+typedef struct _parameter_expansion
+{
+    param_exp_type_t type;
+    char *word;
+} parameter_expansion;
+
+typedef char quote_t;
 typedef struct
 {
     token_t type;
-    bool is_in_dquote;
-    bool is_in_squote;
+    quote_t quote;
     void *value;
 } token;
 
@@ -19,8 +34,7 @@ typedef struct
     const char *str;
     size_t str_token_start;
     size_t str_token_end;
-    bool str_is_in_dquote;
-    bool str_is_in_squote;
+    quote_t quote;
     size_t nb_tokens;
     token *tokens;
 } lexer;
@@ -161,13 +175,13 @@ inline token_t get_string_operator(char *str, size_t len)
     for (int i = FIRST_OPERATOR; i <= LAST_OPERATOR; i++)
         if (strncmp(str, tokens_mapping[i], len) == 0)
             return i;
-    return TOKEN_ERROR;
+    return TOKEN_UNDEFINED;
 }
 
 #define IS_RESERVED_WORD(type) (type >= IF && type <= IN)
 #define IS_TOKEN_IN_QUOTES(t) (t.is_in_dquote || t.is_in_squote)
 #define IS_CURRENT_IN_QUOTES(lexer)                                            \
-    (lexer.str_is_in_dquote || lexer.str_is_in_squote)
+    (lexer.quote == QUOTE_SINGLE || lexer.quote == QUOTE_DOUBLE)
 
 /**
  * @brief Create tokens from input string

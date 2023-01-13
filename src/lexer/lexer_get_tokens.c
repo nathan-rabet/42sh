@@ -28,7 +28,6 @@ static void handle_backquote_in_quoting(char **lexer_input)
         if (**lexer_input == '`' && *(previous_char++) != '\'')
         {
             // Ending backquote found.
-            *lexer_input++;
             break;
         }
 
@@ -120,18 +119,15 @@ token *get_tokens(const char *input, size_t *tokens_len)
             {
             case '"':
             case '\'':
-                char quote = lexer.str[lexer.str_token_end];
+                char quote_c = lexer.str[lexer.str_token_end];
 
-                lexer.str_is_in_dquote =
-                    (quote == '"' ? !lexer.str_is_in_dquote
-                                  : lexer.str_is_in_dquote);
-                lexer.str_is_in_squote = !lexer.str_is_in_dquote;
+                lexer.quote = (quote_c == '"' ? QUOTE_DOUBLE : QUOTE_SINGLE);
 
-                // Preserve literal value of each character if within single quotes.
-                if (quote == "'")
+                // 2.2.2 Single-quotes: Preserve literal value of each character if within single quotes.
+                if (quote_c == "'")
                 {
                     while (lexer.str[lexer.str_token_end] != '\0'
-                    && lexer.str[lexer.str_token_end] != quote)
+                    && lexer.str[lexer.str_token_end] != quote_c)
                     {
                         lexer.str_token_end++;
                     }
@@ -141,22 +137,34 @@ token *get_tokens(const char *input, size_t *tokens_len)
                 }
                 else
                 {
-                    // Literal value of each character if within double quotes is not preserved
-                    // for certain variables.
-                    while (lexer.str[lexer.str_token_end] != '\0'
-                    && lexer.str[lexer.str_token_end] != quote)
+                    // 2.2.3 Double-quotes: Literal value of each character if
+                    // within double quotes is not preserved for certain variables.
+                    for (; lexer.str[lexer.str_token_end] != '\0'
+                    && lexer.str[lexer.str_token_end] != quote_c; lexer.str_token_end++)
                     {
                         if (lexer.str[lexer.str_token_end] == '$')
                         {
-                            // TODO(robertnant): implement case for dollar sign
-                            // handle_dollar-sign(...);
+                            if (lexer.str[lexer.str_token_end + 1] == '{')
+                            {
+                                lexer.str_token_end += 2;
+                                for (; lexer.str[lexer.str_token_end] != '}'
+                                     && lexer.str[lexer.str_token_end] != '\0';
+                                     lexer.str_token_end++)
+                                {}
+                            }
+                            else
+                            {
+                                lexer.str_token_end++;
+                                for (; lexer.str[lexer.str_token_end] != ' '
+                                     && lexer.str[lexer.str_token_end] != '\0';
+                                     lexer.str_token_end++)
+                                {}
+                            }
                         }
-
-                        if (lexer.str[lexer.str_token_end] == '`')
+                        else if (lexer.str[lexer.str_token_end] == '`')
                         {
                             handle_backquote_in_quoting(&(lexer.str));
                         }
-                        lexer.str_token_end++;
                     }
                 }
 
@@ -173,7 +181,8 @@ token *get_tokens(const char *input, size_t *tokens_len)
             {}
 
             else if (lexer.str[lexer.str_token_end] == '\'')
-                lexer.str_is_in_squote = !lexer.str_is_in_squote;
+                lexer.quote =
+                    (lexer.quote == QUOTE_SINGLE ? QUOTE_NONE : QUOTE_SINGLE);
 
             else if (lexer.str[lexer.str_token_end] == '\\')
                 lexer.str_token_end++;
