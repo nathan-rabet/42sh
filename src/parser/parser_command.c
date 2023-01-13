@@ -21,8 +21,9 @@ bool is_shell_command(struct token *token)
 struct ast *parser_command(struct token_list *tokens)
 {
     struct ast *ast = NULL;
-    //if (is_shell_command(tokens->current_token))
-        //ast = parser
-    ast = parser_simple_command(tokens);
+    if (is_shell_command(tokens->current_token))
+        ast = parser_shell_command(tokens);
+    else
+        ast = parser_simple_command(tokens);
     return ast;
 }
