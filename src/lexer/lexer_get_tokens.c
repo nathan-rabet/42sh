@@ -12,6 +12,34 @@ static bool is_prefix(const char *pre, const char *str, size_t pre_size)
     return strncmp(pre, str, pre_size) == 0;
 }
 
+/** 
+ * Handle's backquote when detected within double quotes.
+ * lexer_input represents a pointer to the the lexer's input string
+ * starting from the first double quote that has been detected.
+ * After running this function, it is expected that the string pointed by
+ * lexer_input should point to the character right after the ending backquote.
+*/
+static void handle_backquote_in_quoting(char **lexer_input)
+{
+    char *previous_char = *lexer_input;
+
+    while (**lexer_input != '\0')
+    {
+        if (**lexer_input == '`' && *(previous_char++) != '\'')
+        {
+            // Ending backquote found.
+            *lexer_input++;
+            break;
+        }
+
+        *lexer_input++;
+
+    }
+
+    if (**lexer_input == '\0')
+        err(2, "Lexer: Missing ending backquote");
+}
+
 token *get_tokens(const char *input, size_t *tokens_len)
 {
     lexer lexer = { 0 };
@@ -99,12 +127,39 @@ token *get_tokens(const char *input, size_t *tokens_len)
                                   : lexer.str_is_in_dquote);
                 lexer.str_is_in_squote = !lexer.str_is_in_dquote;
 
-                for (; lexer.str[lexer.str_token_end] != '\0'
-                     && lexer.str[lexer.str_token_end] != quote;
-                     lexer.str_token_end++)
+                // Preserve literal value of each character if within single quotes.
+                if (quote == "'")
                 {
-                    if (quote == '"')
+                    while (lexer.str[lexer.str_token_end] != '\0'
+                    && lexer.str[lexer.str_token_end] != quote)
+                    {
+                        lexer.str_token_end++;
+                    }
+
+                    if (lexer.str[lexer.str_token_end] == '\0')
+                        err(2, "Missing terminating quote for quote delimited text");
                 }
+                else
+                {
+                    // Literal value of each character if within double quotes is not preserved
+                    // for certain variables.
+                    while (lexer.str[lexer.str_token_end] != '\0'
+                    && lexer.str[lexer.str_token_end] != quote)
+                    {
+                        if (lexer.str[lexer.str_token_end] == '$')
+                        {
+                            // TODO(robertnant): implement case for dollar sign
+                            // handle_dollar-sign(...);
+                        }
+
+                        if (lexer.str[lexer.str_token_end] == '`')
+                        {
+                            handle_backquote_in_quoting(&(lexer.str));
+                        }
+                        lexer.str_token_end++;
+                    }
+                }
+
                 break;
 
             case '\\':
