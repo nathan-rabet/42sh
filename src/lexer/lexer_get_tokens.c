@@ -92,18 +92,41 @@ token *get_tokens(const char *input, size_t *tokens_len)
             {
             case '"':
             case '\'':
-                char quote = lexer.str[lexer.str_token_end];
+                char quote_c = lexer.str[lexer.str_token_end];
 
-                lexer.str_is_in_dquote =
-                    (quote == '"' ? !lexer.str_is_in_dquote
-                                  : lexer.str_is_in_dquote);
-                lexer.str_is_in_squote = !lexer.str_is_in_dquote;
+                lexer.quote = (quote_c == '"' ? QUOTE_DOUBLE : QUOTE_SINGLE);
 
                 for (; lexer.str[lexer.str_token_end] != '\0'
-                     && lexer.str[lexer.str_token_end] != quote;
+                     && lexer.str[lexer.str_token_end] != quote_c;
                      lexer.str_token_end++)
                 {
-                    if (quote == '"')
+                    // 2.2.2 Single-Quotes
+                    if (quote_c == '\'')
+                    {}
+
+                    // 2.2.3 Double-Quotes
+                    if (quote_c == '"')
+                    {
+                        if (lexer.str[lexer.str_token_end] == '$')
+                        {
+                            if (lexer.str[lexer.str_token_end + 1] == '{')
+                            {
+                                lexer.str_token_end += 2;
+                                for (; lexer.str[lexer.str_token_end] != '}'
+                                     && lexer.str[lexer.str_token_end] != '\0';
+                                     lexer.str_token_end++)
+                                {}
+                            }
+                            else
+                            {
+                                lexer.str_token_end++;
+                                for (; lexer.str[lexer.str_token_end] != ' '
+                                     && lexer.str[lexer.str_token_end] != '\0';
+                                     lexer.str_token_end++)
+                                {}
+                            }
+                        }
+                    }
                 }
                 break;
 
@@ -118,7 +141,8 @@ token *get_tokens(const char *input, size_t *tokens_len)
             {}
 
             else if (lexer.str[lexer.str_token_end] == '\'')
-                lexer.str_is_in_squote = !lexer.str_is_in_squote;
+                lexer.quote =
+                    (lexer.quote == QUOTE_SINGLE ? QUOTE_NONE : QUOTE_SINGLE);
 
             else if (lexer.str[lexer.str_token_end] == '\\')
                 lexer.str_token_end++;
