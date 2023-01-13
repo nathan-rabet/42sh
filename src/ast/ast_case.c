@@ -19,7 +19,7 @@ struct ast *ast_case_init(char *name, struct ast *case_clause)
 
 bool case_run(struct ast *ast) {
     assert(ast && ast->type == AST_CASE);
-    struct ast_case *case_ast = (struct ast_case *)ast;
+    //struct ast_case *case_ast = (struct ast_case *)ast;
     //TODO(clara)
     return false;
 }

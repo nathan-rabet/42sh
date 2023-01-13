@@ -26,6 +26,7 @@ bool if_run(struct ast *ast) {
         return if_ast->then_body->vtable->run(if_ast->then_body);
     else if (if_ast->else_body != NULL)
         return if_ast->else_body->vtable->run(if_ast->else_body);
+    return false;
 }
 
 void if_free(struct ast *ast)

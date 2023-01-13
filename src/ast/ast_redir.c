@@ -20,8 +20,9 @@ struct ast *ast_redir_init(enum ast_redir_type type,char *IONumber, char *target
 
 bool redir_run(struct ast *ast) {
     assert(ast && ast->type == AST_REDIR);
-    struct ast_redir *redir_ast = (struct ast_redir *)ast;
+    //struct ast_redir *redir_ast = (struct ast_redir *)ast;
     //TODO(clara) execution redirection
+    return false;
 }
 
 void redir_free(struct ast *ast)

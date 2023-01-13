@@ -18,7 +18,7 @@ struct ast *ast_pipe_init(struct ast *command)
 
 bool pipe_run(struct ast *ast) {
     assert(ast && ast->type == AST_PIPE);
-    struct ast_pipe *pipe_ast = (struct ast_pipe *)ast;
+    //struct ast_pipe *pipe_ast = (struct ast_pipe *)ast;
     //TODO(clara)
     return false;
 }

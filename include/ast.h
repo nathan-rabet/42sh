@@ -105,15 +105,15 @@ void list_pretty_print(struct ast *ast);
  */
 enum ast_redir_type {
     /// @brief Tokens redirection
-        DLESS, // <<
-        DGREAT, // >>
-        LESSAND, // <&
-        GREATAND, // >&
-        LESSGREAT, // <>
-        DLESSDASH, // <<-
+        REDIR_DLESS, // <<
+        REDIR_DGREAT, // >>
+        REDIR_LESSAND, // <&
+        REDIR_GREATAND, // >&
+        REDIR_LESSGREAT, // <>
+        REDIR_DLESSDASH, // <<-
 
     /// @brief Token clobber
-        CLOBBER, // >|
+        REDIR_CLOBBER, // >|
 };
 
 /**

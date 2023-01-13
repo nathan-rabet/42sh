@@ -7,29 +7,30 @@
 
 #include "../../include/parser.h"
 
-struct ast *parser_input(token *current_token)
+struct ast *parser_input(struct token *current_token)
 {
     struct ast *ast = NULL;
     switch (current_token->type)
     {
         case NEWLINE :
-            eat(current_token, NEWLINE);
+            current_token = eat(current_token, NEWLINE);
             break;
         case EOF :
-            eat(current_token, EOF);
+            current_token = eat(current_token, EOF);
             break;
         default:
-            ast = parse_list(current_token);
+            ast = parser_list(current_token);
             switch (current_token->type) {
                 case NEWLINE :
-                    eat(current_token, NEWLINE);
+                    current_token = eat(current_token, NEWLINE);
                     break;
                 case EOF :
-                    eat(current_token, EOF);
+                    current_token = eat(current_token, EOF);
                     break;
                 default:
                     wrong_look_ahead(current_token, "parse_input");
             }
 
     }
+    return ast;
 }
