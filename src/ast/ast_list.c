@@ -42,10 +42,10 @@ void list_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_LIST);
     struct ast_list *list_ast = (struct ast_list*) ast;
-    printf("LIST : \n");
+    printf("LIST nb children: %zu: \n", list_ast->nb_children);
     for (size_t i = 0; i < list_ast->nb_children;i++)
     {
-        printf("\tChildren %zu", i);
+        printf("Child %zu : \n", i);
         list_ast->children[i]->vtable->pretty_print(list_ast->children[i]);
     }
 }

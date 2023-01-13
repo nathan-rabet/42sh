@@ -42,7 +42,8 @@ void cmd_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_CMD);
     struct ast_cmd *cmd = (struct ast_cmd*) ast;
-    printf("CMD argv i: ");
+    printf("CMD [\n ");
     for (size_t i = 0; cmd->words[i];i++)
-        printf("nb : %zu, string %s ", i, cmd->words[i]);
+        printf("\tWord nb %zu : %s \n", i, cmd->words[i]);
+    printf("]\n");
 }

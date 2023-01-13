@@ -3,9 +3,9 @@
 
 #include "../../include/parser.h"
 
-struct ast *parser_pipeline(struct token *current_token)
+struct ast *parser_pipeline(struct token_list *tokens)
 {
     struct ast *ast = NULL;
-    ast = parser_command(current_token);
+    ast = parser_command(tokens);
     return ast;
 }
