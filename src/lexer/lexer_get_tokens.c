@@ -12,34 +12,85 @@ static bool is_prefix(const char *pre, const char *str, size_t pre_size)
     return strncmp(pre, str, pre_size) == 0;
 }
 
+// Adds new token to tokens list.
+// TODO(robertnant): Noticed that the token structure has an unused 'quote' field.
+// Figure out its usage and add it to this function.
+struct token *token_add(struct token *token, enum token_types type, void *value)
+{
+    struct token* new = xmalloc(1, sizeof(token));
+
+    new->type = type;
+    new->value = value;
+    new->next = NULL;
+
+    if (token == NULL)
+        return new;
+
+    token->next = new;
+
+    return token;
+}
+
 /** 
  * Handle's backquote when detected within double quotes.
  * lexer_input represents a pointer to the the lexer's input string
- * starting from the first double quote that has been detected.
+ * one byte after the backquote within the double quotes that has been detected.
  * After running this function, it is expected that the string pointed by
- * lexer_input should point to the character right after the ending backquote.
+ * lexer_input should point to the ending backquote found.
+ * 
+ * Return: final command that will be used for command expansion
+ * (string within backquotes without the escaped characters).
 */
-static void handle_backquote_in_quoting(char **lexer_input)
+static char *handle_backquote_in_quoting(lexer *lexer)
 {
-    char *previous_char = *lexer_input;
+    char *expansion_command = NULL;
+    size_t expansion_command_index = 0;
 
-    while (**lexer_input != '\0')
+    char current_char = '\0';
+    while ((current_char = lexer->str[lexer->str_token_end]) != '\0')
     {
-        if (**lexer_input == '`' && *(previous_char++) != '\'')
+        char previous_char = lexer->str[lexer->str_token_end - 1];
+
+        // Case if '\' is found.
+        if (previous_char == '\\')
+        {
+            if (current_char == '$')
+            {
+                // "... ... `$`"
+            }
+            else if (current_char == '`')
+            {
+            }
+            else if (current_char == '\\')
+            {
+            }
+            else
+            {
+            }
+        }
+
+        expansion_command = xcalloc(expansion_command_index + 1, sizeof(char));
+        expansion_command[expansion_command_index++] = current_char;
+        if (current_char == '`' && previous_char != '\'')
         {
             // Ending backquote found.
+            lexer->str_token_end++;
             break;
         }
 
-        *lexer_input++;
-
+        lexer->str_token_end++;
     }
 
-    if (**lexer_input == '\0')
+    if (current_char == '\0')
         err(2, "Lexer: Missing ending backquote");
+
+    // Null terminate expansion command.
+    expansion_command[expansion_command_index] = '\0';
+
+    return expansion_command;
 }
 
-token *get_tokens(const char *input, size_t *tokens_len)
+struct token *get_tokens(const char *input, size_t *tokens_len)
 {
     lexer lexer = { 0 };
     lexer.str = input;
@@ -91,10 +142,8 @@ token *get_tokens(const char *input, size_t *tokens_len)
 
                 if (token_type != TOKEN_UNDEFINED)
                 {
-                    lexer.tokens = xrealloc(lexer.tokens, ++lexer.nb_tokens,
-                                            sizeof(token));
-                    lexer.tokens[lexer.nb_tokens - 1].type = token_type;
-                    lexer.tokens[lexer.nb_tokens - 1].value = NULL;
+                    lexer.tokens = token_add(lexer.tokens, token_type, NULL);
+                    lexer.nb_tokens++;
                     lexer.str_token_start = lexer.str_token_end + 1;
                 }
             }
@@ -134,6 +183,8 @@ token *get_tokens(const char *input, size_t *tokens_len)
 
                     if (lexer.str[lexer.str_token_end] == '\0')
                         err(2, "Missing terminating quote for quote delimited text");
+                                        
+                    // TODO(robertnant): Add token.
                 }
                 else
                 {
@@ -163,7 +214,9 @@ token *get_tokens(const char *input, size_t *tokens_len)
                         }
                         else if (lexer.str[lexer.str_token_end] == '`')
                         {
-                            handle_backquote_in_quoting(&(lexer.str));
+                            // Move to character after backquote.
+                            lexer.str_token_end++;
+                            handle_backquote_in_quoting(&lexer);
                         }
                     }
                 }
@@ -195,11 +248,10 @@ token *get_tokens(const char *input, size_t *tokens_len)
     // shall be delimited.
     if (lexer.str_token_start != lexer.str_token_end)
     {
-        lexer.tokens = xrealloc(lexer.tokens, ++lexer.nb_tokens, sizeof(token));
-        lexer.tokens[lexer.nb_tokens - 1].type = WORD;
-        lexer.tokens[lexer.nb_tokens - 1].value =
-            strcpy(xmalloc(lexer.str_token_end - lexer.str_token_start + 1,
+        lexer.tokens = token_add(lexer.tokens, WORD,
+        strcpy(xmalloc(lexer.str_token_end - lexer.str_token_start + 1,
                            sizeof(char)),
-                   lexer.str + lexer.str_token_start);
+                   lexer.str + lexer.str_token_start));
+        lexer.nb_tokens++;
     }
 }

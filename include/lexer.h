@@ -10,7 +10,8 @@ enum token_types
 {
     QUOTE_NONE = 0,
     QUOTE_SINGLE,
-    QUOTE_DOUBLE
+    QUOTE_DOUBLE,
+    QUOTE_BACK
 };
 
 typedef char param_exp_type_t;
@@ -22,12 +23,14 @@ typedef struct _parameter_expansion
 } parameter_expansion;
 
 typedef char quote_t;
-typedef struct
+
+struct token
 {
     token_t type;
     quote_t quote;
     void *value;
-} token;
+    struct token *next;
+};
 
 typedef struct
 {
@@ -35,8 +38,10 @@ typedef struct
     size_t str_token_start;
     size_t str_token_end;
     quote_t quote;
+    // TODO(robertnant): potentially remove nb_tokens
+    // as tokens will be represented as a linked list.
     size_t nb_tokens;
-    token *tokens;
+    struct token *tokens;
 } lexer;
 
 extern char *IFS;
@@ -190,6 +195,6 @@ inline token_t get_string_operator(char *str, size_t len)
  * @param tokens_len The length of the returned array
  * @return token* The array of tokens
  */
-token *get_tokens(const char *input, size_t *tokens_len);
+struct token *get_tokens(const char *input, size_t *tokens_len);
 
 #endif /* LEXER_H */
