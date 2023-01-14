@@ -7,23 +7,22 @@
 
 #include "../../include/parser.h"
 
-bool is_shell_command(struct token *token)
-{
-    switch (token->type) {
-        case IF:
-            return true;
-        default:
-            return false;
-    }
-    return false;
-}
 
 struct ast *parser_command(struct token_list *tokens)
 {
     struct ast *ast = NULL;
     if (is_shell_command(tokens->current_token))
+    {
         ast = parser_shell_command(tokens);
+        struct list_redir *list = NULL;
+
+        while (is_redirection(tokens->current_token->type))
+            list = parser_redirection(tokens, list);
+        if (list != NULL)
+            return ast_redir_init(list, ast);
+    }
     else
         ast = parser_simple_command(tokens);
+
     return ast;
 }

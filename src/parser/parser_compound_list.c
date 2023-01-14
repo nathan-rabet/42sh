@@ -35,7 +35,7 @@ struct ast *parser_compound_list(struct token_list *tokens)
         eat(tokens, NEWLINE);
     children[i] = NULL;
 
-    // if 1 chil
+    // if 1 child
     if (i < 2)
         return children[0];
     ast = ast_list_init(i, children);

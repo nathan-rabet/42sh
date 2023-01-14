@@ -315,6 +315,115 @@ void test5()
     ast->vtable->pretty_print(ast);
 }
 
+void test6()
+{
+    printf("\n----------------TEST 6-----------------\n");
+    printf("\n---------------- REDIRECTION -----------------\n\n");
+
+    xalloc_init();
+
+    struct token *token6 = xmalloc(1, sizeof(struct token*));
+    token6->type = NEWLINE;
+    token6->value = "\n";
+    token6->next = NULL;
+
+    struct token *token4 = xmalloc(1, sizeof(struct token*));
+    token4->type = WORD;
+    token4->value = "file.txt";
+    token4->next = token6;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token*));
+    token3->type = GREAT;
+    token3->value = ">";
+    token3->next = token4;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token*));
+    token2->type = WORD;
+    token2->value = "tofile";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token*));
+    token->type = WORD;
+    token->value = "echo";
+    token->next = token2;
+
+    struct ast *ast = parser_input(token);
+
+    ast->vtable->pretty_print(ast);
+}
+
+void test7()
+{
+    printf("\n----------------TEST 7-----------------\n");
+    printf("\n---------------- REDIRECTION AND IF -----------------\n\n");
+
+    xalloc_init();
+
+    struct token *tokenend = xmalloc(1, sizeof(struct token*));
+    tokenend->type = NEWLINE;
+    tokenend->value = "\n";
+    tokenend->next = NULL;
+
+    struct token *token11 = xmalloc(1, sizeof(struct token*));
+    token11->type = FI;
+    token11->value = "fi";
+    token11->next = tokenend;
+
+    struct token *token10 = xmalloc(1, sizeof(struct token*));
+    token10->type = SEMI;
+    token10->value = ";";
+    token10->next = token11;
+
+    struct token *token9 = xmalloc(1, sizeof(struct token*));
+    token9->type = WORD;
+    token9->value = "example.txt";
+    token9->next = token10;
+
+    struct token *token8 = xmalloc(1, sizeof(struct token*));
+    token8->type = GREAT;
+    token8->value = ">";
+    token8->next = token9;
+
+    struct token *token7 = xmalloc(1, sizeof(struct token*));
+    token7->type = WORD;
+    token7->value = "foobar";
+    token7->next = token8;
+
+    struct token *token6 = xmalloc(1, sizeof(struct token*));
+    token6->type = WORD;
+    token6->value = "echo";
+    token6->next = token7;
+
+    struct token *token5 = xmalloc(1, sizeof(struct token*));
+    token5->type = THEN;
+    token5->value = "then";
+    token5->next = token6;
+
+    struct token *token4 = xmalloc(1, sizeof(struct token*));
+    token4->type = SEMI;
+    token4->value = ";";
+    token4->next = token5;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token*));
+    token3->type = WORD;
+    token3->value = "ok";
+    token3->next = token4;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token*));
+    token2->type = WORD;
+    token2->value = "echo";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token*));
+    token->type = IF;
+    token->value = "if";
+    token->next = token2;
+
+    struct ast *ast = parser_input(token);
+
+    ast->vtable->pretty_print(ast);
+}
+
 
 int main(void)
 {
@@ -323,5 +432,7 @@ int main(void)
     test3();
     test4();
     test5();
+    test6();
+    test7();
     return 0;
 }

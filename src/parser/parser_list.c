@@ -9,7 +9,7 @@ struct ast *parser_list(struct token_list *tokens)
     struct ast **children = xmalloc(1, sizeof(struct ast **));
     size_t i = 1;
     children[0] = parser_and_or(tokens);
-    printf("test %i\n", tokens->current_token->type);
+    // printf("test %i\n", tokens->current_token->type);
 
     while (tokens->current_token->type == SEMI)
     {

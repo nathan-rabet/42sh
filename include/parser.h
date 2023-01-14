@@ -24,10 +24,17 @@ struct ast *parser_shell_command(struct token_list *tokens);
 struct ast *parser_simple_command(struct token_list *tokens);
 struct ast *parser_element(struct token_list *tokens, char *first);
 struct ast *parser_compound_list(struct token_list *tokens);
+struct list_redir *parser_redirection(struct token_list *tokens, struct list_redir *next);
+
 
 struct ast *parser_rule_if(struct token_list *tokens);
 struct ast *parser_else_clause(struct token_list *tokens);
 struct ast *parser_rule_elif(struct token_list *tokens);
+
+// Utils
+bool is_redirection(enum token_types type);
+bool is_shell_command(struct token *token);
+bool is_prefix(struct token *token);
 
 
 

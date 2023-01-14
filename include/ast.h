@@ -117,20 +117,33 @@ enum ast_redir_type {
 };
 
 /**
- * @brief the redir node
- * @param base the linked of the ast structure
+ * @brief the redir item
  * @param type the type of redirection
  * @param IONumber the ionumber
  * @param target the name of the target file of the redirection
  */
-struct ast_redir {
-    struct ast base;
+struct list_redir {
     enum ast_redir_type type;
     char *IONumber;
     char *target;
+    struct list_redir *next;
 };
 
-struct ast *ast_redir_init(enum ast_redir_type type,char *IONumber, char *target);
+/**
+ * @brief the redir node
+ * @param base the linked of the ast structure
+ * @param command the command of what we display
+ * @param list of the all the redirection
+ */
+struct ast_redir {
+    struct ast base;
+    struct ast *command;
+    struct list_redir *list;
+};
+
+
+struct ast *ast_redir_init(struct list_redir *redir, struct ast *command);
+struct list_redir *list_redir_init(enum ast_redir_type type,char *IONumber, char *target, struct list_redir *next);
 bool redir_run(struct ast *ast);
 void redir_free(struct ast *ast);
 void redir_pretty_print(struct ast *ast);

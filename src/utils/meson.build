@@ -1,1 +1,1 @@
-sources += files('xalloc.c')
+sources += files('xalloc.c', 'parser_utils.c')

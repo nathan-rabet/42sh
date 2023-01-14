@@ -2,7 +2,7 @@
 #include "../../include/xalloc.h"
 
 
-struct ast *ast_redir_init(enum ast_redir_type type,char *IONumber, char *target)
+struct ast *ast_redir_init(struct list_redir *list, struct ast *command)
 {
     static struct ast_vtable vtable = {
             .run = &redir_run,
@@ -12,10 +12,20 @@ struct ast *ast_redir_init(enum ast_redir_type type,char *IONumber, char *target
     struct ast_redir *redir_ast = xmalloc(1, sizeof(struct ast_redir));
     redir_ast->base.type = AST_REDIR;
     redir_ast->base.vtable = &vtable;
-    redir_ast->type = type;
-    redir_ast->IONumber = IONumber;
-    redir_ast->target = target;
+    redir_ast->command = command;
+    redir_ast->list = list;
     return &redir_ast->base;
+}
+
+struct list_redir *list_redir_init(enum ast_redir_type type,char *IONumber, char *target,
+        struct list_redir *next)
+{
+    struct list_redir *list = xmalloc(1, sizeof (struct list_redir *));
+    list->type = type;
+    list->IONumber = IONumber;
+    list->target = target;
+    list->next = next;
+    return list;
 }
 
 bool redir_run(struct ast *ast) {
@@ -28,9 +38,7 @@ bool redir_run(struct ast *ast) {
 void redir_free(struct ast *ast)
 {
     assert(ast && ast->type == AST_REDIR);
-    struct ast_redir *redir_ast = (struct ast_redir*) ast;
-    xfree(redir_ast->IONumber);
-    xfree(redir_ast->target);
+    // struct ast_redir *redir_ast = (struct ast_redir*) ast;
     xfree(ast);
 }
 
@@ -38,7 +46,15 @@ void redir_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_REDIR);
     struct ast_redir *redir_ast = (struct ast_redir*) ast;
-    printf("REDIRECTION [ type : %i, IOnumber : %s, target %s \n",
-           redir_ast->type, redir_ast->IONumber, redir_ast->target);
-
+    struct list_redir *list = redir_ast->list;
+    printf("REDIRECTION LIST [ COMMAND :");
+    redir_ast->command->vtable->pretty_print(redir_ast->command);
+    printf("LIST : ");
+    while (list != NULL)
+    {
+        printf("| type : %i, IOnumber : %s, target %s \n",
+               list->type, list->IONumber, list->target);
+        list = list->next;
+    }
+    printf("] \n");
 }
