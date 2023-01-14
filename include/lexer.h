@@ -2,17 +2,16 @@
 #define LEXER_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 typedef int token_t;
 
-typedef struct
+struct token
 {
     token_t type;
-    bool is_in_dquote;
-    bool is_in_squote;
     void *value;
     struct token *next;
-} token;
+};
 
 typedef struct
 {
@@ -94,51 +93,6 @@ enum token_types
     COMMAND // Any executable command ("ls -l", "./42sh")
 };
 
-char *tokens_mapping = {
-    NULL, // UNDEFINED
-    NULL, // WORD
-    NULL, // ASSIGNMENT_WORD
-    NULL, // NAME
-    "\n", // NEWLINE
-    NULL, // IO_NUMBER
-
-    "&&", // AND_IF
-    "||", // OR_IF
-    ";;", // DSEMI
-
-    "<<", // DLESS
-    ">>", // DGREAT
-    "<&", // LESSAND
-    ">&", // GREATAND
-    "<>", // LESSGREAT
-    "<<-", // DLESSDASH
-
-    ">|", // CLOBBER
-
-    "if", // IF
-    "then", // THEN
-    "else", // ELSE
-    "elif", // ELIF
-    "fi", // FI
-
-    "case", // CASE
-    "esac", // ESAC
-
-    "while" // WHILE
-    "until", // UNTIL
-
-    "do", // DO
-    "done", // DONE
-
-    "for", // FOR
-
-    "{", // LBRACE
-    "}", // RBRACE
-
-    "!", // BANG
-
-    "in", // IN
-};
 
 #define FIRST_OPERATOR AND_IF
 #define LAST_OPERATOR CLOBBER

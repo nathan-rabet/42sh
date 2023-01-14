@@ -22,6 +22,7 @@ struct ast *parser_input(struct token *list_tokens)
             break;
         default:
             ast = parser_list(tokens);
+
             switch (tokens->current_token->type) {
                 case NEWLINE :
                     eat(tokens, NEWLINE);
@@ -34,5 +35,6 @@ struct ast *parser_input(struct token *list_tokens)
             }
 
     }
+
     return ast;
 }

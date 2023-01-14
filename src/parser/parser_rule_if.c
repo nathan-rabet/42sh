@@ -22,6 +22,5 @@ struct ast *parser_rule_if(struct token_list *tokens)
     // Construct ast
     ast = ast_if_init(if_condition, then, else_clause);
 
-
     return ast;
 }

@@ -19,5 +19,6 @@ struct ast *parser_else_clause(struct token_list *tokens)
     {
         ast = parser_rule_elif(tokens);
     }
+
     return ast;
 }

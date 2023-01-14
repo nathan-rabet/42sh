@@ -48,7 +48,7 @@ void if_pretty_print(struct ast *ast)
     printf("\nTHEN [ ");
     if_ast->then_body->vtable->pretty_print(if_ast->then_body);
     printf(" ]\n");
-    if (if_ast->else_body)
+    if (if_ast->else_body != NULL)
     {
         printf("\nELSE [ ");
         if_ast->else_body->vtable->pretty_print(if_ast->else_body);

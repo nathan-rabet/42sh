@@ -20,8 +20,17 @@ struct ast *parser_and_or(struct token_list *tokens);
 struct ast *parser_list(struct token_list *tokens);
 struct ast *parser_pipeline(struct token_list *tokens);
 struct ast *parser_command(struct token_list *tokens);
+struct ast *parser_shell_command(struct token_list *tokens);
 struct ast *parser_simple_command(struct token_list *tokens);
 struct ast *parser_element(struct token_list *tokens, char *first);
+struct ast *parser_compound_list(struct token_list *tokens);
+
+struct ast *parser_rule_if(struct token_list *tokens);
+struct ast *parser_else_clause(struct token_list *tokens);
+struct ast *parser_rule_elif(struct token_list *tokens);
+
+
+
 
 
 #endif //PARSER_H
