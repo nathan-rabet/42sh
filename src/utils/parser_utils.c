@@ -20,6 +20,8 @@ bool is_shell_command(struct token *token)
 {
     switch (token->type) {
         case IF:
+        case WHILE:
+        case UNTIL:
             return true;
         default:
             return false;

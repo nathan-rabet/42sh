@@ -14,6 +14,12 @@
 struct ast *parser_shell_command(struct token_list *tokens)
 {
     struct ast *ast = NULL;
-    ast = parser_rule_if(tokens);
+    if (tokens->current_token->type == IF)
+        return parser_rule_if(tokens);
+    else if (tokens->current_token->type == WHILE)
+        return parser_rule_while(tokens);
+    else if (tokens->current_token->type == UNTIL)
+        return parser_rule_until(tokens);
+    // ERR
     return ast;
 }

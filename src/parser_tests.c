@@ -620,6 +620,101 @@ void test11()
     ast->vtable->pretty_print(ast);
 }
 
+void test12()
+{
+    printf("\n----------------TEST 12-----------------\n");
+    printf("\n---------------- SIMPLE WHILE -----------------\n\n");
+
+    xalloc_init();
+
+    struct token *tokenend = xmalloc(1, sizeof(struct token*));
+    tokenend->type = NEWLINE;
+    tokenend->value = "\n";
+    tokenend->next = NULL;
+
+    struct token *token6 = xmalloc(1, sizeof(struct token*));
+    token6->type = DONE;
+    token6->value = "done";
+    token6->next = tokenend;
+
+    struct token *token5 = xmalloc(1, sizeof(struct token*));
+    token5->type = WORD;
+    token5->value = "qqchhhh";
+    token5->next = token6;
+
+    struct token *token4 = xmalloc(1, sizeof(struct token*));
+    token4->type = DO;
+    token4->value = "do";
+    token4->next = token5;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token*));
+    token3->type = SEMI;
+    token3->value = ";";
+    token3->next = token4;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token*));
+    token2->type = WORD;
+    token2->value = "true";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token*));
+    token->type = WHILE;
+    token->value = "while";
+    token->next = token2;
+
+    struct ast *ast = parser_input(token);
+
+    ast->vtable->pretty_print(ast);
+}
+
+void test13()
+{
+    printf("\n----------------TEST 13-----------------\n");
+    printf("\n---------------- SIMPLE UNTIL -----------------\n\n");
+
+    xalloc_init();
+
+    struct token *tokenend = xmalloc(1, sizeof(struct token*));
+    tokenend->type = NEWLINE;
+    tokenend->value = "\n";
+    tokenend->next = NULL;
+
+    struct token *token6 = xmalloc(1, sizeof(struct token*));
+    token6->type = DONE;
+    token6->value = "done";
+    token6->next = tokenend;
+
+    struct token *token5 = xmalloc(1, sizeof(struct token*));
+    token5->type = WORD;
+    token5->value = "qqchhhh";
+    token5->next = token6;
+
+    struct token *token4 = xmalloc(1, sizeof(struct token*));
+    token4->type = DO;
+    token4->value = "do";
+    token4->next = token5;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token*));
+    token3->type = SEMI;
+    token3->value = ";";
+    token3->next = token4;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token*));
+    token2->type = WORD;
+    token2->value = "true";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token*));
+    token->type = UNTIL;
+    token->value = "until";
+    token->next = token2;
+
+    struct ast *ast = parser_input(token);
+
+    ast->vtable->pretty_print(ast);
+}
+
+
 
 int main(void)
 {
@@ -634,5 +729,7 @@ int main(void)
     test9();
     test10();
     test11();
+    test12();
+    test13();
     return 0;
 }

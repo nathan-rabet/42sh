@@ -11,10 +11,12 @@ struct token_list
     struct token *current_token;
 };
 
-
+// Get token
 void eat(struct token_list *tokens, token_t type);
 void wrong_look_ahead(struct token_list *tokens, char *function);
 token_t look_ahead(struct token_list *tokens);
+
+// Parser grammar
 struct ast *parser_input(struct token *tokens);
 struct ast *parser_and_or(struct token_list *tokens);
 struct ast *parser_list(struct token_list *tokens);
@@ -26,10 +28,12 @@ struct ast *parser_element(struct token_list *tokens, char *first);
 struct ast *parser_compound_list(struct token_list *tokens);
 struct list_redir *parser_redirection(struct token_list *tokens, struct list_redir *next);
 
-
+// Parser rule
 struct ast *parser_rule_if(struct token_list *tokens);
 struct ast *parser_else_clause(struct token_list *tokens);
 struct ast *parser_rule_elif(struct token_list *tokens);
+struct ast *parser_rule_until(struct token_list *tokens);
+struct ast *parser_rule_while(struct token_list *tokens);
 
 // Utils
 bool is_redirection(enum token_types type);
