@@ -286,16 +286,18 @@ void case_free(struct ast *ast);
 void case_pretty_print(struct ast *ast);
 
 /**
- * @brief the piê node
+ * @brief the pipe node
  * @param base the linked of the ast structure
+ * @param nb_command the number of command to run
  * @param command the ast node to run
  */
 struct ast_pipe {
     struct ast base;
-    struct ast *command;
+    size_t nb_command;
+    struct ast **command;
 };
 
-struct ast *ast_pipe_init(struct ast *command);
+struct ast *ast_pipe_init(size_t nb_command, struct ast **command);
 bool pipe_run(struct ast *ast);
 void pipe_free(struct ast *ast);
 void pipe_pretty_print(struct ast *ast);

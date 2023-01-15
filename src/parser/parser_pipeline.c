@@ -7,6 +7,13 @@ struct ast *parser_pipeline(struct token_list *tokens)
 {
     struct ast **command = xmalloc(1, sizeof (struct ast **));
     size_t i = 1;
+    bool negation = false;
+    if (tokens->current_token->type == BANG)
+    {
+        eat(tokens, BANG);
+        negation = true;
+    }
+
     command[0] = parser_command(tokens);
 
     while (tokens->current_token->type == PIPE)
@@ -18,7 +25,11 @@ struct ast *parser_pipeline(struct token_list *tokens)
             command[i++] = parser_command(tokens);
     }
     command[i] = NULL;
-    if (i < 2)
+    if (i < 2 && !negation)
         return command[0];
+    else if (i < 2 && negation)
+        return ast_not_init(command[0]);
+    else if (negation)
+        return ast_not_init(ast_pipe_init(i, command));
     return ast_pipe_init(i, command);
 }

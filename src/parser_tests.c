@@ -525,6 +525,101 @@ void test9()
     ast->vtable->pretty_print(ast);
 }
 
+void test10()
+{
+    printf("\n----------------TEST 10-----------------\n");
+    printf("\n---------------- SIMPLE NEGATION -----------------\n\n");
+
+    xalloc_init();
+
+    struct token *tokenend = xmalloc(1, sizeof(struct token*));
+    tokenend->type = NEWLINE;
+    tokenend->value = "\n";
+    tokenend->next = NULL;
+
+    struct token *token5 = xmalloc(1, sizeof(struct token*));
+    token5->type = WORD;
+    token5->value = "a";
+    token5->next = tokenend;
+
+    struct token *token4 = xmalloc(1, sizeof(struct token*));
+    token4->type = WORD;
+    token4->value = "echo";
+    token4->next = token5;
+
+    struct token *token3_1 = xmalloc(1, sizeof(struct token*));
+    token3_1->type = SEMI;
+    token3_1->value = ";";
+    token3_1->next = token4;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token*));
+    token3->type = WORD;
+    token3->value = "toto";
+    token3->next = token3_1;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token*));
+    token2->type = WORD;
+    token2->value = "echo";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token*));
+    token->type = BANG;
+    token->value = "!";
+    token->next = token2;
+
+    struct ast *ast = parser_input(token);
+
+    ast->vtable->pretty_print(ast);
+}
+
+void test11()
+{
+    printf("\n----------------TEST 11-----------------\n");
+    printf("\n---------------- NEGATION / PIPELINE-----------------\n\n");
+
+    xalloc_init();
+
+    struct token *tokenend = xmalloc(1, sizeof(struct token*));
+    tokenend->type = NEWLINE;
+    tokenend->value = "\n";
+    tokenend->next = NULL;
+
+    struct token *token5 = xmalloc(1, sizeof(struct token*));
+    token5->type = WORD;
+    token5->value = "a";
+    token5->next = tokenend;
+
+
+    struct token *token4 = xmalloc(1, sizeof(struct token*));
+    token4->type = WORD;
+    token4->value = "echo";
+    token4->next = token5;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token*));
+    token3->type = PIPE;
+    token3->value = "|";
+    token3->next = token4;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token*));
+    token2->type = WORD;
+    token2->value = "tofile";
+    token2->next = token3;
+
+    struct token *token1 = xmalloc(1, sizeof(struct token*));
+    token1->type = WORD;
+    token1->value = "echo";
+    token1->next = token2;
+
+    struct token *token = xmalloc(1, sizeof(struct token*));
+    token->type = BANG;
+    token->value = "!";
+    token->next = token1;
+
+    struct ast *ast = parser_input(token);
+
+    ast->vtable->pretty_print(ast);
+}
+
 
 int main(void)
 {
@@ -537,5 +632,7 @@ int main(void)
     test7();
     test8();
     test9();
+    test10();
+    test11();
     return 0;
 }
