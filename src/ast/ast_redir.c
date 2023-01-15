@@ -52,7 +52,7 @@ void redir_pretty_print(struct ast *ast)
     printf("LIST : ");
     while (list != NULL)
     {
-        printf("| type : %i, IOnumber : %s, target %s \n",
+        printf(" type : %i, IOnumber : %s, target %s | ",
                list->type, list->IONumber, list->target);
         list = list->next;
     }

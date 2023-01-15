@@ -482,6 +482,49 @@ void test8()
     ast->vtable->pretty_print(ast);
 }
 
+void test9()
+{
+    printf("\n----------------TEST 9-----------------\n");
+    printf("\n---------------- SIMPLE PIPELINE -----------------\n\n");
+
+    xalloc_init();
+
+    struct token *tokenend = xmalloc(1, sizeof(struct token*));
+    tokenend->type = NEWLINE;
+    tokenend->value = "\n";
+    tokenend->next = NULL;
+
+    struct token *token5 = xmalloc(1, sizeof(struct token*));
+    token5->type = WORD;
+    token5->value = "a";
+    token5->next = tokenend;
+
+
+    struct token *token4 = xmalloc(1, sizeof(struct token*));
+    token4->type = WORD;
+    token4->value = "echo";
+    token4->next = token5;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token*));
+    token3->type = PIPE;
+    token3->value = "|";
+    token3->next = token4;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token*));
+    token2->type = WORD;
+    token2->value = "tofile";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token*));
+    token->type = WORD;
+    token->value = "echo";
+    token->next = token2;
+
+    struct ast *ast = parser_input(token);
+
+    ast->vtable->pretty_print(ast);
+}
+
 
 int main(void)
 {
@@ -493,5 +536,6 @@ int main(void)
     test6();
     test7();
     test8();
+    test9();
     return 0;
 }

@@ -5,7 +5,6 @@
 
 struct ast *parser_list(struct token_list *tokens)
 {
-    struct ast* ast = NULL;
     struct ast **children = xmalloc(1, sizeof(struct ast **));
     size_t i = 1;
     children[0] = parser_and_or(tokens);
@@ -21,10 +20,9 @@ struct ast *parser_list(struct token_list *tokens)
     }
 
     children[i] = NULL;
-    // if 1 chil
+    // if 1 child
     if (i < 2)
         return children[0];
 
-    ast = ast_list_init(i, children);
-    return ast;
+    return ast_list_init(i, children);
 }

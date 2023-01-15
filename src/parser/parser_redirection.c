@@ -25,7 +25,9 @@ struct list_redir *parser_redirection(struct token_list *tokens, struct list_red
     if (look_ahead(tokens) == WORD)
     {
         target = tokens->current_token->value;
+
         eat(tokens, WORD);
+
     }
     else
         exit(2);

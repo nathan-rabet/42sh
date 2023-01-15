@@ -34,8 +34,8 @@ void list_free(struct ast *ast)
         for (size_t i = 0; i < list_ast->nb_children;i++)
             list_ast->children[i]->vtable->free(list_ast->children[i]);
         xfree(list_ast->children);
-        xfree(ast);
     }
+    xfree(ast);
 }
 
 void list_pretty_print(struct ast *ast)

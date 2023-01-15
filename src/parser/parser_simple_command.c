@@ -25,10 +25,8 @@ struct ast *parser_simple_command(struct token_list *tokens)
     }
     else
         return ast_redir_init(list, NULL);
-
     while (is_redirection(tokens->current_token->type))
             list = parser_redirection(tokens, list);
-
     if (list == NULL)
         return ast;
 
