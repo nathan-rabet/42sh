@@ -22,11 +22,11 @@ bool is_shell_command(struct token *token)
         case IF:
         case WHILE:
         case UNTIL:
+        case FOR:
             return true;
         default:
             return false;
     }
-    return false;
 }
 
 bool is_prefix(struct token_list *token)

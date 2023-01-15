@@ -20,6 +20,8 @@ struct ast *parser_shell_command(struct token_list *tokens)
         return parser_rule_while(tokens);
     else if (tokens->current_token->type == UNTIL)
         return parser_rule_until(tokens);
+    else if (tokens->current_token->type == FOR)
+        return parser_rule_for(tokens);
     // ERR
     return ast;
 }

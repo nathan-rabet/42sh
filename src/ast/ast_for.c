@@ -40,7 +40,7 @@ void for_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_FOR);
     struct ast_for *for_ast = (struct ast_for*) ast;
-    printf("FOR name: %s in", for_ast->name);
+    printf("FOR name: %s in ", for_ast->name);
     for_ast->word->vtable->pretty_print(for_ast->word);
     printf("do : ");
     for_ast->to_execute->vtable->pretty_print(for_ast->to_execute);

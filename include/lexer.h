@@ -28,8 +28,6 @@ enum token_types
     TOKEN_UNDEFINED = 0, // Undefined token
     /// @brief Tokens global
     WORD, // Any word
-    ASSIGNMENT_WORD, // Any word that is an assignment
-    NAME, // Any word that is a name
     NEWLINE, // \n
     IO_NUMBER, // /[<>]\d+/
 

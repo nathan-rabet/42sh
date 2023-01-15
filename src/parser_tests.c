@@ -843,6 +843,78 @@ void test15()
     ast->vtable->pretty_print(ast);
 }
 
+void test16()
+{
+    printf("\n----------------TEST 16-----------------\n");
+    printf("\n---------------- FOR -----------------\n\n");
+
+    xalloc_init();
+
+    struct token *tokenend = xmalloc(1, sizeof(struct token*));
+    tokenend->type = NEWLINE;
+    tokenend->value = "\n";
+    tokenend->next = NULL;
+
+    struct token *token11 = xmalloc(1, sizeof(struct token*));
+    token11->type = DONE;
+    token11->value = "done";
+    token11->next = tokenend;
+
+    struct token *token10 = xmalloc(1, sizeof(struct token*));
+    token10->type = SEMI;
+    token10->value = ";";
+    token10->next = token11;
+
+    struct token *token9 = xmalloc(1, sizeof(struct token*));
+    token9->type = WORD;
+    token9->value = "example.txt";
+    token9->next = token10;
+
+    struct token *token8 = xmalloc(1, sizeof(struct token*));
+    token8->type = DO;
+    token8->value = "do";
+    token8->next = token9;
+
+    struct token *token7 = xmalloc(1, sizeof(struct token*));
+    token7->type = WORD;
+    token7->value = "2";
+    token7->next = token8;
+
+    struct token *token6 = xmalloc(1, sizeof(struct token*));
+    token6->type = WORD;
+    token6->value = "echo";
+    token6->next = token7;
+
+    struct token *token5 = xmalloc(1, sizeof(struct token*));
+    token5->type = WORD;
+    token5->value = "&1";
+    token5->next = token6;
+
+    struct token *token4 = xmalloc(1, sizeof(struct token*));
+    token4->type = WORD;
+    token4->value = "test";
+    token4->next = token5;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token*));
+    token3->type = IN;
+    token3->value = "in";
+    token3->next = token4;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token*));
+    token2->type = WORD;
+    token2->value = "i";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token*));
+    token->type = FOR;
+    token->value = "for";
+    token->next = token2;
+
+    struct ast *ast = parser_input(token);
+
+    ast->vtable->pretty_print(ast);
+}
+
 int main(void)
 {
     test1();
@@ -860,5 +932,6 @@ int main(void)
     test13();
     test14();
     test15();
+    test16();
     return 0;
 }
