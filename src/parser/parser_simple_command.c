@@ -8,27 +8,32 @@
 
 struct ast *parser_simple_command(struct token_list *tokens)
 {
-    struct ast *ast = NULL;
-    char *first = xmalloc(1, sizeof(char *));
     struct list_redir *list = NULL;
+    char **words = xmalloc(1, sizeof (char **));
 
-    while (is_redirection(tokens->current_token->type))
-        list = parser_redirection(tokens, list);
+    while (is_prefix(tokens))
+    {
+        if (is_redirection(tokens->current_token->type))
+            list = parser_redirection(tokens, list);
+        if (is_assignment_word(tokens->current_token->value))
+            words = parser_element(tokens, words);
+    }
 
 
     if (tokens->current_token->type == WORD)
     {
-        // Copy the value of the current token
-        first = tokens->current_token->value;
-        eat(tokens, WORD);
-        ast = parser_element(tokens, first);
+        words = parser_element(tokens, words);
     }
-    else
-        return ast_redir_init(list, NULL);
-    while (is_redirection(tokens->current_token->type))
-            list = parser_redirection(tokens, list);
-    if (list == NULL)
-        return ast;
 
-    return ast_redir_init(list, ast);
+    while (is_redirection(tokens->current_token->type) || tokens->current_token->type == WORD)
+    {
+        if (is_redirection(tokens->current_token->type))
+            list = parser_redirection(tokens, list);
+        if (tokens->current_token->type == WORD)
+            words = parser_element(tokens, words);
+    }
+
+    if (list == NULL)
+        return ast_cmd_init(words);
+    return ast_redir_init(list, ast_cmd_init(words));
 }

@@ -37,9 +37,9 @@ void and_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_AND);
     struct ast_and *and_ast = (struct ast_and*) ast;
-    printf("AND [ ");
+    printf("AND [ LEFT :");
     and_ast->ast_left->vtable->pretty_print(and_ast->ast_left);
-    printf(", ");
+    printf(", RIGHT : ");
     and_ast->ast_right->vtable->pretty_print(and_ast->ast_right);
     printf("]\n");
 }

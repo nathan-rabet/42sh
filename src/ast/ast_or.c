@@ -37,9 +37,9 @@ void or_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_OR);
     struct ast_or *or_ast = (struct ast_or*) ast;
-    printf("OR [ ");
+    printf("OR [ LEFT :");
     or_ast->ast_left->vtable->pretty_print(or_ast->ast_left);
-    printf(", ");
+    printf(", RIGHT :");
     or_ast->ast_right->vtable->pretty_print(or_ast->ast_right);
     printf("]\n");
 }
