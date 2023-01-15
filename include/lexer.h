@@ -14,37 +14,24 @@ enum token_types
     QUOTE_BACK
 };
 
-typedef char param_exp_type_t;
-
-typedef struct _parameter_expansion
-{
-    param_exp_type_t type;
-    char *word;
-} parameter_expansion;
-
 typedef char quote_t;
 
-struct token
+typedef struct token
 {
     token_t type;
     quote_t quote;
     void *value;
     struct token *next;
-};
+} token;
 
 typedef struct
 {
     const char *str;
-    size_t str_token_start;
-    size_t str_token_end;
+    char *str_token_start;
+    char *str_token_end;
     quote_t quote;
-    // TODO(robertnant): potentially remove nb_tokens
-    // as tokens will be represented as a linked list.
-    size_t nb_tokens;
-    struct token *tokens;
+    token *tokens;
 } lexer;
-
-extern char *IFS;
 
 // Conformorming to the SCL (Shell Command Language) standard
 enum token_types
@@ -52,10 +39,8 @@ enum token_types
     TOKEN_UNDEFINED = 0, // Undefined token
     /// @brief Tokens global
     WORD, // Any word
-    ASSIGNMENT_WORD, // Any word that is an assignment
-    NAME, // Any word that is a name
-    NEWLINE, // \n
     IO_NUMBER, // /[<>]\d+/
+    NEWLINE, // \n
 
     /// @brief Tokens separator
     AND_IF, // &&
@@ -111,19 +96,16 @@ enum token_types
     LESS, // <
     GREAT, // >
 
-    /// @brief out of SCL tokens
+    //// @brief out of SCL tokens
     SEMI, // ;
     PIPE, // |
-    COMMAND // Any executable command ("ls -l", "./42sh")
 };
 
-char *tokens_mapping = {
+const char *tokens_mapping = {
     NULL, // UNDEFINED
     NULL, // WORD
-    NULL, // ASSIGNMENT_WORD
-    NULL, // NAME
-    "\n", // NEWLINE
     NULL, // IO_NUMBER
+    "\n", // NEWLINE
 
     "&&", // AND_IF
     "||", // OR_IF
@@ -164,37 +146,56 @@ char *tokens_mapping = {
     "<", // LESS
     ">", // GREAT
 
-    ";", // GREAT
+    ";", // SEMI
     "|", // PIPE
-
 };
+
+// Tokens utils
+#define FIRST_HARD_CODED NEWLINE
+#define LAST_HARD_CODED PIPE
 
 // Operators utils
 #define FIRST_OPERATOR AND_IF
 #define LAST_OPERATOR CLOBBER
-#define IS_TOKEN_OPERATOR(token)                                               \
-    (toekn.type >= FIRST_OPERATOR && token.type <= LAST_OPERATOR)
-
-inline token_t get_string_operator(char *str, size_t len)
-{
-    for (int i = FIRST_OPERATOR; i <= LAST_OPERATOR; i++)
-        if (strncmp(str, tokens_mapping[i], len) == 0)
-            return i;
-    return TOKEN_UNDEFINED;
-}
-
-#define IS_RESERVED_WORD(type) (type >= IF && type <= IN)
-#define IS_TOKEN_IN_QUOTES(t) (t.is_in_dquote || t.is_in_squote)
-#define IS_CURRENT_IN_QUOTES(lexer)                                            \
-    (lexer.quote == QUOTE_SINGLE || lexer.quote == QUOTE_DOUBLE)
 
 /**
  * @brief Create tokens from input string
  *
  * @param input The input string
- * @param tokens_len The length of the returned array
  * @return token* The array of tokens
  */
-struct token *get_tokens(const char *input, size_t *tokens_len);
+token *get_tokens(const char *input);
+
+/**
+ * @brief Lex the input string which starts with a backslash
+ *
+ * @note str must start with a backslash
+ *
+ * @param tokens The tokens
+ * @param str The input string
+ * @return char* The string after the backslash
+ */
+char *lexer_eat_backslash(token_t tokens, char *str);
+
+/**
+ * @brief Lex the input string which starts with a single quote or a double
+ * quote
+ *
+ * @note str must start with a single quote or a double quote
+ *
+ * @param tokens The tokens
+ * @param str The input string
+ * @return char* The string after the single quote
+ */
+char *lexer_eat_quotes(token_t tokens, char *str);
+
+/**
+ * @brief Tells which token type is the prefix of the input string
+ * @param lex The lexer structure
+ * @param pre_size The size of the prefix
+ *
+ * @return token_t The prefix token type
+ */
+token_t lexer_is_token_prefix(lexer *lex, size_t pre_size);
 
 #endif /* LEXER_H */
