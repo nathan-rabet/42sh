@@ -18,6 +18,8 @@ bool is_redirection(enum token_types type)
 
 bool is_shell_command(struct token *token)
 {
+    if (strcmp(token->value, "(") == 0)
+        return true;
     switch (token->type) {
         case IF:
         case WHILE:

@@ -24,6 +24,7 @@ enum ast_type {
     AST_CASE,
     AST_PIPE,
     AST_BRACE,
+    AST_SUBSHELL,
 };
 
 struct ast_vtable;
@@ -318,5 +319,20 @@ struct ast *ast_brace_init(struct ast *command);
 bool brace_run(struct ast *ast);
 void brace_free(struct ast *ast);
 void brace_pretty_print(struct ast *ast);
+
+/**
+ * @brief the pipe node
+ * @param base the linked of the ast structure
+ * @param command the ast node to run
+ */
+struct ast_subshell {
+    struct ast base;
+    struct ast *command;
+};
+
+struct ast *ast_subshell_init(struct ast *command);
+bool subshell_run(struct ast *ast);
+void subshell_free(struct ast *ast);
+void subshell_pretty_print(struct ast *ast);
 
 #endif //AST_H
