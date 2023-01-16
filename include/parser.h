@@ -4,7 +4,6 @@
 #include "lexer.h"
 #include "ast.h"
 #include "xalloc.h"
-#include <string.h>
 #include <ctype.h>
 
 struct token_list

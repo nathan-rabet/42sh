@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
 
 /**
@@ -22,6 +23,7 @@ enum ast_type {
     AST_FUNC,
     AST_CASE,
     AST_PIPE,
+    AST_BRACE,
 };
 
 struct ast_vtable;
@@ -301,5 +303,20 @@ struct ast *ast_pipe_init(size_t nb_command, struct ast **command);
 bool pipe_run(struct ast *ast);
 void pipe_free(struct ast *ast);
 void pipe_pretty_print(struct ast *ast);
+
+/**
+ * @brief the pipe node
+ * @param base the linked of the ast structure
+ * @param command the ast node to run
+ */
+struct ast_brace {
+    struct ast base;
+    struct ast *command;
+};
+
+struct ast *ast_brace_init(struct ast *command);
+bool brace_run(struct ast *ast);
+void brace_free(struct ast *ast);
+void brace_pretty_print(struct ast *ast);
 
 #endif //AST_H
