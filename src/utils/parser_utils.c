@@ -23,6 +23,7 @@ bool is_shell_command(struct token *token)
         case WHILE:
         case UNTIL:
         case FOR:
+        case LBRACE:
             return true;
         default:
             return false;
@@ -48,5 +49,16 @@ bool is_assignment_word(char *name)
 {
     if (is_name_before_equal(name) && strchr(name, '='))
         return true;
+    return false;
+}
+
+bool is_funcdec(struct token_list *tokens)
+{
+    assert(tokens != NULL && tokens->current_token != NULL
+        && tokens->current_token->next != NULL && tokens->current_token->next->next != NULL);
+
+    if (look_ahead(tokens) == WORD && strcmp(tokens->current_token->next->value, "(") == 0
+            && strcmp(tokens->current_token->next->next->value, ")") == 0)
+            return true;
     return false;
 }

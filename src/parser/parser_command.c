@@ -21,8 +21,17 @@ struct ast *parser_command(struct token_list *tokens)
         if (list != NULL)
             return ast_redir_init(list, ast);
     }
+    else if (is_funcdec(tokens))
+    {
+        ast = parser_funcdec(tokens);
+        struct list_redir *list = NULL;
+
+        while (is_redirection(tokens->current_token->type))
+            list = parser_redirection(tokens, list);
+        if (list != NULL)
+            return ast_redir_init(list, ast);
+    }
     else
         ast = parser_simple_command(tokens);
-
     return ast;
 }

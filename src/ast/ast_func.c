@@ -38,8 +38,8 @@ void func_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_FUNC);
     struct ast_func *func_ast = (struct ast_func*) ast;
-    printf("func [ name: %s in", func_ast->name);
+    printf("func [ name: %s ", func_ast->name);
     printf("do : ");
     func_ast->to_execute->vtable->pretty_print(func_ast->to_execute);
-    printf("done ]\n");
+    printf("done func ]\n");
 }
