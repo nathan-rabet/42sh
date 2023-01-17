@@ -116,7 +116,16 @@ static void _get_tokens(lexer *lex, size_t input_len)
         lex->str_token_start = tmp_str_token_start;
         if (IS_OPERATOR(token))
             token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
-    }
+
+        // Rule 2.3.7: If the current character is an unquoted <blank>, any
+        // token containing the previous character is delimited and the current
+        // character shall be discarded.
+        if (IS_BLANK(GET_CURRENT_CHAR(lex)))
+        {
+            token_add(lex, WORD, GET_LEN_PREVIOUS_CHAR(lex));
+            lex->str_token_end++; // discard current character
+            continue;
+        }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if any)
     // shall be delimited.
