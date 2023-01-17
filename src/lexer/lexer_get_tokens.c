@@ -2,88 +2,18 @@
 
 #include "lexer.h"
 #include "xalloc.h"
-static void token_add(lexer *l, token_t token_type, quote_t quote_type,
-                      size_t value_size);
+
+static inline bool is_blank(char c)
 {
-    struct token *new = xmalloc(1, sizeof(token));
-
-    new->type = token_type;
-    new->quote = quote_type;
-    new->value = xcalloc(1, value_size);
-    memcpy(new->value, l->str_token_start, value_size);
-    new->next = NULL;
-
-    if (l->tokens == NULL)
-        l->tokens = new;
-    else
-        for (struct token *tmp = l->tokens; tmp != NULL; tmp = tmp->next)
-            if (tmp->next == NULL)
-            {
-                tmp->next = new;
-                break;
-            }
-}
-
-/**
- * Handle's backquote when detected within double quotes.
- * lexer_input represents a pointer to the the lexer's input string
- * one byte after the backquote within the double quotes that has been detected.
- * After running this function, it is expected that the string pointed by
- * lexer_input should point to the ending backquote found.
- *
- * Return: final command that will be used for command expansion
- * (string within backquotes without the escaped characters).
- */
-static char *handle_backquote_in_quoting(lexer *lexer)
-{
-    char *expansion_command = NULL;
-    size_t expansion_command_index = 0;
-
-    char current_char = '\0';
-    while ((current_char = lexer->str_token_end) != '\0')
-    {
-        char previous_char = *(lexer->str_token_end - 1);
-
-        // Case if '\' is found.
-        if (previous_char == '\\')
-        {
-            if (current_char == '$')
-            {
-                // "... ... `$`"
-            }
-            else if (current_char == '`')
-            {}
-            else if (current_char == '\\')
-            {}
-            else
-            {}
-        }
-
-        expansion_command = xcalloc(expansion_command_index + 1, sizeof(char));
-        expansion_command[expansion_command_index++] = current_char;
-        if (current_char == '`' && previous_char != '\'')
-        {
-            // Ending backquote found.
-            lexer->str_token_end++;
-            break;
-        }
-
-        lexer->str_token_end++;
-    }
-
-    if (current_char == '\0')
-        err(2, "Lexer: Missing ending backquote");
-
-    // Null terminate expansion command.
-    expansion_command[expansion_command_index] = '\0';
-
-    return expansion_command;
+    return c == ' ' || c == '\t';
 }
 
 static void _get_tokens(lexer *lex, size_t input_len)
 {
     assert(input_len > 0);
-    for (; input_len--; lex->str_token_end++)
+
+    char *end_addr = lex->str_token_start + input_len;
+    for (; lex->str_token_end < end_addr; lex->str_token_end++)
     {
         // Rule 2.3.2 : If the previous character was used as part of an
         // operator and the current character is not quoted and can be used with
@@ -109,11 +39,8 @@ static void _get_tokens(lexer *lex, size_t input_len)
                 continue; // a prefix can be formed using current character
                           // (which is not in quotes).
             else
-            {
                 token_add(lex, prefix_token, QUOTE_NONE,
                           lex->str_token_end - lex->str_token_start);
-                lex->str_token_start = lex->str_token_end;
-            }
         }
 
         // Rule 2.3.4: If the current character is <backslash>, single-quote, or
@@ -133,43 +60,71 @@ static void _get_tokens(lexer *lex, size_t input_len)
             quote_t quote_type =
                 *(lex->str_token_end) == '"' ? QUOTE_DOUBLE : QUOTE_SINGLE;
 
-            lex->str_token_end =
-                lexer_eat_quotes(lex->tokens, lex->str_token_end);
+            lexer_eat_quotes(lex);
             token_add(lex, WORD, quote_type,
                       lex->str_token_end - lex->str_token_start);
-
-            lex->str_token_start = lex->str_token_end;
             break;
 
         case '\\':
-            lex->str_token_end =
-                lexer_eat_backslash(lex->tokens, &lex->str_token_end);
+            lexer_eat_backslash(lex);
             break;
         default:
             break;
+        }
+
+        // Rule 2.3.5: If the current character is an unquoted '$' or '`', the
+        // shell shall identify the start of any candidates for parameter
+        // expansion (Parameter Expansion), command substitution (Command
+        // Substitution), or arithmetic expansion (Arithmetic Expansion) from
+        // their introductory unquoted character sequences: '$' or "${", "$(" or
+        // '`', and "$((", respectively. The shell shall read sufficient input
+        // to determine the end of the unit to be expanded (as explained in the
+        // cited sections). While processing the characters, if instances of
+        // expansions or quoting are found nested within the substitution, the
+        // shell shall recursively process them in the manner specified for the
+        // construct that is found. The characters found from the beginning of
+        // the substitution to its end, allowing for any recursion necessary to
+        // recognize embedded constructs, shall be included unmodified in the
+        // result token, including any embedded or enclosing substitution
+        // operators or quotes. The token shall not be delimited by the end of
+        // the substitution.
+        if (*(lex->str_token_end) == '$' || *(lex->str_token_end) == '`')
+        {
+            // Command substitution
+            if (strcmp(lex->str_token_end, '$(') == 0)
+                lexer_eat_command_substitution(lex);
+            else if (*(lex->str_token_end) == '`')
+                lexer_eat_command_backquote(lex);
+            // Arithmetic expansion
+            else if (strcmp(lex->str_token_end, "$((") == 0)
+                lexer_eat_arithmetics_expansion(lex);
+            // Parameter expansion
+            else if (strcmp(lex->str_token_end, "${") == 0)
+                lexer_eat_parameter_expansion_braces(lex);
+            else if (*(lex->str_token_end) == '$')
+                lexer_eat_parameter_expansion(lex);
+
+            token_add(lex, WORD, QUOTE_NONE,
+                      lex->str_token_end - lex->str_token_start);
+            lex->str_token_start = lex->str_token_end;
         }
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if any)
     // shall be delimited.
     if (lex->str_token_start != lex->str_token_end)
-    {
-        lex->tokens = token_add(
-            lex->tokens, WORD,
-            strcpy(xmalloc(lex->str_token_end - lex->str_token_start + 1,
-                           sizeof(char)),
-                   lex->str_token_start));
-    }
+        token_add(lex, WORD, QUOTE_NONE,
+                  lex->str_token_end - lex->str_token_start);
 }
 
-token *get_tokens(const char *input)
+token *get_tokens(const char *input, size_t len)
 {
     lexer *lex = xcalloc(1, sizeof(lexer));
     lex->str = input;
     lex->str_token_start = input;
     lex->str_token_end = input;
     lex->tokens = NULL;
-    _get_tokens(lex, strlen(input));
+    _get_tokens(lex, len);
 
     token_t *tokens = lex->tokens;
     xfree(lex);

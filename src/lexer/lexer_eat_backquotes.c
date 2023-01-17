@@ -2,9 +2,9 @@
 
 #include "lexer.h"
 
-void lexer_eat_quotes(lexer *lex)
+void lexer_eat_command_backquote(lexer *lex)
 {
-    assert(lex->str_token_end[0] == '\'' || lex->str_token_end[0] == '"');
+    assert(lex->str_token_end[0] == '`');
 
     char quote_c = lex->str_token_end[0];
 

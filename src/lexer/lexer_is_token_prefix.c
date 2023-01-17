@@ -20,7 +20,7 @@ token_t lexer_is_token_prefix(lexer *lex, size_t pre_size)
         {
             for (size_t i = 1; i < pre_size; i++)
                 if (!isdigit(lex->str_token_start[i]))
-                    return WORD;
+                    goto ret;
             return IO_NUMBER;
         }
     }
@@ -33,5 +33,6 @@ token_t lexer_is_token_prefix(lexer *lex, size_t pre_size)
         if (is_prefix(lex->str_token_start, tokens_mapping[i], pre_size))
             return i;
 
-    return WORD;
+ret:
+    return (is_name(lex->str_token_start, pre_size) ? NAME : WORD);
 }

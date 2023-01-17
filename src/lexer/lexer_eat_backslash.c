@@ -2,15 +2,13 @@
 
 #include "lexer.h"
 
-char *lexer_eat_backslash(token_t tokens, char *str)
+void lexer_eat_backslash(lexer *lex)
 {
-    assert(str[0] == '\\');
+    assert(lex->str_token_end[0] == '\\');
 
-    if (str[1] == '\n')
-        str += 2; // Remove the backslash and the newline.
+    if (lex->str_token_end[1] == '\n')
+        lex->str_token_end += 2; // Remove the backslash and the newline.
 
     else
-        str++; // Remove the backslash.
-
-    return str;
+        lex->str_token_end++; // Remove the backslash.
 }
