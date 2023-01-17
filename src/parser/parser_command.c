@@ -32,6 +32,6 @@ struct ast *parser_command(struct token_list *tokens)
             return ast_redir_init(list, ast);
     }
     else
-        ast = parser_simple_command(tokens);
+        return parser_simple_command(tokens);
     return ast;
 }

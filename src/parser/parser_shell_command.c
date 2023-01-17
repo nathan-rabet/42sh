@@ -36,6 +36,7 @@ struct ast *parser_shell_command(struct token_list *tokens)
         ast = ast_subshell_init(parser_compound_list(tokens));
         eat(tokens, WORD);
     }
-    // ERR
+    else
+        parser_grammar_return_error_2(tokens->current_token);
     return ast;
 }

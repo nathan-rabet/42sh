@@ -14,17 +14,11 @@ struct ast *parser_compound_list(struct token_list *tokens)
     children[0] = parser_and_or(tokens);
     while(look_ahead(tokens) == NEWLINE || look_ahead(tokens) == SEMI)
     {
-        if (look_ahead(tokens) == NEWLINE)
-           eat(tokens, NEWLINE);
-        else
+        if (look_ahead(tokens) == SEMI)
            eat(tokens, SEMI);
+
         while (look_ahead(tokens) == NEWLINE)
            eat(tokens, NEWLINE);
-        //printf("debut nb child %zu\n", i);
-        //printf("char : %s\n", (char *)tokens->current_token->value);
-
-        if (tokens->current_token->type != WORD)
-            break;
 
         children[i++] = parser_and_or(tokens);
     }

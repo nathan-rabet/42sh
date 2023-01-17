@@ -18,6 +18,8 @@ struct ast *parser_and_or(struct token_list *tokens)
             ast = ast_and_init(ast, parser_pipeline(tokens));
         else if (type == OR_IF)
             ast = ast_or_init(ast, parser_pipeline(tokens));
+        else
+            parser_grammar_return_error_2(tokens->current_token);
     }
 
     return ast;

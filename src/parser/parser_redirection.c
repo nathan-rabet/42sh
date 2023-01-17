@@ -21,16 +21,15 @@ struct list_redir *parser_redirection(struct token_list *tokens, struct list_red
         eat(tokens, tokens->current_token->type);
     }
     else
-        return NULL;
+        parser_grammar_return_error_2(tokens->current_token);
     if (look_ahead(tokens) == WORD)
     {
         target = tokens->current_token->value;
-
         eat(tokens, WORD);
 
     }
     else
-        exit(2);
+        parser_grammar_return_error_2(tokens->current_token);
 
     ast = list_redir_init(type, IONumber, target, next);
     return ast;

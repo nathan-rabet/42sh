@@ -12,9 +12,7 @@ struct ast *parser_list(struct token_list *tokens)
 
     while (tokens->current_token->type == SEMI)
     {
-
         eat(tokens, SEMI);
-
         if (tokens->current_token)
             children[i++] = parser_and_or(tokens);
     }

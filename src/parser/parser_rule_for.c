@@ -29,10 +29,13 @@ struct ast *parser_rule_for(struct token_list *tokens)
             eat(tokens, SEMI);
         else if (look_ahead(tokens) == NEWLINE)
             eat(tokens, NEWLINE);
+        else
+            parser_grammar_return_error_2(tokens->current_token);
     }
 
     while(look_ahead(tokens) == NEWLINE)
         eat(tokens, NEWLINE);
+
     eat(tokens, DO);
 
     to_execute = parser_compound_list(tokens);

@@ -9,6 +9,9 @@ struct ast *parser_rule_case(struct token_list *tokens)
     char *name = NULL;
 
     eat(tokens, CASE);
+
+    if (look_ahead(tokens) != WORD)
+        parser_grammar_return_error_2(tokens->current_token);
     name = tokens->current_token->value;
     eat(tokens, WORD);
 

@@ -23,6 +23,8 @@ struct ast *parser_pipeline(struct token_list *tokens)
             eat(tokens, NEWLINE);
         if (tokens->current_token)
             command[i++] = parser_command(tokens);
+        else
+            parser_grammar_return_error_2(tokens->current_token);
     }
     command[i] = NULL;
     if (i < 2 && !negation)

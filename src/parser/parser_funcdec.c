@@ -18,6 +18,8 @@ struct ast *parser_funcdec(struct token_list *tokens)
         eat(tokens, WORD);
         eat(tokens, WORD);
     }
+    else
+        parser_grammar_return_error_2(tokens->current_token);
 
     while (look_ahead(tokens) == NEWLINE)
         eat(tokens, NEWLINE);

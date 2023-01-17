@@ -65,3 +65,9 @@ bool is_funcdec(struct token_list *tokens)
             return true;
     return false;
 }
+
+void parser_grammar_return_error_2(struct token *token)
+{
+    xfree_all();
+    err(2, "42sh: syntax error near unexpected token '%s'\n", (char *)token->value);
+}

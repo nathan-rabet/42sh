@@ -48,6 +48,7 @@ bool is_prefix(struct token_list *token);
 bool is_name_before_equal(char *name);
 bool is_assignment_word(char *name);
 bool is_funcdec(struct token_list *tokens);
+void parser_grammar_return_error_2(struct token *token);
 
 
 
