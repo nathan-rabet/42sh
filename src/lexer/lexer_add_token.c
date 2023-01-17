@@ -1,12 +1,11 @@
 #include "lexer.h"
+#include "xalloc.h"
 
-void token_add(lexer *lex, token_t token_type, quote_t quote_type,
-               size_t value_size)
+void token_add(lexer *lex, token_t token_type, size_t value_size)
 {
     struct token *new = xmalloc(1, sizeof(token));
 
     new->type = token_type;
-    new->quote = quote_type;
     new->value = xcalloc(1, value_size);
     memcpy(new->value, lex->str_token_start, value_size);
     new->next = NULL;
@@ -25,5 +24,5 @@ void token_add(lexer *lex, token_t token_type, quote_t quote_type,
         }
     }
 
-    lex->str_token_start += value_size + 1; // +1 for the loop increment.
+    lex->str_token_start += value_size; // +1 for the loop increment.
 }

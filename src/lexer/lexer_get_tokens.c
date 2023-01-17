@@ -12,7 +12,7 @@ static void _get_tokens(lexer *lex, size_t input_len)
 {
     assert(input_len > 0);
 
-    char *end_addr = lex->str_token_start + input_len;
+    char *end_addr = lex->str_token_start + input_len + 1;
     for (; lex->str_token_end < end_addr; lex->str_token_end++)
     {
         // Rule 2.3.2 : If the previous character was used as part of an
@@ -21,8 +21,8 @@ static void _get_tokens(lexer *lex, size_t input_len)
         // of that (operator) token.
 
         // Check if previous characters form an operator prefix.
-        token_t prefix_token = lexer_is_token_prefix(
-            lex, lex->str_token_end - lex->str_token_start - 1);
+        token_t prefix_token =
+            lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex));
 
         // If an operator prefix can be formed
         if (IS_OPERATOR(prefix_token))
@@ -32,15 +32,14 @@ static void _get_tokens(lexer *lex, size_t input_len)
              * operator prefix (must be true for Rule 2.3.2 and false for
              * Rule 2.3.3).
              */
-            prefix_token = lexer_is_token_prefix(
-                lex, lex->str_token_end - lex->str_token_start);
+            prefix_token =
+                lexer_is_token_prefix(lex, GET_LEN_CURRENT_CHAR(lex));
 
             if (IS_OPERATOR(prefix_token))
                 continue; // a prefix can be formed using current character
                           // (which is not in quotes).
             else
-                token_add(lex, prefix_token, QUOTE_NONE,
-                          lex->str_token_end - lex->str_token_start);
+                token_add(lex, prefix_token, GET_LEN_CURRENT_CHAR(lex));
         }
 
         // Rule 2.3.4: If the current character is <backslash>, single-quote, or
@@ -53,16 +52,15 @@ static void _get_tokens(lexer *lex, size_t input_len)
         // quotes or substitution operators, between the <quotation-mark> and
         // the end of the quoted text. The token shall not be delimited by the
         // end of the quoted field.
-        switch (*(lex->str_token_end))
+        switch (GET_CURRENT_CHAR(lex))
         {
         case '"':
         case '\'':
             quote_t quote_type =
-                *(lex->str_token_end) == '"' ? QUOTE_DOUBLE : QUOTE_SINGLE;
+                GET_CURRENT_CHAR(lex) == '"' ? QUOTE_DOUBLE : QUOTE_SINGLE;
 
             lexer_eat_quotes(lex);
-            token_add(lex, WORD, quote_type,
-                      lex->str_token_end - lex->str_token_start);
+            token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
             break;
 
         case '\\':
@@ -88,25 +86,23 @@ static void _get_tokens(lexer *lex, size_t input_len)
         // result token, including any embedded or enclosing substitution
         // operators or quotes. The token shall not be delimited by the end of
         // the substitution.
-        if (*(lex->str_token_end) == '$' || *(lex->str_token_end) == '`')
+        if (GET_CURRENT_CHAR(lex) == '$' || GET_CURRENT_CHAR(lex) == '`')
         {
             // Command substitution
-            if (strcmp(lex->str_token_end, '$(') == 0)
+            if (strcmp(GET_CURRENT_CHAR_ADDR(lex), '$(') == 0)
                 lexer_eat_command_substitution(lex);
-            else if (*(lex->str_token_end) == '`')
+            else if (GET_CURRENT_CHAR(lex) == '`')
                 lexer_eat_command_backquote(lex);
             // Arithmetic expansion
-            else if (strcmp(lex->str_token_end, "$((") == 0)
+            else if (strcmp(GET_CURRENT_CHAR_ADDR(lex), "$((") == 0)
                 lexer_eat_arithmetics_expansion(lex);
             // Parameter expansion
-            else if (strcmp(lex->str_token_end, "${") == 0)
+            else if (strcmp(GET_CURRENT_CHAR_ADDR(lex), "${") == 0)
                 lexer_eat_parameter_expansion_braces(lex);
-            else if (*(lex->str_token_end) == '$')
+            else if (GET_CURRENT_CHAR(lex) == '$')
                 lexer_eat_parameter_expansion(lex);
 
-            token_add(lex, WORD, QUOTE_NONE,
-                      lex->str_token_end - lex->str_token_start);
-            lex->str_token_start = lex->str_token_end;
+            token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
             continue;
         }
 
@@ -115,19 +111,17 @@ static void _get_tokens(lexer *lex, size_t input_len)
         // shall be delimited. The current character shall be used as the
         // beginning of the next (operator) token.
         char *tmp_str_token_start = lex->str_token_start;
-        lex->str_token_start = lex->str_token_end;
+        lex->str_token_start = GET_CURRENT_CHAR_ADDR(lex);
         token_t token = lexer_is_token_prefix(lex, 1);
         lex->str_token_start = tmp_str_token_start;
         if (IS_OPERATOR(token))
-            token_add(lex, WORD, QUOTE_NONE,
-                      lex->str_token_end - lex->str_token_start - 1);
+            token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if any)
     // shall be delimited.
-    if (lex->str_token_start != lex->str_token_end)
-        token_add(lex, WORD, QUOTE_NONE,
-                  lex->str_token_end - lex->str_token_start);
+    if (lex->str_token_end != end_addr)
+        token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
 }
 
 token *get_tokens(const char *input, size_t len)
@@ -135,7 +129,7 @@ token *get_tokens(const char *input, size_t len)
     lexer *lex = xcalloc(1, sizeof(lexer));
     lex->str = input;
     lex->str_token_start = input;
-    lex->str_token_end = input;
+    lex->str_token_end = input + 1;
     lex->tokens = NULL;
     _get_tokens(lex, len);
 

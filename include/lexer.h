@@ -156,6 +156,17 @@ const char *tokens_mapping = {
     NULL // PARAMETER_EXPANSION
 };
 
+// Lexer utils
+#define IS_BLANK(c) (c == ' ' || c == '\t')
+#define GET_CURRENT_CHAR_ADDR(lex) (lex->str_token_end - 1)
+#define GET_LEN_CURRENT_CHAR(lex)                                              \
+    (GET_CURRENT_CHAR_ADDR(lex) - lex->str_token_start)
+#define GET_CURRENT_CHAR(lex) (*(GET_CURRENT_CHAR_ADDR(lex)))
+#define GET_PREVIOUS_CHAR_ADDR(lex) (lex->str_token_end - 2)
+#define GET_LEN_PREVIOUS_CHAR(lex)                                             \
+    (GET_PREVIOUS_CHAR_ADDR(lex) - lex->str_token_start)
+#define GET_PREVIOUS_CHAR(lex) (*(GET_PREVIOUS_CHAR_ADDR(lex)))
+
 // Tokens utils
 #define FIRST_HARD_CODED NEWLINE
 #define LAST_HARD_CODED PIPE
@@ -177,10 +188,11 @@ token *get_tokens(const char *input, size_t len);
 /**
  * @brief Add a token to the tokens linked list
  *
- * @param tokens The tokens linked list
+ * @param lex The lexer structure pointer
+ * @param token_type The type of the token
+ * @param value_size The size of the token value
  */
-void token_add(lexer *lex, token_t token_type, quote_t quote_type,
-               size_t value_size);
+void token_add(lexer *lex, token_t token_type, size_t value_size);
 
 /**
  * @brief Tells if a character is blank
