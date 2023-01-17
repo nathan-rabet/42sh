@@ -57,8 +57,9 @@ bool is_assignment_word(char *name)
 
 bool is_funcdec(struct token_list *tokens)
 {
-    assert(tokens != NULL && tokens->current_token != NULL
-        && tokens->current_token->next != NULL && tokens->current_token->next->next != NULL);
+    if (!(tokens != NULL && tokens->current_token != NULL
+        && tokens->current_token->next != NULL && tokens->current_token->next->next != NULL))
+        return false;
 
     if (look_ahead(tokens) == WORD && strcmp(tokens->current_token->next->value, "(") == 0
             && strcmp(tokens->current_token->next->next->value, ")") == 0)

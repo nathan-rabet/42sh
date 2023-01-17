@@ -875,10 +875,15 @@ void test16()
     token8->value = "do";
     token8->next = token9;
 
+    struct token *token71 = xmalloc(1, sizeof(struct token*));
+    token71->type = SEMI;
+    token71->value = ";";
+    token71->next = token8;
+
     struct token *token7 = xmalloc(1, sizeof(struct token*));
     token7->type = WORD;
     token7->value = "2";
-    token7->next = token8;
+    token7->next = token71;
 
     struct token *token6 = xmalloc(1, sizeof(struct token*));
     token6->type = WORD;
