@@ -25,5 +25,5 @@ void token_add(lexer *lex, token_t token_type, quote_t quote_type,
         }
     }
 
-    lex->str_token_start = lex->str_token_end + 1; // +1 for the loop increment.
+    lex->str_token_start += value_size + 1; // +1 for the loop increment.
 }

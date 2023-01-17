@@ -25,7 +25,7 @@ static void _get_tokens(lexer *lex, size_t input_len)
             lex, lex->str_token_end - lex->str_token_start - 1);
 
         // If an operator prefix can be formed
-        if (prefix_token >= FIRST_OPERATOR && prefix_token <= LAST_OPERATOR)
+        if (IS_OPERATOR(prefix_token))
         {
             /**
              * Check if current character with previous characters can form an
@@ -35,7 +35,7 @@ static void _get_tokens(lexer *lex, size_t input_len)
             prefix_token = lexer_is_token_prefix(
                 lex, lex->str_token_end - lex->str_token_start);
 
-            if (prefix_token >= FIRST_OPERATOR && prefix_token <= LAST_OPERATOR)
+            if (IS_OPERATOR(prefix_token))
                 continue; // a prefix can be formed using current character
                           // (which is not in quotes).
             else
@@ -107,7 +107,20 @@ static void _get_tokens(lexer *lex, size_t input_len)
             token_add(lex, WORD, QUOTE_NONE,
                       lex->str_token_end - lex->str_token_start);
             lex->str_token_start = lex->str_token_end;
+            continue;
         }
+
+        // Rule 2.3.6: If the current character is not quoted and can be used as
+        // the first character of a new operator, the current token (if any)
+        // shall be delimited. The current character shall be used as the
+        // beginning of the next (operator) token.
+        char *tmp_str_token_start = lex->str_token_start;
+        lex->str_token_start = lex->str_token_end;
+        token_t token = lexer_is_token_prefix(lex, 1);
+        lex->str_token_start = tmp_str_token_start;
+        if (IS_OPERATOR(token))
+            token_add(lex, WORD, QUOTE_NONE,
+                      lex->str_token_end - lex->str_token_start - 1);
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if any)

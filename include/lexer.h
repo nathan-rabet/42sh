@@ -163,6 +163,7 @@ const char *tokens_mapping = {
 // Operators utils
 #define FIRST_OPERATOR AND_IF
 #define LAST_OPERATOR CLOBBER
+#define IS_OPERATOR(token) (token >= FIRST_OPERATOR && token <= LAST_OPERATOR)
 
 /**
  * @brief Create tokens from input string
