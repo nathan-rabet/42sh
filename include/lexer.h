@@ -282,4 +282,11 @@ void lexer_eat_command_substitution(lexer *lex);
  */
 void lexer_eat_command_backquote(lexer *lex);
 
+/**
+ * @brief Lex the input string with a comment (with #...)
+ *
+ * @param lex The lexer structure pointer
+ */
+void lexer_eat_comment(lexer *lex);
+
 #endif /* LEXER_H */

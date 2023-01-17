@@ -126,6 +126,21 @@ static void _get_tokens(lexer *lex, size_t input_len)
             lex->str_token_end++; // discard current character
             continue;
         }
+
+        // Rule 2.3.8: If the previous character was part of a word, the current
+        // character shall be appended to that word.
+        if (lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex)) == WORD)
+            continue;
+
+        // Rule 2.3.9: If the current character is a '#', it and all subsequent
+        // characters up to, but excluding, the next <newline> shall be
+        // discarded as a comment. The <newline> that ends the line is not
+        // considered part of the comment.
+        if (GET_CURRENT_CHAR(lex) == '#')
+        {
+            lexer_eat_comment(lex);
+            continue;
+        }
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if
