@@ -141,6 +141,10 @@ static void _get_tokens(lexer *lex, size_t input_len)
             lexer_eat_comment(lex);
             continue;
         }
+
+        // Rule 2.3.10: The current character is used as the start of a new
+        // word.
+        token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if
