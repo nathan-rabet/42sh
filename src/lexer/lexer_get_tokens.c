@@ -126,9 +126,10 @@ static void _get_tokens(lexer *lex, size_t input_len)
             lex->str_token_end++; // discard current character
             continue;
         }
+    }
 
-    // Rule 2.3.1: If the end of input is recognized, the current token (if any)
-    // shall be delimited.
+    // Rule 2.3.1: If the end of input is recognized, the current token (if
+    // any) shall be delimited.
     if (lex->str_token_end != end_addr)
         token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
 }
