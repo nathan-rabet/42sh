@@ -272,6 +272,20 @@ void func_free(struct ast *ast);
 void func_pretty_print(struct ast *ast);
 
 /**
+ * @brief list of case item
+ * @param word list of matching word
+ * @param nb_word number of matching word
+ * @param to_execute the ast to execute if the word match
+ */
+struct list_case_item {
+    char **word;
+    size_t nb_word;
+    struct ast *to_execute;
+};
+
+struct list_case_item *list_case_item_init(char **word, size_t nb_word, struct ast *to_execute);
+
+/**
  * @brief the case node
  * @param base the linked of the ast structure
  * @param name the name of the variable that will be compare
@@ -280,10 +294,11 @@ void func_pretty_print(struct ast *ast);
 struct ast_case {
     struct ast base;
     char *name;
-    struct ast *case_clause;
+    size_t nb_item;
+    struct list_case_item **case_item;
 };
 
-struct ast *ast_case_init(char *name, struct ast *case_clause);
+struct ast *ast_case_init(char *name, struct list_case_item **case_item, size_t nb_item);
 bool case_run(struct ast *ast);
 void case_free(struct ast *ast);
 void case_pretty_print(struct ast *ast);

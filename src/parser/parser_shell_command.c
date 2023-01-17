@@ -22,6 +22,8 @@ struct ast *parser_shell_command(struct token_list *tokens)
         return parser_rule_until(tokens);
     else if (look_ahead(tokens) == FOR)
         return parser_rule_for(tokens);
+    else if (look_ahead(tokens) == CASE)
+        return parser_rule_case(tokens);
     else if (look_ahead(tokens) == LBRACE)
     {
         eat(tokens, LBRACE);

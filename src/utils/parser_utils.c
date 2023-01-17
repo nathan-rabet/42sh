@@ -26,6 +26,7 @@ bool is_shell_command(struct token *token)
         case UNTIL:
         case FOR:
         case LBRACE:
+        case CASE:
             return true;
         default:
             return false;

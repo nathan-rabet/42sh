@@ -36,6 +36,10 @@ struct ast *parser_rule_elif(struct token_list *tokens);
 struct ast *parser_rule_until(struct token_list *tokens);
 struct ast *parser_rule_while(struct token_list *tokens);
 struct ast *parser_rule_for(struct token_list *tokens);
+struct ast *parser_rule_case(struct token_list *tokens);
+struct ast *parser_case_clause(struct token_list *tokens);
+struct list_case_item *parser_case_item(struct token_list *tokens);
+
 
 // Utils
 bool is_redirection(enum token_types type);
