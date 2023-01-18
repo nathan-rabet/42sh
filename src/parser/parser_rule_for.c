@@ -7,7 +7,8 @@
 struct ast *parser_rule_for(struct token_list *tokens)
 {
     char *name = NULL;
-    char **names = xmalloc(1, sizeof (char **));
+    char **names = xmalloc(100, sizeof (char **));
+    names[0] = NULL;
     struct ast *words = NULL;
     struct ast *to_execute = NULL;
 

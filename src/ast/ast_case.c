@@ -20,7 +20,7 @@ struct ast *ast_case_init(char *name, struct list_case_item **case_item, size_t 
 
 struct list_case_item *list_case_item_init(char **word, size_t nb_word, struct ast *to_execute)
 {
-    struct list_case_item *item = xmalloc(1, sizeof (struct list_case_item *));
+    struct list_case_item *item = xmalloc(1, sizeof (struct list_case_item ));
     item->word = word;
     item->nb_word = nb_word;
     item->to_execute = to_execute;

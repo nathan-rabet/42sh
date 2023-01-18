@@ -20,7 +20,7 @@ struct ast *ast_redir_init(struct list_redir *list, struct ast *command)
 struct list_redir *list_redir_init(enum ast_redir_type type,char *IONumber, char *target,
         struct list_redir *next)
 {
-    struct list_redir *list = xmalloc(1, sizeof (struct list_redir *));
+    struct list_redir *list = xmalloc(1, sizeof (struct list_redir ));
     list->type = type;
     list->IONumber = IONumber;
     list->target = target;

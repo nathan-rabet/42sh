@@ -5,7 +5,7 @@
 
 struct ast *parser_pipeline(struct token_list *tokens)
 {
-    struct ast **command = xmalloc(1, sizeof (struct ast **));
+    struct ast **command = xmalloc(100, sizeof (struct ast **));
     size_t i = 1;
     bool negation = false;
     if (tokens->current_token->type == BANG)

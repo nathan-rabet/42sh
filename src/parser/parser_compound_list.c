@@ -6,7 +6,7 @@
 struct ast *parser_compound_list(struct token_list *tokens)
 {
     struct ast *ast = NULL;
-    struct ast **children = xmalloc(1, sizeof(struct ast **));
+    struct ast **children = xmalloc(100, sizeof(struct ast **));
     size_t i = 1;
 
     while (look_ahead(tokens) == NEWLINE)

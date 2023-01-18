@@ -6,7 +6,7 @@
 struct list_redir *parser_redirection(struct token_list *tokens, struct list_redir *next)
 {
     struct list_redir *ast = NULL;
-    char *IONumber = NULL;
+    char *IONumber = "1";
     char *target;
     enum ast_redir_type type;
 

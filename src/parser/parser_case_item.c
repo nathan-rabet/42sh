@@ -5,7 +5,7 @@
 
 struct list_case_item *parser_case_item(struct token_list *tokens)
 {
-    char **word = xmalloc(1, sizeof(char **));
+    char **word = xmalloc(100, sizeof(char **));
     size_t i = 0;
     struct ast *to_execute = NULL;
 

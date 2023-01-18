@@ -9,7 +9,8 @@
 struct ast *parser_simple_command(struct token_list *tokens)
 {
     struct list_redir *list = NULL;
-    char **words = xmalloc(1, sizeof (char **));
+    char **words = xmalloc(100, sizeof (char *));
+    words[0] = NULL;
 
     while (is_prefix(tokens))
     {
