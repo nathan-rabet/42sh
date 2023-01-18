@@ -17,7 +17,7 @@ struct ast *ast_while_init(struct ast *condition, struct ast *to_execute)
     return &while_ast->base;
 }
 
-bool while_run(struct ast *ast) {
+int while_run(struct ast *ast) {
     assert(ast && ast->type == AST_WHILE);
     struct ast_while *while_ast = (struct ast_while *)ast;
     while (while_ast->condition->vtable->run(while_ast->condition))

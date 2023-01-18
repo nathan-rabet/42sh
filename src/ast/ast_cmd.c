@@ -17,7 +17,7 @@ struct ast *ast_cmd_init(char **word)
     return &cmd->base;
 }
 
-bool cmd_run(struct ast *ast) {
+int cmd_run(struct ast *ast) {
     assert(ast && ast->type == AST_CMD);
    // struct ast_cmd *cmd = (struct ast_cmd *)ast;
     //TODO(clara) run_command:
@@ -44,6 +44,6 @@ void cmd_pretty_print(struct ast *ast)
     struct ast_cmd *cmd = (struct ast_cmd*) ast;
     printf("CMD [\n ");
     for (size_t i = 0; cmd->words[i];i++)
-        printf("\tWord nb %zu : %s \n", i, cmd->words[i]);
+        printf("\tWord nb %zu : %s \n", i, cmd->words[i])r
     printf("]\n");
 }

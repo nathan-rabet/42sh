@@ -17,7 +17,7 @@ struct ast *ast_and_init(struct ast *ast_left, struct ast *ast_right)
     return &and_ast->base;
 }
 
-bool and_run(struct ast *ast) {
+int and_run(struct ast *ast) {
     assert(ast && ast->type == AST_AND);
     struct ast_and *and_ast = (struct ast_and *)ast;
     return and_ast->ast_left->vtable->run(and_ast->ast_left) &&

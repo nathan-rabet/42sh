@@ -16,7 +16,7 @@ struct ast *ast_brace_init(struct ast *command)
     return &brace_ast->base;
 }
 
-bool brace_run(struct ast *ast) {
+int brace_run(struct ast *ast) {
     assert(ast && ast->type == AST_BRACE);
     struct ast_brace *brace_ast = (struct ast_brace *)ast;
     return brace_ast->command->vtable->run(brace_ast->command);

@@ -28,7 +28,7 @@ struct list_redir *list_redir_init(enum ast_redir_type type,char *IONumber, char
     return list;
 }
 
-bool redir_run(struct ast *ast) {
+int redir_run(struct ast *ast) {
     assert(ast && ast->type == AST_REDIR);
     //struct ast_redir *redir_ast = (struct ast_redir *)ast;
     //TODO(clara) execution redirection

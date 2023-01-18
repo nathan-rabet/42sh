@@ -16,7 +16,7 @@ struct ast *ast_subshell_init(struct ast *command)
     return &subshell_ast->base;
 }
 
-bool subshell_run(struct ast *ast) {
+int subshell_run(struct ast *ast) {
     assert(ast && ast->type == AST_SUBSHELL);
     struct ast_subshell *subshell_ast = (struct ast_subshell *)ast;
     return subshell_ast->command->vtable->run(subshell_ast->command);

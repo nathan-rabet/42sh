@@ -17,7 +17,7 @@ struct ast *ast_func_init(char *name, struct ast *to_execute)
     return &func_ast->base;
 }
 
-bool func_run(struct ast *ast) {
+int func_run(struct ast *ast) {
     assert(ast && ast->type == AST_FUNC);
     struct ast_func *func_ast = (struct ast_func *)ast;
     //TODO(clara)

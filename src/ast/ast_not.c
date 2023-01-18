@@ -16,7 +16,7 @@ struct ast *ast_not_init(struct ast *ast_not)
     return &not_ast->base;
 }
 
-bool not_run(struct ast *ast) {
+int not_run(struct ast *ast) {
     assert(ast && ast->type == AST_NOT);
     struct ast_not *not_ast = (struct ast_not *)ast;
     return ! not_ast->ast_not->vtable->run(not_ast->ast_not);

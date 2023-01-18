@@ -17,7 +17,7 @@ struct ast *ast_or_init(struct ast *ast_left, struct ast *ast_right)
     return &or_ast->base;
 }
 
-bool or_run(struct ast *ast) {
+int or_run(struct ast *ast) {
     assert(ast && ast->type == AST_OR);
     struct ast_or *or_ast = (struct ast_or *)ast;
     return or_ast->ast_left->vtable->run(or_ast->ast_left) ||

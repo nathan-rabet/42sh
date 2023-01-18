@@ -17,7 +17,7 @@ struct ast *ast_list_init(size_t nb_children, struct ast **children)
     return &list_ast->base;
 }
 
-bool list_run(struct ast *ast) {
+int list_run(struct ast *ast) {
     assert(ast && ast->type == AST_LIST);
     struct ast_list *list_ast = (struct ast_list *)ast;
     for (size_t i = 0; i < list_ast->nb_children; i++)

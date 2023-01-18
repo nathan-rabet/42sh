@@ -19,7 +19,7 @@ struct ast *ast_if_init(struct ast *condition,
     return &if_ast->base;
 }
 
-bool if_run(struct ast *ast) {
+int if_run(struct ast *ast) {
     assert(ast && ast->type == AST_IF);
     struct ast_if *if_ast = (struct ast_if *)ast;
     if (if_ast->condition)

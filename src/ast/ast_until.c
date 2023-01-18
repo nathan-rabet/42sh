@@ -17,7 +17,7 @@ struct ast *ast_until_init(struct ast *condition, struct ast *to_execute)
     return &until_ast->base;
 }
 
-bool until_run(struct ast *ast) {
+int until_run(struct ast *ast) {
     assert(ast && ast->type == AST_UNTIL);
     struct ast_until *until_ast = (struct ast_until *)ast;
     do
