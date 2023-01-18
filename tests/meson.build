@@ -13,3 +13,4 @@ c_args += ['-fsanitize=address']
 link_args += ['-fsanitize=address']
 
 subdir('parser')
+subdir('execution')

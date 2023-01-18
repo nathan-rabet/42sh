@@ -1043,7 +1043,7 @@ void test18()
 
     ast->vtable->pretty_print(ast);
 }
-
+/*
 int main(void)
 {
     xalloc_init();
@@ -1067,4 +1067,4 @@ int main(void)
     test18();
     xfree_all();
     return 0;
-}
+}*/

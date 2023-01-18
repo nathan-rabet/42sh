@@ -32,6 +32,7 @@ int redir_run(struct ast *ast) {
     assert(ast && ast->type == AST_REDIR);
     //struct ast_redir *redir_ast = (struct ast_redir *)ast;
     //TODO(clara) execution redirection
+
     return false;
 }
 

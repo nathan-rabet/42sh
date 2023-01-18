@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "execution.h"
 
 /**
  * @brief Node of the AST
@@ -108,15 +109,17 @@ void list_pretty_print(struct ast *ast);
  */
 enum ast_redir_type {
     /// @brief Tokens redirection
-        REDIR_DLESS, // <<
-        REDIR_DGREAT, // >>
-        REDIR_LESSAND, // <&
-        REDIR_GREATAND, // >&
-        REDIR_LESSGREAT, // <>
-        REDIR_DLESSDASH, // <<-
+        REDIR_LESS, // < redirecting input
+        REDIR_GREAT, // > redirecting output no clobber
+        REDIR_DLESS, // << here document
+        REDIR_DGREAT, // >> Appending redirection output
+        REDIR_LESSAND, // <& Duplicate an input file descriptor
+        REDIR_GREATAND, // >& Duplicate an output file descriptor
+        REDIR_LESSGREAT, // <> open file descriptor for reading and writing
+        REDIR_DLESSDASH, // <<- here document
 
     /// @brief Token clobber
-        REDIR_CLOBBER, // >|
+        REDIR_CLOBBER, // >| redirecting output
 };
 
 /**
