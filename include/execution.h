@@ -1,8 +1,26 @@
-//
-// Created by chalu on 1/18/2023.
-//
+#ifndef EXECUTION_H
+#define EXECUTION_H
 
-#ifndef INC_42SH_EXECUTION_H
-#define INC_42SH_EXECUTION_H
+#include "ast.h"
+#include "xalloc.h"
 
-#endif //INC_42SH_EXECUTION_H
+struct dup_item
+{
+    int fd;
+    struct dup_item *next;
+};
+
+/**
+ * @brief list of dup item
+ */
+struct list_dup
+{
+    struct dup_item *head; // head of the list
+};
+
+int exec_cmd(struct ast *ast, int *error);
+
+// Utils
+bool is_builtin(char *name);
+
+#endif //EXECUTION_H

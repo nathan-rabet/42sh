@@ -20,7 +20,7 @@ dep = []
 link_args = []
 sources = []
 subdir('src')
-#subdir('tests')
+subdir('tests')
 inc = include_directories('include')
 
 # 42sh

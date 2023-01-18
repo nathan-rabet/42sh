@@ -46,7 +46,7 @@ struct ast {
  * @param pretty_print the print function
  */
 struct ast_vtable {
-    bool (*run)(struct ast *ast);
+    int (*run)(struct ast *ast);
     void (*free)(struct ast *ast);
     void (*pretty_print)(struct ast *ast);
 };
@@ -62,7 +62,7 @@ struct ast_cmd {
 };
 
 struct ast *ast_cmd_init(char **word);
-bool cmd_run(struct ast *ast);
+int cmd_run(struct ast *ast);
 void cmd_free(struct ast *ast);
 void cmd_pretty_print(struct ast *ast);
 
@@ -82,7 +82,7 @@ void cmd_pretty_print(struct ast *ast);
 
 struct ast *ast_if_init(struct ast *condition,
                         struct ast *then_body, struct ast *else_body);
-bool if_run(struct ast *ast);
+int if_run(struct ast *ast);
 void if_free(struct ast *ast);
 void if_pretty_print(struct ast *ast);
 
@@ -99,7 +99,7 @@ struct ast_list {
 };
 
 struct ast *ast_list_init(size_t nb_children, struct ast **children);
-bool list_run(struct ast *ast);
+int list_run(struct ast *ast);
 void list_free(struct ast *ast);
 void list_pretty_print(struct ast *ast);
 
@@ -147,7 +147,7 @@ struct ast_redir {
 
 struct ast *ast_redir_init(struct list_redir *redir, struct ast *command);
 struct list_redir *list_redir_init(enum ast_redir_type type,char *IONumber, char *target, struct list_redir *next);
-bool redir_run(struct ast *ast);
+int redir_run(struct ast *ast);
 void redir_free(struct ast *ast);
 void redir_pretty_print(struct ast *ast);
 
@@ -164,7 +164,7 @@ struct ast_and {
 };
 
 struct ast *ast_and_init(struct ast *ast_left, struct ast *ast_right);
-bool and_run(struct ast *ast);
+int and_run(struct ast *ast);
 void and_free(struct ast *ast);
 void and_pretty_print(struct ast *ast);
 
@@ -181,7 +181,7 @@ struct ast_or {
 };
 
 struct ast *ast_or_init(struct ast *ast_left, struct ast *ast_right);
-bool or_run(struct ast *ast);
+int or_run(struct ast *ast);
 void or_free(struct ast *ast);
 void or_pretty_print(struct ast *ast);
 
@@ -196,7 +196,7 @@ struct ast_not {
 };
 
 struct ast *ast_not_init(struct ast *ast_not);
-bool not_run(struct ast *ast);
+int not_run(struct ast *ast);
 void not_free(struct ast *ast);
 void not_pretty_print(struct ast *ast);
 
@@ -213,7 +213,7 @@ struct ast_while {
 };
 
 struct ast *ast_while_init(struct ast *condition, struct ast *to_execute);
-bool while_run(struct ast *ast);
+int while_run(struct ast *ast);
 void while_free(struct ast *ast);
 void while_pretty_print(struct ast *ast);
 
@@ -231,7 +231,7 @@ void while_pretty_print(struct ast *ast);
 };
 
 struct ast *ast_until_init(struct ast *condition, struct ast *to_execute);
-bool until_run(struct ast *ast);
+int until_run(struct ast *ast);
 void until_free(struct ast *ast);
 void until_pretty_print(struct ast *ast);
 
@@ -250,7 +250,7 @@ struct ast_for {
 };
 
 struct ast *ast_for_init(char *name, struct ast *word, struct ast *to_execute);
-bool for_run(struct ast *ast);
+int for_run(struct ast *ast);
 void for_free(struct ast *ast);
 void for_pretty_print(struct ast *ast);
 
@@ -267,7 +267,7 @@ struct ast_func {
 };
 
 struct ast *ast_func_init(char *name, struct ast *to_execute);
-bool func_run(struct ast *ast);
+int func_run(struct ast *ast);
 void func_free(struct ast *ast);
 void func_pretty_print(struct ast *ast);
 
@@ -299,7 +299,7 @@ struct ast_case {
 };
 
 struct ast *ast_case_init(char *name, struct list_case_item **case_item, size_t nb_item);
-bool case_run(struct ast *ast);
+int case_run(struct ast *ast);
 void case_free(struct ast *ast);
 void case_pretty_print(struct ast *ast);
 
@@ -316,7 +316,7 @@ struct ast_pipe {
 };
 
 struct ast *ast_pipe_init(size_t nb_command, struct ast **command);
-bool pipe_run(struct ast *ast);
+int pipe_run(struct ast *ast);
 void pipe_free(struct ast *ast);
 void pipe_pretty_print(struct ast *ast);
 
@@ -331,7 +331,7 @@ struct ast_brace {
 };
 
 struct ast *ast_brace_init(struct ast *command);
-bool brace_run(struct ast *ast);
+int brace_run(struct ast *ast);
 void brace_free(struct ast *ast);
 void brace_pretty_print(struct ast *ast);
 
@@ -346,7 +346,7 @@ struct ast_subshell {
 };
 
 struct ast *ast_subshell_init(struct ast *command);
-bool subshell_run(struct ast *ast);
+int subshell_run(struct ast *ast);
 void subshell_free(struct ast *ast);
 void subshell_pretty_print(struct ast *ast);
 
