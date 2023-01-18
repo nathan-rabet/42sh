@@ -6,30 +6,19 @@
 
 typedef int token_t;
 
-enum token_types
-{
-    QUOTE_NONE = 0,
-    QUOTE_SINGLE,
-    QUOTE_DOUBLE,
-    QUOTE_BACK
-};
-
-typedef char quote_t;
-
 typedef struct token
 {
     token_t type;
-    quote_t quote;
     void *value;
     struct token *next;
 } token;
 
-typedef struct
+typedef struct lexer
 {
-    const char *str;
+    const char *input;
+    size_t input_len;
     char *str_token_start;
     char *str_token_end;
-    quote_t quote;
     token *tokens;
 } lexer;
 
@@ -104,58 +93,6 @@ enum token_types
     PARAMETER_EXPANSION // ${...} or $...
 };
 
-const char *tokens_mapping = {
-    NULL, // UNDEFINED
-    NULL, // WORD
-    NULL, // NAME
-    NULL, // IO_NUMBER
-    "\n", // NEWLINE
-
-    "&&", // AND_IF
-    "||", // OR_IF
-    ";;", // DSEMI
-
-    "<<", // DLESS
-    ">>", // DGREAT
-    "<&", // LESSAND
-    ">&", // GREATAND
-    "<>", // LESSGREAT
-    "<<-", // DLESSDASH
-
-    ">|", // CLOBBER
-
-    "if", // IF
-    "then", // THEN
-    "else", // ELSE
-    "elif", // ELIF
-    "fi", // FI
-
-    "case", // CASE
-    "esac", // ESAC
-
-    "while" // WHILE
-    "until", // UNTIL
-
-    "do", // DO
-    "done", // DONE
-
-    "for", // FOR
-
-    "{", // LBRACE
-    "}", // RBRACE
-
-    "!", // BANG
-
-    "in", // IN
-    "<", // LESS
-    ">", // GREAT
-
-    ";", // SEMI
-    "|", // PIPE
-    NULL, // ARITHMETIC_EXPANSION
-    NULL // PARAMETER_EXPANSION
-};
-
 // Lexer utils
 #define IS_BLANK(c) (c == ' ' || c == '\t')
 #define GET_CURRENT_CHAR_ADDR(lex) (lex->str_token_end - 1)
@@ -166,6 +103,9 @@ const char *tokens_mapping = {
 #define GET_LEN_PREVIOUS_CHAR(lex)                                             \
     (GET_PREVIOUS_CHAR_ADDR(lex) - lex->str_token_start)
 #define GET_PREVIOUS_CHAR(lex) (*(GET_PREVIOUS_CHAR_ADDR(lex)))
+#define GET_NEXT_CHAR_ADDR(lex) (lex->str_token_end)
+#define GET_LEN_NEXT_CHAR(lex) (GET_NEXT_CHAR_ADDR(lex) - lex->str_token_start)
+#define GET_NEXT_CHAR(lex) (*(GET_NEXT_CHAR_ADDR(lex)))
 
 // Tokens utils
 #define FIRST_HARD_CODED NEWLINE
@@ -193,17 +133,6 @@ token *get_tokens(const char *input, size_t len);
  * @param value_size The size of the token value
  */
 void token_add(lexer *lex, token_t token_type, size_t value_size);
-
-/**
- * @brief Tells if a character is blank
- *
- * @note A blank is a space or a tab
- *
- * @param c The character to test
- * @return true
- * @return false
- */
-bool is_blank(char c);
 
 /**
  * @brief Tells if a string is a name

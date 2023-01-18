@@ -9,10 +9,10 @@ void lexer_eat_arithmetics_expansion(lexer *lex)
 
     lex->str_token_end += 3;
     unsigned int parenthesis_count = 2;
-    for (; *lex->str_token_end != '\0' && parenthesis_count;
+    for (; GET_CURRENT_CHAR(lex) != '\0' && parenthesis_count > 0;
          lex->str_token_end++)
-        if (*lex->str_token_end == '(')
+        if (GET_CURRENT_CHAR(lex) == '(')
             parenthesis_count++;
-        else if (*lex->str_token_end == ')')
+        else if (GET_CURRENT_CHAR(lex) == ')')
             parenthesis_count--;
 }

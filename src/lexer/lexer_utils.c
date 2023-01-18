@@ -1,10 +1,6 @@
+#include <ctype.h>
+
 #include "lexer.h"
-
-bool is_blank(char c)
-{
-    return c == ' ' || c == '\t';
-}
-
 bool is_name(char *str, size_t len)
 {
     if (len == 0)

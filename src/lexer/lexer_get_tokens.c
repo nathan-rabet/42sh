@@ -1,19 +1,15 @@
+#include <assert.h>
 #include <string.h>
 
 #include "lexer.h"
 #include "xalloc.h"
 
-static inline bool is_blank(char c)
+static void _get_tokens(lexer *lex)
 {
-    return c == ' ' || c == '\t';
-}
+    assert(lex->input_len > 0);
 
-static void _get_tokens(lexer *lex, size_t input_len)
-{
-    assert(input_len > 0);
-
-    char *end_addr = lex->str_token_start + input_len + 1;
-    for (; lex->str_token_end < end_addr; lex->str_token_end++)
+    for (; lex->str_token_end < lex->input + lex->input_len;
+         lex->str_token_end++)
     {
         // Rule 2.3.2 : If the previous character was used as part of an
         // operator and the current character is not quoted and can be used with
@@ -56,9 +52,6 @@ static void _get_tokens(lexer *lex, size_t input_len)
         {
         case '"':
         case '\'':
-            quote_t quote_type =
-                GET_CURRENT_CHAR(lex) == '"' ? QUOTE_DOUBLE : QUOTE_SINGLE;
-
             lexer_eat_quotes(lex);
             token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
             break;
@@ -89,7 +82,7 @@ static void _get_tokens(lexer *lex, size_t input_len)
         if (GET_CURRENT_CHAR(lex) == '$' || GET_CURRENT_CHAR(lex) == '`')
         {
             // Command substitution
-            if (strcmp(GET_CURRENT_CHAR_ADDR(lex), '$(') == 0)
+            if (strcmp(GET_CURRENT_CHAR_ADDR(lex), "$(") == 0)
                 lexer_eat_command_substitution(lex);
             else if (GET_CURRENT_CHAR(lex) == '`')
                 lexer_eat_command_backquote(lex);
@@ -149,20 +142,25 @@ static void _get_tokens(lexer *lex, size_t input_len)
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if
     // any) shall be delimited.
-    if (lex->str_token_end != end_addr)
+    if (lex->str_token_end != lex->input + lex->input_len)
         token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
 }
 
 token *get_tokens(const char *input, size_t len)
 {
     lexer *lex = xcalloc(1, sizeof(lexer));
-    lex->str = input;
-    lex->str_token_start = input;
-    lex->str_token_end = input + 1;
-    lex->tokens = NULL;
-    _get_tokens(lex, len);
 
-    token_t *tokens = lex->tokens;
+    char *input_cpy = xcalloc(len + 1, sizeof(char));
+    memcpy(input_cpy, input, len);
+    lex->input = input_cpy;
+    lex->input_len = len;
+    lex->str_token_start = input_cpy;
+    lex->str_token_end = input_cpy + 1;
+    lex->tokens = NULL;
+    _get_tokens(lex);
+
+    token *tokens = lex->tokens;
     xfree(lex);
+    xfree(input_cpy);
     return tokens;
 }

@@ -18,11 +18,25 @@ endif
 
 dep = []
 link_args = []
-sources = ['src/utils/xalloc.c']
+sources = [
+'src/lexer/lexer_eat_backslash.c',
+'src/lexer/lexer_eat_parameter_expansion.c',
+'src/lexer/lexer_eat_backquotes.c',
+'src/lexer/lexer_eat_arithmetics_expansion.c',
+'src/lexer/lexer_eat_command_substitution.c',
+'src/lexer/lexer_utils.c',
+'src/lexer/lexer_add_token.c',
+'src/lexer/lexer_eat_comment.c',
+'src/lexer/lexer_is_token_prefix.c',
+'src/lexer/lexer_get_tokens.c',
+'src/lexer/lexer_eat_parameter_expansion_braces.c',
+'src/lexer/lexer_eat_quotes.c',
+'src/utils/xalloc.c'
+]
 inc = include_directories('include')
 
 # 42sh
-executable('42sh', sources + ['src/main.c'], include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
+executable('42sh', sources + ['src/main.c'], include_directories: inc, c_args: c_args + ['-D NDEBUG'], dependencies: dep, link_args: link_args)
 
 if get_option('enable_tests') == true
     # Tests main

@@ -1,6 +1,60 @@
+#include <assert.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "lexer.h"
+
+static const char *tokens_mapping[] = {
+    NULL, // UNDEFINED
+    NULL, // WORD
+    NULL, // NAME
+    NULL, // IO_NUMBER
+    "\n", // NEWLINE
+
+    "&&", // AND_IF
+    "||", // OR_IF
+    ";;", // DSEMI
+
+    "<<", // DLESS
+    ">>", // DGREAT
+    "<&", // LESSAND
+    ">&", // GREATAND
+    "<>", // LESSGREAT
+    "<<-", // DLESSDASH
+
+    ">|", // CLOBBER
+
+    "if", // IF
+    "then", // THEN
+    "else", // ELSE
+    "elif", // ELIF
+    "fi", // FI
+
+    "case", // CASE
+    "esac", // ESAC
+
+    "while" // WHILE
+    "until", // UNTIL
+
+    "do", // DO
+    "done", // DONE
+
+    "for", // FOR
+
+    "{", // LBRACE
+    "}", // RBRACE
+
+    "!", // BANG
+
+    "in", // IN
+    "<", // LESS
+    ">", // GREAT
+
+    ";", // SEMI
+    "|", // PIPE
+    NULL, // ARITHMETIC_EXPANSION
+    NULL // PARAMETER_EXPANSION
+};
 
 static inline bool is_prefix(const char *pre, const char *str, size_t pre_size)
 {

@@ -7,6 +7,8 @@
 
 #include "lexer.h"
 
+#define BUFFER_SIZE 1024
+
 /// Parser /////////////
 
 struct Node
@@ -18,19 +20,19 @@ struct Node
 
 struct Node *parse_simple_command(char *input)
 {
-    token token =
-        get_next_token(input); // call the lexer's get_next_token function
+    token *token = get_tokens(
+        input, strlen(input)); // call the lexer's get_next_token function
     struct Node *node = malloc(sizeof(struct Node));
     node->type = "SIMPLE_COMMAND";
     node->words = malloc(sizeof(char *));
-    node->words[0] = token.value;
+    node->words[0] = token->value;
     node->num_words = 1;
 
-    while ((token = get_next_token(input)).value != NULL)
+    while ((token = get_tokens(input, strlen(input))) != NULL)
     { // use the NULL token value from the lexer
         node->words =
             realloc(node->words, (node->num_words + 1) * sizeof(char *));
-        node->words[node->num_words++] = token.value;
+        node->words[node->num_words++] = token->value;
     }
 
   return node;

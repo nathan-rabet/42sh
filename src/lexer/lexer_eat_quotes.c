@@ -4,14 +4,14 @@
 
 void lexer_eat_quotes(lexer *lex)
 {
-    assert(lex->str_token_end[0] == '\'' || lex->str_token_end[0] == '"');
+    assert(GET_CURRENT_CHAR(lex) == '\'' || GET_CURRENT_CHAR(lex) == '"');
 
-    char quote_c = lex->str_token_end[0];
+    char quote_c = GET_CURRENT_CHAR(lex);
 
     // 2.2.2 Single-quotes: Preserve literal value of each character
     // if within single quotes.
-    for (; lex->str_token_end[0] != '\0' && lex->str_token_end[0] != quote_c;
+    for (; GET_CURRENT_CHAR(lex) != '\0' && GET_CURRENT_CHAR(lex) != quote_c;
          lex->str_token_end++)
-        if (lex->str_token_end[0] == '\\')
+        if (GET_CURRENT_CHAR(lex) == '\\')
             lexer_eat_backslash(lex);
 }
