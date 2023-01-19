@@ -22,23 +22,26 @@ static inline void _test_tokens(const char *input, const token *expected_tokens,
 
     for (size_t i = 0; i < nb_tokens; i++)
     {
-        cr_assert_str_eq(returned_tokens->value, expected_tokens[i].value,
-                         "Got token value '%s', expected '%s'",
-                         returned_tokens->value, expected_tokens[i].value);
+        bool is_value_correct =
+            strcmp(returned_tokens->value, expected_tokens[i].value) == 0;
+        bool is_type_correct = returned_tokens->type == expected_tokens[i].type;
 
-        cr_assert_eq(returned_tokens->type, expected_tokens[i].type,
-                     "Got token type '%d', expected '%d'",
-                     returned_tokens->type, expected_tokens[i].type);
+        if (!is_value_correct || !is_type_correct)
+        {
+            cr_assert_fail("Token %zu is incorrect: got type %d, value %s, "
+                           "expected type %d, value %s",
+                           i, returned_tokens->type, returned_tokens->value,
+                           expected_tokens[i].type, expected_tokens[i].value);
+        }
         returned_tokens = returned_tokens->next;
     }
-
     xfree(returned_tokens);
     xalloc_deinit();
 }
 
 // Rule 2.3.1: If the end of input is recognized, the current token (if
 //  any) shall be delimited.
-Test(lexer, empty_input)
+Test(lexer_scl, empty_input)
 {
     const char *cmd = "";
 
@@ -47,7 +50,7 @@ Test(lexer, empty_input)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_words)
+Test(lexer_scl, simple_words)
 {
     const char *cmd = "echo test eeee";
 
@@ -64,7 +67,7 @@ Test(lexer, simple_words)
 // operator and the current character is not quoted and can be used with
 // the previous characters to form an operator, it shall be used as part
 // of that (operator) token.
-Test(lexer, great_operator)
+Test(lexer_scl, great_operator)
 {
     const char *cmd = "a > b";
 
@@ -77,7 +80,7 @@ Test(lexer, great_operator)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, pipe_operator)
+Test(lexer_scl, pipe_operator)
 {
     const char *cmd = "a | b";
 
@@ -90,7 +93,7 @@ Test(lexer, pipe_operator)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, double_operator_dgreat)
+Test(lexer_scl, double_operator_dgreat)
 {
     const char *cmd = "a >> b";
 
@@ -103,7 +106,7 @@ Test(lexer, double_operator_dgreat)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, or_if_operator)
+Test(lexer_scl, or_if_operator)
 {
     const char *cmd = "a && b";
 
@@ -120,7 +123,7 @@ Test(lexer, or_if_operator)
 // and the current character cannot be used with the previous characters
 // to form an operator, the operator containing the previous character
 // shall be delimited.
-Test(lexer, double_operator_without_spaces)
+Test(lexer_scl, double_operator_without_spaces)
 {
     const char *cmd = "a>>b";
 
@@ -133,7 +136,7 @@ Test(lexer, double_operator_without_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, double_operator_with_spaces)
+Test(lexer_scl, double_operator_with_spaces)
 {
     const char *cmd = "a >> b";
 
@@ -146,7 +149,7 @@ Test(lexer, double_operator_with_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, two_operators_concat)
+Test(lexer_scl, two_operators_concat)
 {
     const char *cmd = "a >>&& b";
 
@@ -160,7 +163,7 @@ Test(lexer, two_operators_concat)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, three_operators_concat)
+Test(lexer_scl, three_operators_concat)
 {
     const char *cmd = "a >>&&| b";
 
@@ -173,7 +176,7 @@ Test(lexer, three_operators_concat)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, invalid_newline)
+Test(lexer_scl, invalid_newline)
 {
     const char *cmd = "a >>b\nbb";
 
@@ -186,7 +189,7 @@ Test(lexer, invalid_newline)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, DLESSDASH)
+Test(lexer_scl, DLESSDASH)
 {
     const char *cmd = "a <<- b";
 
@@ -199,7 +202,7 @@ Test(lexer, DLESSDASH)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, DLESSDASH_sticked)
+Test(lexer_scl, DLESSDASH_sticked)
 {
     const char *cmd = "a<<-b";
 
@@ -212,14 +215,14 @@ Test(lexer, DLESSDASH_sticked)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, concatened_operators)
+Test(lexer_scl, concatened_operators)
 {
     const char *cmd = "a &&& b";
 
     const token expected_tokens[] = {
         { .type = NAME, .value = "a" },
         { .type = AND_IF, .value = "&&" },
-        { .type = TOKEN_UNDEFINED, .value = "&" },
+        { .type = AMPERSAND, .value = "&" },
         { .type = NAME, .value = "b" },
     };
 
@@ -235,7 +238,7 @@ Test(lexer, concatened_operators)
 // including any embedded or enclosing quotes or substitution operators, between
 // the <quotation-mark> and the end of the quoted text. The token shall not be
 // delimited by the end of the quoted field.
-Test(lexer, quoted_operator)
+Test(lexer_scl, quoted_operator)
 {
     const char *cmd = "echo 'a > b'";
 
@@ -247,7 +250,7 @@ Test(lexer, quoted_operator)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_word)
+Test(lexer_scl, simple_word)
 {
     const char *cmd = "'echo'";
 
@@ -258,7 +261,7 @@ Test(lexer, simple_word)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_word_with_spaces)
+Test(lexer_scl, simple_word_with_spaces)
 {
     const char *cmd = "'echo'   ";
 
@@ -269,7 +272,7 @@ Test(lexer, simple_word_with_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, two_dquotes)
+Test(lexer_scl, two_dquotes)
 {
     const char *cmd = "\"echo\"\"echo\"";
 
@@ -281,7 +284,7 @@ Test(lexer, two_dquotes)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, two_quotes_different)
+Test(lexer_scl, two_quotes_different)
 {
     const char *cmd = "\"echo\"'echo'";
 
@@ -293,7 +296,7 @@ Test(lexer, two_quotes_different)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_backslash)
+Test(lexer_scl, simple_backslash)
 {
     const char *cmd = "echo \\a";
 
@@ -305,7 +308,7 @@ Test(lexer, simple_backslash)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, newline_joining)
+Test(lexer_scl, newline_joining)
 {
     const char *cmd = "echo \\\n a";
 
@@ -317,7 +320,7 @@ Test(lexer, newline_joining)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, two_newline_joining)
+Test(lexer_scl, two_newline_joining)
 {
     const char *cmd = "echo \\\n\\\n a";
 
@@ -329,7 +332,7 @@ Test(lexer, two_newline_joining)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, three_newline_joining)
+Test(lexer_scl, three_newline_joining)
 {
     const char *cmd = "echo \\\n\\\n\\\n a";
 
@@ -357,7 +360,7 @@ Test(lexer, three_newline_joining)
 // result token, including any embedded or enclosing substitution
 // operators or quotes. The token shall not be delimited by the end of
 // the substitution.
-Test(lexer, simple_command_substitution)
+Test(lexer_scl, simple_command_substitution)
 {
     const char *cmd = "echo $(a)";
 
@@ -369,7 +372,7 @@ Test(lexer, simple_command_substitution)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_command_substitution_with_spaces)
+Test(lexer_scl, simple_command_substitution_with_spaces)
 {
     const char *cmd = "echo $(  a  )";
 
@@ -381,7 +384,7 @@ Test(lexer, simple_command_substitution_with_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_command_backquote)
+Test(lexer_scl, simple_command_backquote)
 {
     const char *cmd = "echo `a`";
 
@@ -393,7 +396,7 @@ Test(lexer, simple_command_backquote)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_command_backquote_with_spaces)
+Test(lexer_scl, simple_command_backquote_with_spaces)
 {
     const char *cmd = "echo `  a  `";
 
@@ -405,7 +408,7 @@ Test(lexer, simple_command_backquote_with_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_arithmetic_expansion)
+Test(lexer_scl, simple_arithmetic_expansion)
 {
     const char *cmd = "echo $((a))";
 
@@ -417,7 +420,7 @@ Test(lexer, simple_arithmetic_expansion)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_arithmetic_expansion_with_spaces)
+Test(lexer_scl, simple_arithmetic_expansion_with_spaces)
 {
     const char *cmd = "echo $((  a  ))";
 
@@ -429,7 +432,7 @@ Test(lexer, simple_arithmetic_expansion_with_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_parameter_expansion_braces)
+Test(lexer_scl, simple_parameter_expansion_braces)
 {
     const char *cmd = "echo ${a}";
 
@@ -441,7 +444,7 @@ Test(lexer, simple_parameter_expansion_braces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_parameter_expansion_braces_with_spaces)
+Test(lexer_scl, simple_parameter_expansion_braces_with_spaces)
 {
     const char *cmd = "echo ${  a  }";
 
@@ -453,7 +456,7 @@ Test(lexer, simple_parameter_expansion_braces_with_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_parameter_expansion)
+Test(lexer_scl, simple_parameter_expansion)
 {
     const char *cmd = "echo $a";
 
@@ -465,7 +468,7 @@ Test(lexer, simple_parameter_expansion)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_parameter_expansion_with_spaces)
+Test(lexer_scl, simple_parameter_expansion_with_spaces)
 {
     const char *cmd = "echo $a    ";
 
@@ -482,7 +485,7 @@ Test(lexer, simple_parameter_expansion_with_spaces)
 // shall be delimited. The current character shall be used as the
 // beginning of the next (operator) token.
 
-Test(lexer, simple_command_with_spaces)
+Test(lexer_scl, simple_command_with_spaces)
 {
     const char *cmd = "test;";
 
@@ -494,7 +497,7 @@ Test(lexer, simple_command_with_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, simple_command_with_spaces_and_newline)
+Test(lexer_scl, simple_command_with_spaces_and_newline)
 {
     const char *cmd = "test&&";
 
@@ -509,7 +512,7 @@ Test(lexer, simple_command_with_spaces_and_newline)
 // Rule 2.3.7: If the current character is an unquoted <blank>, any
 // token containing the previous character is delimited and the current
 // character shall be discarded.
-Test(lexer, spaces_before_word)
+Test(lexer_scl, spaces_before_word)
 {
     const char *cmd = "     test";
 
@@ -520,7 +523,7 @@ Test(lexer, spaces_before_word)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, spaces_between_words)
+Test(lexer_scl, spaces_between_words)
 {
     const char *cmd = "     test     echo  ";
 
@@ -532,7 +535,7 @@ Test(lexer, spaces_between_words)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, spaces_and_tab)
+Test(lexer_scl, spaces_and_tab)
 {
     const char *cmd = "test    \t \t echo";
 
@@ -546,7 +549,7 @@ Test(lexer, spaces_and_tab)
 
 // Rule 2.3.8: If the previous character was part of a word, the current
 // character shall be appended to that word.
-Test(lexer, reserved_if)
+Test(lexer_scl, reserved_if)
 {
     const char *cmd = "if";
 
@@ -557,7 +560,7 @@ Test(lexer, reserved_if)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, reserved_if_clause)
+Test(lexer_scl, reserved_if_clause)
 {
     const char *cmd = "if test; then echo; fi";
 
@@ -571,7 +574,7 @@ Test(lexer, reserved_if_clause)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, reserved_lbrace)
+Test(lexer_scl, reserved_lbrace)
 {
     const char *cmd = "{";
 
@@ -582,7 +585,7 @@ Test(lexer, reserved_lbrace)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, reserved_sticked)
+Test(lexer_scl, reserved_sticked)
 {
     const char *cmd = "if{";
 
@@ -593,7 +596,7 @@ Test(lexer, reserved_sticked)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, reserved_sticked_2)
+Test(lexer_scl, reserved_sticked_2)
 {
     const char *cmd = "ifthenelsefi";
 
@@ -604,7 +607,7 @@ Test(lexer, reserved_sticked_2)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, reserved_sticked_3)
+Test(lexer_scl, reserved_sticked_3)
 {
     const char *cmd = "!test";
 
@@ -615,7 +618,7 @@ Test(lexer, reserved_sticked_3)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, reserved_bang)
+Test(lexer_scl, reserved_bang)
 {
     const char *cmd = "! test";
 
@@ -627,7 +630,7 @@ Test(lexer, reserved_bang)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, reserved_with_separator)
+Test(lexer_scl, reserved_with_separator)
 {
     const char *cmd = "if;then;fi";
 
@@ -645,7 +648,7 @@ Test(lexer, reserved_with_separator)
 // discarded as a comment. The <newline> that ends the line is not
 // considered part of the comment.
 
-Test(lexer, comment)
+Test(lexer_scl, comment)
 {
     const char *cmd = "test # comment";
 
@@ -656,7 +659,7 @@ Test(lexer, comment)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, alone_comment)
+Test(lexer_scl, alone_comment)
 {
     const char *cmd = "#";
 
@@ -665,7 +668,7 @@ Test(lexer, alone_comment)
     _test_tokens(cmd, expected_tokens, 0);
 }
 
-Test(lexer, only_comment)
+Test(lexer_scl, only_comment)
 {
     const char *cmd = "# comment";
 
@@ -674,7 +677,7 @@ Test(lexer, only_comment)
     _test_tokens(cmd, expected_tokens, 0);
 }
 
-Test(lexer, comment_with_newline)
+Test(lexer_scl, comment_with_newline)
 {
     const char *cmd = "test # comment\n";
 
@@ -685,7 +688,7 @@ Test(lexer, comment_with_newline)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, comment_with_newline_2)
+Test(lexer_scl, comment_with_newline_2)
 {
     const char *cmd = "test # comment\ntest2";
 

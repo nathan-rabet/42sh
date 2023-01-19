@@ -91,7 +91,7 @@ token_t lexer_is_token(lexer *lex, size_t len)
     }
 
     // Operators and reserved words
-    for (size_t i = FIRST_HARD_CODED; i < LAST_HARD_CODED; i++)
+    for (size_t i = FIRST_HARD_CODED; i <= LAST_HARD_CODED; i++)
         if (strlen(tokens_mapping[i]) == len
             && strncmp(lex->str_token_start, tokens_mapping[i], len) == 0)
             return i;
@@ -106,7 +106,7 @@ token_t lexer_is_token(lexer *lex, size_t len)
 
 token_t lexer_is_token_prefix_operator(lexer *lex, size_t len)
 {
-    for (size_t i = FIRST_HARD_CODED; i < LAST_HARD_CODED; i++)
+    for (size_t i = FIRST_HARD_CODED; i <= LAST_HARD_CODED; i++)
         if (is_prefix(lex->str_token_start, tokens_mapping[i], len))
             return i;
 
