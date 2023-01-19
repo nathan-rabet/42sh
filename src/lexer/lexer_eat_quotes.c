@@ -10,8 +10,11 @@ void lexer_eat_quotes(lexer *lex)
 
     // 2.2.2 Single-quotes: Preserve literal value of each character
     // if within single quotes.
-    for (; GET_CURRENT_CHAR(lex) != '\0' && GET_CURRENT_CHAR(lex) != quote_c;
+    for (; !IS_END_OF_INPUT(lex) && GET_CURRENT_CHAR(lex) != quote_c;
          lex->str_token_end++)
-        if (GET_CURRENT_CHAR(lex) == '\\')
-            lexer_eat_backslash(lex);
+
+        // Newline joining
+        if (GET_CURRENT_CHAR(lex) == '\\' && HAS_NEXT_CHAR(lex)
+            && GET_NEXT_CHAR(lex) == '\n')
+            lexer_eat_newline_joining(lex);
 }

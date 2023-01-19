@@ -8,34 +8,47 @@ static void _get_tokens(lexer *lex)
 {
     assert(lex->input_len > 0);
 
-    for (; lex->str_token_end < lex->input + lex->input_len;
-         lex->str_token_end++)
+    for (; !IS_END_OF_INPUT(lex); lex->str_token_end++)
     {
         // Rule 2.3.2 : If the previous character was used as part of an
         // operator and the current character is not quoted and can be used with
         // the previous characters to form an operator, it shall be used as part
         // of that (operator) token.
-
-        // Check if previous characters form an operator prefix.
-        token_t prefix_token =
-            lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex));
-
-        // If an operator prefix can be formed
-        if (IS_OPERATOR(prefix_token))
+        if (HAS_PREVIOUS_CHAR(lex))
         {
-            /**
-             * Check if current character with previous characters can form an
-             * operator prefix (must be true for Rule 2.3.2 and false for
-             * Rule 2.3.3).
-             */
-            prefix_token =
-                lexer_is_token_prefix(lex, GET_LEN_CURRENT_CHAR(lex));
+            token_t prefix_previous_token =
+                lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex));
 
-            if (IS_OPERATOR(prefix_token))
-                continue; // a prefix can be formed using current character
-                          // (which is not in quotes).
-            else
-                token_add(lex, prefix_token, GET_LEN_CURRENT_CHAR(lex));
+            if (IS_OPERATOR(prefix_previous_token))
+            {
+                token_t prefix_current_token =
+                    lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex));
+                if (IS_OPERATOR(prefix_current_token))
+                    continue;
+            }
+        }
+
+        // Rule 2.3.3: If the previous character was used as part of an operator
+        // and the current character cannot be used with the previous characters
+        // to form an operator, the operator containing the previous character
+        // shall be delimited.
+        if (HAS_PREVIOUS_CHAR(lex))
+        {
+            token_t prefix_previous_token =
+                lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex));
+
+            if (IS_OPERATOR(prefix_previous_token))
+            {
+                token_t current_token =
+                    lexer_is_token(lex, GET_LEN_CURRENT_CHAR(lex));
+                if (!IS_OPERATOR(current_token))
+                {
+                    token_t previous_token =
+                        lexer_is_token(lex, GET_LEN_PREVIOUS_CHAR(lex));
+                    token_add(lex, previous_token, GET_LEN_PREVIOUS_CHAR(lex));
+                    continue;
+                }
+            }
         }
 
         // Rule 2.3.4: If the current character is <backslash>, single-quote, or
@@ -54,7 +67,7 @@ static void _get_tokens(lexer *lex)
         case '\'':
             lexer_eat_quotes(lex);
             token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
-            break;
+            continue;
 
         case '\\':
             lexer_eat_backslash(lex);
@@ -107,22 +120,30 @@ static void _get_tokens(lexer *lex)
         lex->str_token_start = GET_CURRENT_CHAR_ADDR(lex);
         token_t token = lexer_is_token_prefix(lex, 1);
         lex->str_token_start = tmp_str_token_start;
-        if (IS_OPERATOR(token))
-            token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
+        if (HAS_PREVIOUS_CHAR(lex) && IS_OPERATOR(token))
+        {
+            token_add(lex, WORD, GET_LEN_PREVIOUS_CHAR(lex));
+            continue;
+        }
 
         // Rule 2.3.7: If the current character is an unquoted <blank>, any
         // token containing the previous character is delimited and the current
         // character shall be discarded.
         if (IS_BLANK(GET_CURRENT_CHAR(lex)))
         {
-            token_add(lex, WORD, GET_LEN_PREVIOUS_CHAR(lex));
-            lex->str_token_end++; // discard current character
+            if (HAS_PREVIOUS_CHAR(lex))
+                token_add(lex, WORD, GET_LEN_PREVIOUS_CHAR(lex));
+
+            // Discard current character
+            lex->str_token_start++;
+            lex->str_token_end++;
             continue;
         }
 
         // Rule 2.3.8: If the previous character was part of a word, the current
         // character shall be appended to that word.
-        if (lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex)) == WORD)
+        if (HAS_PREVIOUS_CHAR(lex)
+            && (lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex)) != TOKEN_UNDEFINED))
             continue;
 
         // Rule 2.3.9: If the current character is a '#', it and all subsequent
@@ -137,30 +158,31 @@ static void _get_tokens(lexer *lex)
 
         // Rule 2.3.10: The current character is used as the start of a new
         // word.
-        token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
+        if (HAS_PREVIOUS_CHAR(lex))
+            token_add(lex, WORD, GET_LEN_PREVIOUS_CHAR(lex));
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if
     // any) shall be delimited.
-    if (lex->str_token_end != lex->input + lex->input_len)
+    if (lex->str_token_start != GET_CURRENT_CHAR_ADDR(lex))
         token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
 }
 
 token *get_tokens(const char *input, size_t len)
 {
-    lexer *lex = xcalloc(1, sizeof(lexer));
+    if (len == 0)
+        return NULL;
 
+    lexer lex = { 0 };
     char *input_cpy = xcalloc(len + 1, sizeof(char));
-    memcpy(input_cpy, input, len);
-    lex->input = input_cpy;
-    lex->input_len = len;
-    lex->str_token_start = input_cpy;
-    lex->str_token_end = input_cpy + 1;
-    lex->tokens = NULL;
-    _get_tokens(lex);
+    lex.input = memcpy(input_cpy, input, len);
+    lex.input_len = len;
+    lex.str_token_start = input_cpy;
+    lex.str_token_end = input_cpy + 1;
+    lex.tokens = NULL;
+    _get_tokens(&lex);
 
-    token *tokens = lex->tokens;
-    xfree(lex);
+    token *tokens = lex.tokens;
     xfree(input_cpy);
     return tokens;
 }

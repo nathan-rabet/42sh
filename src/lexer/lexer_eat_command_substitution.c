@@ -9,9 +9,11 @@ void lexer_eat_command_substitution(lexer *lex)
 
     lex->str_token_end += 2;
     unsigned int parenthesis_count = 1;
-    for (; GET_CURRENT_CHAR(lex) != '\0' && parenthesis_count > 0;
+    for (; !IS_END_OF_INPUT(lex) && parenthesis_count > 0;
          GET_CURRENT_CHAR(lex)++)
-        if (GET_CURRENT_CHAR(lex) == '(')
+        if (CAN_EAT_NEWLINE_JOINING(lex))
+            lexer_eat_newline_joining(lex);
+        else if (GET_CURRENT_CHAR(lex) == '(')
             parenthesis_count++;
         else if (GET_CURRENT_CHAR(lex) == ')')
             parenthesis_count--;

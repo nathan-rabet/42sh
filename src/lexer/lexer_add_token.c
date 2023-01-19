@@ -6,13 +6,16 @@
 
 void token_add(lexer *lex, token_t token_type, size_t value_size)
 {
-    assert(lex->str_token_start + value_size < lex->str_token_end);
+    assert(value_size <= GET_LEN_CURRENT_CHAR(lex));
+
+    if (value_size == 0)
+        return;
 
     struct token *new = xmalloc(1, sizeof(token));
 
     new->type = token_type;
-    new->value = xcalloc(value_size, 1);
-    memcpy(new->value, lex->str_token_start, value_size);
+    new->value = xcalloc(value_size + 1, sizeof(char));
+    strncpy(new->value, lex->str_token_start, value_size);
     new->next = NULL;
 
     if (lex->tokens == NULL)
@@ -20,7 +23,10 @@ void token_add(lexer *lex, token_t token_type, size_t value_size)
     else
         for (struct token *tmp = lex->tokens; tmp != NULL; tmp = tmp->next)
             if (tmp->next == NULL)
+            {
                 tmp->next = new;
+                break;
+            }
 
     lex->str_token_start += value_size;
 }

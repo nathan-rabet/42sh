@@ -12,4 +12,7 @@ dep += [criterion_lib]
 c_args += ['-fsanitize=address']
 link_args += ['-fsanitize=address']
 
-sources += ['tests/xalloc/xalloc_tests.c']
+sources += [
+    'tests/lexer/lexer_tests.c',
+    'tests/xalloc/xalloc_tests.c'
+    ]

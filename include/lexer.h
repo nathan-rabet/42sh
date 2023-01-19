@@ -89,27 +89,39 @@ enum token_types
     //// @brief out of SCL tokens
     SEMI, // ;
     PIPE, // |
-    ARITHMETIC_EXPANSION, // $((...))
-    PARAMETER_EXPANSION // ${...} or $...
+    AMPERSAND, // &
 };
 
 // Lexer utils
 #define IS_BLANK(c) (c == ' ' || c == '\t')
+
 #define GET_CURRENT_CHAR_ADDR(lex) (lex->str_token_end - 1)
 #define GET_LEN_CURRENT_CHAR(lex)                                              \
-    (GET_CURRENT_CHAR_ADDR(lex) - lex->str_token_start)
+    ((size_t)(GET_CURRENT_CHAR_ADDR(lex) - lex->str_token_start + 1))
 #define GET_CURRENT_CHAR(lex) (*(GET_CURRENT_CHAR_ADDR(lex)))
-#define GET_PREVIOUS_CHAR_ADDR(lex) (lex->str_token_end - 2)
-#define GET_LEN_PREVIOUS_CHAR(lex)                                             \
-    (GET_PREVIOUS_CHAR_ADDR(lex) - lex->str_token_start)
+
+#define GET_PREVIOUS_CHAR_ADDR(lex) (GET_CURRENT_CHAR_ADDR(lex) - 1)
+#define GET_LEN_PREVIOUS_CHAR(lex) (GET_LEN_CURRENT_CHAR(lex) - 1)
 #define GET_PREVIOUS_CHAR(lex) (*(GET_PREVIOUS_CHAR_ADDR(lex)))
-#define GET_NEXT_CHAR_ADDR(lex) (lex->str_token_end)
-#define GET_LEN_NEXT_CHAR(lex) (GET_NEXT_CHAR_ADDR(lex) - lex->str_token_start)
+
+#define GET_NEXT_CHAR_ADDR(lex) (GET_CURRENT_CHAR_ADDR(lex) + 1)
+#define GET_LEN_NEXT_CHAR(lex) (GET_LEN_CURRENT_CHAR(lex) + 1)
 #define GET_NEXT_CHAR(lex) (*(GET_NEXT_CHAR_ADDR(lex)))
+
+#define HAS_PREVIOUS_CHAR(lex)                                                 \
+    (GET_PREVIOUS_CHAR_ADDR(lex) >= lex->str_token_start)
+#define IS_END_OF_INPUT(lex)                                                   \
+    (GET_CURRENT_CHAR_ADDR(lex) > lex->input + lex->input_len)
+#define HAS_NEXT_CHAR(lex)                                                     \
+    (GET_NEXT_CHAR_ADDR(lex) < lex->input + lex->input_len)
+
+#define CAN_EAT_NEWLINE_JOINING(lex)                                           \
+    (GET_CURRENT_CHAR(lex) == '\\' && HAS_NEXT_CHAR(lex)                       \
+     && GET_NEXT_CHAR(lex) == '\n')
 
 // Tokens utils
 #define FIRST_HARD_CODED NEWLINE
-#define LAST_HARD_CODED PIPE
+#define LAST_HARD_CODED AMPERSAND
 
 // Operators utils
 #define FIRST_OPERATOR AND_IF
@@ -121,12 +133,12 @@ enum token_types
  *
  * @param input The input string
  * @param len The length of the input string
- * @return token* The array of tokens
+ * @return token* The linked-list of tokens
  */
 token *get_tokens(const char *input, size_t len);
 
 /**
- * @brief Add a token to the tokens linked list
+ * @brief Add a token to the tokens linked-list
  *
  * @param lex The lexer structure pointer
  * @param token_type The type of the token
@@ -135,27 +147,45 @@ token *get_tokens(const char *input, size_t len);
 void token_add(lexer *lex, token_t token_type, size_t value_size);
 
 /**
- * @brief Tells if a string is a name
+ * @brief Tells if the input string is a name
  *
- * @note A name is a word consisting only of alphanumeric  characters  and
+ * @note A name is a word consisting only of alphanumeric characters and
  * underscores, and beginning with an alphabetic character or an underscore.
  * Also referred to as an identifier.
  *
- * @param str
- * @param len
+ * @param str The input string
+ * @param len The length of the input string
  * @return true
  * @return false
  */
-bool is_name(char *str, size_t len);
+bool is_name(const char *str, size_t len);
+
+/**
+ * @brief Telling which token type is the input string
+ *
+ * @param lex The lexer structure
+ * @param len The length of the token string
+ * @return token_t The token type
+ */
+token_t lexer_is_token(lexer *lex, size_t len);
 
 /**
  * @brief Tells which token type is the prefix of the input string
  * @param lex The lexer structure
- * @param pre_size The size of the prefix
+ * @param len The length of the token string
  *
  * @return token_t The prefix token type
  */
-token_t lexer_is_token_prefix(lexer *lex, size_t pre_size);
+token_t lexer_is_token_prefix(lexer *lex, size_t len);
+
+/**
+ * @brief Performs a newline joining to the input string
+ *
+ * @note str must start with a backslash
+ *
+ * @param lex The lexer structure pointer
+ */
+void lexer_eat_newline_joining(lexer *lex);
 
 /**
  * @brief Lex the input string which starts with a backslash
