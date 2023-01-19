@@ -16,6 +16,28 @@ bool is_redirection(enum token_types type)
     }
 }
 
+enum ast_redir_type redirection_type(enum token_types type)
+{
+    switch (type) {
+        case LESS:
+            return REDIR_LESS;
+        case GREAT:
+            return REDIR_GREAT;
+        case DGREAT:
+            return REDIR_DGREAT;
+        case GREATAND:
+            return REDIR_GREATAND;
+        case LESSAND:
+            return REDIR_LESSAND;
+        case CLOBBER:
+            return REDIR_CLOBBER;
+        case LESSGREAT:
+            return REDIR_LESSGREAT;
+        default:
+            return REDIR_DLESSDASH;
+    }
+}
+
 bool is_shell_command(struct token *token)
 {
     if (strcmp(token->value, "(") == 0)
@@ -65,6 +87,17 @@ bool is_funcdec(struct token_list *tokens)
             && strcmp(tokens->current_token->next->next->value, ")") == 0)
             return true;
     return false;
+}
+
+char *IONumbertype(enum ast_redir_type type)
+{
+    switch (type) {
+        case REDIR_LESS:
+        case REDIR_LESSGREAT:
+            return "0";
+        default:
+            return "1";
+    }
 }
 
 void parser_grammar_return_error_2(struct token *token)

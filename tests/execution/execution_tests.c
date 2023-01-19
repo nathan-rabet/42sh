@@ -1,4 +1,6 @@
 #include "../../include/execution.h"
+#include "../../include/lexer.h"
+#include "../../include/parser.h"
 
 void test_exec_cmd()
 {
@@ -9,9 +11,82 @@ void test_exec_cmd()
     exec_cmd(argv, error);
 }
 
+void test_exec_redir()
+{
+    printf("\n----------------TEST 6-----------------\n");
+    printf("\n---------------- REDIRECTION STDOUT-----------------\n\n");
+
+
+
+    struct token *token6 = xmalloc(1, sizeof(struct token));
+    token6->type = NEWLINE;
+    token6->value = "\n";
+    token6->next = NULL;
+
+    struct token *token4 = xmalloc(1, sizeof(struct token));
+    token4->type = WORD;
+    token4->value = "file.txt";
+    token4->next = token6;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token));
+    token3->type = GREAT;
+    token3->value = ">";
+    token3->next = token4;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token));
+    token2->type = WORD;
+    token2->value = "tofile";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token));
+    token->type = WORD;
+    token->value = "echo";
+    token->next = token2;
+
+
+    struct ast *ast = parser_input(token);
+    ast->vtable->pretty_print(ast);
+    ast->vtable->run(ast);
+}
+
+void test_exec_input()
+{
+    printf("\n----------------TEST 6-----------------\n");
+    printf("\n---------------- REDIRECTION STDIN-----------------\n\n");
+
+
+
+    struct token *token6 = xmalloc(1, sizeof(struct token));
+    token6->type = NEWLINE;
+    token6->value = "\n";
+    token6->next = NULL;
+
+    struct token *token3 = xmalloc(1, sizeof(struct token));
+    token3->type = WORD;
+    token3->value = "file.txt";
+    token3->next = token6;
+
+    struct token *token2 = xmalloc(1, sizeof(struct token));
+    token2->type = LESS;
+    token2->value = "<";
+    token2->next = token3;
+
+    struct token *token = xmalloc(1, sizeof(struct token));
+    token->type = WORD;
+    token->value = "cat";
+    token->next = token2;
+
+
+    struct ast *ast = parser_input(token);
+    ast->vtable->pretty_print(ast);
+    ast->vtable->run(ast);
+}
+
 int main(void)
 {
     xalloc_init();
     test_exec_cmd();
+    test_exec_redir();
+    //test_exec_input();
     xfree_all();
 }

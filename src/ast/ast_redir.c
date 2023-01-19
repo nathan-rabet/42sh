@@ -30,10 +30,9 @@ struct list_redir *list_redir_init(enum ast_redir_type type,char *IONumber, char
 
 int redir_run(struct ast *ast) {
     assert(ast && ast->type == AST_REDIR);
-    //struct ast_redir *redir_ast = (struct ast_redir *)ast;
-    //TODO(clara) execution redirection
-
-    return false;
+    struct ast_redir *redir_ast = (struct ast_redir *)ast;
+    exec_redir(redir_ast->list);
+    return redir_ast->command->vtable->run(redir_ast->command);
 }
 
 void redir_free(struct ast *ast)
