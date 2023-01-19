@@ -8,4 +8,6 @@ void lexer_eat_comment(lexer *lex)
 
     while (!IS_END_OF_INPUT(lex) && GET_CURRENT_CHAR(lex) != '\n')
         lex->str_token_end++;
+
+    lex->str_token_start = lex->str_token_end;
 }

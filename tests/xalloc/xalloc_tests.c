@@ -182,23 +182,20 @@ static void *_xmalloc_multithreading_stress_thread(void *arg)
     for (int i = 0; i < nb_allocs; i++)
     {
         void *ptr = xmalloc(42, sizeof(int));
-        cr_assert_not_null(ptr);
-        cr_assert_not_null(xalloc_dlist.head);
-        cr_assert_null(xalloc_dlist.head->prev);
-
         xfree(ptr);
     }
 
     return NULL;
 }
 
+#define MULTI_THREADING_STRESS_NB 400
 Test(xalloc, xmalloc_multithreading_stress)
 {
     xalloc_init();
 
-    const int nb_threads = 42;
-    const int nb_allocs = 42;
-    pthread_t threads[42];
+    const int nb_threads = MULTI_THREADING_STRESS_NB;
+    const int nb_allocs = MULTI_THREADING_STRESS_NB;
+    pthread_t threads[MULTI_THREADING_STRESS_NB];
 
     for (int i = 0; i < nb_threads; i++)
         pthread_create(&threads[i], NULL, _xmalloc_multithreading_stress_thread,

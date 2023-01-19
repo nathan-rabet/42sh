@@ -15,7 +15,7 @@ typedef struct token
 
 typedef struct lexer
 {
-    const char *input;
+    char *input;
     size_t input_len;
     char *str_token_start;
     char *str_token_end;

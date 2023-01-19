@@ -5,7 +5,7 @@
 
 void lexer_eat_arithmetics_expansion(lexer *lex)
 {
-    assert(strcmp(lex->str_token_end, "$((") == 0);
+    assert(strncmp(lex->str_token_end, "$((", 3) == 0);
 
     lex->str_token_end += 3;
     unsigned int parenthesis_count = 2;

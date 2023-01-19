@@ -68,10 +68,18 @@ static void _get_tokens(lexer *lex)
             lexer_eat_quotes(lex);
             token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
             continue;
-
         case '\\':
-            lexer_eat_backslash(lex);
-            break;
+            if (CAN_EAT_NEWLINE_JOINING(lex))
+            {
+                lexer_eat_newline_joining(lex);
+                lex->str_token_end--; // Next loop will increment it.
+                continue;
+            }
+            else
+            {
+                lexer_eat_backslash(lex);
+                break;
+            }
         default:
             break;
         }
@@ -95,15 +103,15 @@ static void _get_tokens(lexer *lex)
         if (GET_CURRENT_CHAR(lex) == '$' || GET_CURRENT_CHAR(lex) == '`')
         {
             // Command substitution
-            if (strcmp(GET_CURRENT_CHAR_ADDR(lex), "$(") == 0)
+            if (strncmp(GET_CURRENT_CHAR_ADDR(lex), "$(", 2) == 0)
                 lexer_eat_command_substitution(lex);
             else if (GET_CURRENT_CHAR(lex) == '`')
                 lexer_eat_command_backquote(lex);
             // Arithmetic expansion
-            else if (strcmp(GET_CURRENT_CHAR_ADDR(lex), "$((") == 0)
+            else if (strncmp(GET_CURRENT_CHAR_ADDR(lex), "$((", 3) == 0)
                 lexer_eat_arithmetics_expansion(lex);
             // Parameter expansion
-            else if (strcmp(GET_CURRENT_CHAR_ADDR(lex), "${") == 0)
+            else if (strncmp(GET_CURRENT_CHAR_ADDR(lex), "${", 2) == 0)
                 lexer_eat_parameter_expansion_braces(lex);
             else if (GET_CURRENT_CHAR(lex) == '$')
                 lexer_eat_parameter_expansion(lex);
@@ -145,6 +153,7 @@ static void _get_tokens(lexer *lex)
         if (HAS_PREVIOUS_CHAR(lex)
             && (lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex))
                 != TOKEN_UNDEFINED)
+            && !is_separator(GET_PREVIOUS_CHAR(lex))
             && !is_separator(GET_CURRENT_CHAR(lex)))
             continue;
 
@@ -161,8 +170,11 @@ static void _get_tokens(lexer *lex)
         // Rule 2.3.10: The current character is used as the start of a new
         // word.
         if (HAS_PREVIOUS_CHAR(lex))
+        {
             token_add(lex, lexer_is_token(lex, GET_LEN_PREVIOUS_CHAR(lex)),
                       GET_LEN_PREVIOUS_CHAR(lex));
+            lex->str_token_end--;
+        }
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if

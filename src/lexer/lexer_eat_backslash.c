@@ -1,16 +1,24 @@
 #include <assert.h>
+#include <err.h>
 #include <string.h>
 
 #include "lexer.h"
+
+static void remove_input_character_forward(lexer *lex, size_t len)
+{
+    memmove(GET_CURRENT_CHAR_ADDR(lex), GET_CURRENT_CHAR_ADDR(lex) + len,
+            lex->input_len - (GET_CURRENT_CHAR_ADDR(lex) - lex->input) - len);
+
+    // Adding \0 to the end of the string.
+    lex->input_len -= len;
+    lex->input[lex->input_len] = '\0';
+}
 
 void lexer_eat_newline_joining(lexer *lex)
 {
     assert(GET_CURRENT_CHAR(lex) == '\\' && GET_NEXT_CHAR(lex) == '\n');
 
-    // Join the next line to the current one.
-    memmove(GET_CURRENT_CHAR_ADDR(lex), GET_CURRENT_CHAR_ADDR(lex) + 2,
-            lex->input_len - GET_LEN_CURRENT_CHAR(lex) - 2 + 1);
-    lex->input_len -= 2;
+    remove_input_character_forward(lex, 2);
 }
 
 void lexer_eat_backslash(lexer *lex)
@@ -18,10 +26,7 @@ void lexer_eat_backslash(lexer *lex)
     assert(GET_CURRENT_CHAR(lex) == '\\');
 
     if (!HAS_NEXT_CHAR(lex))
-        lex->str_token_end++;
-
-    else if (GET_NEXT_CHAR(lex) == '\n')
-        lexer_eat_newline_joining(lex);
+        errx(1, "lexing: Backslash at the end of the input.");
     else
-        lex->str_token_end += 2; // Bypass the backslash and the next character.
+        remove_input_character_forward(lex, 1);
 }

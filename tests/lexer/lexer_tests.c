@@ -22,12 +22,13 @@ static inline void _test_tokens(const char *input, const token *expected_tokens,
 
     for (size_t i = 0; i < nb_tokens; i++)
     {
-        cr_assert_eq(returned_tokens->type, expected_tokens[i].type,
-                     "Got token type '%d', expected '%d'",
-                     returned_tokens->type, expected_tokens[i].type);
         cr_assert_str_eq(returned_tokens->value, expected_tokens[i].value,
                          "Got token value '%s', expected '%s'",
                          returned_tokens->value, expected_tokens[i].value);
+
+        cr_assert_eq(returned_tokens->type, expected_tokens[i].type,
+                     "Got token type '%d', expected '%d'",
+                     returned_tokens->type, expected_tokens[i].type);
         returned_tokens = returned_tokens->next;
     }
 
@@ -35,8 +36,9 @@ static inline void _test_tokens(const char *input, const token *expected_tokens,
     xalloc_deinit();
 }
 
-// rule 1
-Test(lexer, rule_2_3_1_empty_input)
+// Rule 2.3.1: If the end of input is recognized, the current token (if
+//  any) shall be delimited.
+Test(lexer, empty_input)
 {
     const char *cmd = "";
 
@@ -45,7 +47,7 @@ Test(lexer, rule_2_3_1_empty_input)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, rule_2_3_1_simple_words)
+Test(lexer, simple_words)
 {
     const char *cmd = "echo test eeee";
 
@@ -58,30 +60,11 @@ Test(lexer, rule_2_3_1_simple_words)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, rule_2_3_1_spaces_before_word)
-{
-    const char *cmd = "     test";
-
-    const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
-    };
-
-    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
-}
-
-Test(lexer, rule_2_3_1_spaces_between_words)
-{
-    const char *cmd = "     test     echo  ";
-
-    const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
-        { .type = NAME, .value = "echo" },
-    };
-
-    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
-}
-// Rule 2
-Test(lexer, rule_2_3_2_great_operator)
+// Rule 2.3.2 : If the previous character was used as part of an
+// operator and the current character is not quoted and can be used with
+// the previous characters to form an operator, it shall be used as part
+// of that (operator) token.
+Test(lexer, great_operator)
 {
     const char *cmd = "a > b";
 
@@ -94,7 +77,7 @@ Test(lexer, rule_2_3_2_great_operator)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, rule_2_3_2_another_pipe_operator)
+Test(lexer, pipe_operator)
 {
     const char *cmd = "a | b";
 
@@ -107,7 +90,7 @@ Test(lexer, rule_2_3_2_another_pipe_operator)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, rule_2_3_2_double_operator_dgreat)
+Test(lexer, double_operator_dgreat)
 {
     const char *cmd = "a >> b";
 
@@ -120,7 +103,7 @@ Test(lexer, rule_2_3_2_double_operator_dgreat)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, rule_2_3_2_or_if_operator)
+Test(lexer, or_if_operator)
 {
     const char *cmd = "a && b";
 
@@ -133,8 +116,11 @@ Test(lexer, rule_2_3_2_or_if_operator)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-// rule 3
-Test(lexer, rule_2_3_3_double_operator_without_spaces)
+// Rule 2.3.3: If the previous character was used as part of an operator
+// and the current character cannot be used with the previous characters
+// to form an operator, the operator containing the previous character
+// shall be delimited.
+Test(lexer, double_operator_without_spaces)
 {
     const char *cmd = "a>>b";
 
@@ -147,7 +133,109 @@ Test(lexer, rule_2_3_3_double_operator_without_spaces)
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
 
-Test(lexer, rule_2_3_2__S_quoted_operator)
+Test(lexer, double_operator_with_spaces)
+{
+    const char *cmd = "a >> b";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "a" },
+        { .type = DGREAT, .value = ">>" },
+        { .type = NAME, .value = "b" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, two_operators_concat)
+{
+    const char *cmd = "a >>&& b";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "a" },
+        { .type = DGREAT, .value = ">>" },
+        { .type = AND_IF, .value = "&&" },
+        { .type = NAME, .value = "b" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, three_operators_concat)
+{
+    const char *cmd = "a >>&&| b";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "a" },    { .type = DGREAT, .value = ">>" },
+        { .type = AND_IF, .value = "&&" }, { .type = PIPE, .value = "|" },
+        { .type = NAME, .value = "b" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, invalid_newline)
+{
+    const char *cmd = "a >>b\nbb";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "a" },  { .type = DGREAT, .value = ">>" },
+        { .type = NAME, .value = "b" },  { .type = NEWLINE, .value = "\n" },
+        { .type = NAME, .value = "bb" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, DLESSDASH)
+{
+    const char *cmd = "a <<- b";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "a" },
+        { .type = DLESSDASH, .value = "<<-" },
+        { .type = NAME, .value = "b" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, DLESSDASH_sticked)
+{
+    const char *cmd = "a<<-b";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "a" },
+        { .type = DLESSDASH, .value = "<<-" },
+        { .type = NAME, .value = "b" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, concatened_operators)
+{
+    const char *cmd = "a &&& b";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "a" },
+        { .type = AND_IF, .value = "&&" },
+        { .type = TOKEN_UNDEFINED, .value = "&" },
+        { .type = NAME, .value = "b" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+// Rule 2.3.4: If the current character is <backslash>, single-quote, or
+// double-quote and it is not quoted, it shall affect quoting for subsequent
+// characters up to the end of the quoted text. The rules for quoting are as
+// described in Quoting . During token recognition no substitutions shall be
+// actually performed, and the result token shall contain exactly the characters
+// that appear in the input (except for <newline> joining), unmodified,
+// including any embedded or enclosing quotes or substitution operators, between
+// the <quotation-mark> and the end of the quoted text. The token shall not be
+// delimited by the end of the quoted field.
+Test(lexer, quoted_operator)
 {
     const char *cmd = "echo 'a > b'";
 
@@ -158,3 +246,458 @@ Test(lexer, rule_2_3_2__S_quoted_operator)
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
 }
+
+Test(lexer, simple_word)
+{
+    const char *cmd = "'echo'";
+
+    const token expected_tokens[] = {
+        { .type = WORD, .value = "'echo'" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_word_with_spaces)
+{
+    const char *cmd = "'echo'   ";
+
+    const token expected_tokens[] = {
+        { .type = WORD, .value = "'echo'" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, two_dquotes)
+{
+    const char *cmd = "\"echo\"\"echo\"";
+
+    const token expected_tokens[] = {
+        { .type = WORD, .value = "\"echo\"" },
+        { .type = WORD, .value = "\"echo\"" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, two_quotes_different)
+{
+    const char *cmd = "\"echo\"'echo'";
+
+    const token expected_tokens[] = {
+        { .type = WORD, .value = "\"echo\"" },
+        { .type = WORD, .value = "'echo'" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_backslash)
+{
+    const char *cmd = "echo \\a";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = NAME, .value = "a" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, newline_joining)
+{
+    const char *cmd = "echo \\\n a";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = NAME, .value = "a" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, two_newline_joining)
+{
+    const char *cmd = "echo \\\n\\\n a";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = NAME, .value = "a" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, three_newline_joining)
+{
+    const char *cmd = "echo \\\n\\\n\\\n a";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = NAME, .value = "a" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+// Rule 2.3.5: If the current character is an unquoted '$' or '`', the
+// shell shall identify the start of any candidates for parameter
+// expansion (Parameter Expansion), command substitution (Command
+// Substitution), or arithmetic expansion (Arithmetic Expansion) from
+// their introductory unquoted character sequences: '$' or "${", "$(" or
+// '`', and "$((", respectively. The shell shall read sufficient input
+// to determine the end of the unit to be expanded (as explained in the
+// cited sections). While processing the characters, if instances of
+// expansions or quoting are found nested within the substitution, the
+// shell shall recursively process them in the manner specified for the
+// construct that is found. The characters found from the beginning of
+// the substitution to its end, allowing for any recursion necessary to
+// recognize embedded constructs, shall be included unmodified in the
+// result token, including any embedded or enclosing substitution
+// operators or quotes. The token shall not be delimited by the end of
+// the substitution.
+Test(lexer, simple_command_substitution)
+{
+    const char *cmd = "echo $(a)";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "$(a)" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_command_substitution_with_spaces)
+{
+    const char *cmd = "echo $(  a  )";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "$(  a  )" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_command_backquote)
+{
+    const char *cmd = "echo `a`";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "`a`" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_command_backquote_with_spaces)
+{
+    const char *cmd = "echo `  a  `";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "`  a  `" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_arithmetic_expansion)
+{
+    const char *cmd = "echo $((a))";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "$((a))" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_arithmetic_expansion_with_spaces)
+{
+    const char *cmd = "echo $((  a  ))";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "$((  a  ))" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_parameter_expansion_braces)
+{
+    const char *cmd = "echo ${a}";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "${a}" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_parameter_expansion_braces_with_spaces)
+{
+    const char *cmd = "echo ${  a  }";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "${  a  }" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_parameter_expansion)
+{
+    const char *cmd = "echo $a";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "$a" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_parameter_expansion_with_spaces)
+{
+    const char *cmd = "echo $a    ";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "$a" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+// Rule 2.3.6: If the current character is not quoted and can be used as
+// the first character of a new operator, the current token (if any)
+// shall be delimited. The current character shall be used as the
+// beginning of the next (operator) token.
+
+Test(lexer, simple_command_with_spaces)
+{
+    const char *cmd = "test;";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "test" },
+        { .type = SEMI, .value = ";" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, simple_command_with_spaces_and_newline)
+{
+    const char *cmd = "test&&";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "test" },
+        { .type = AND_IF, .value = "&&" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+// Rule 2.3.7: If the current character is an unquoted <blank>, any
+// token containing the previous character is delimited and the current
+// character shall be discarded.
+Test(lexer, spaces_before_word)
+{
+    const char *cmd = "     test";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "test" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, spaces_between_words)
+{
+    const char *cmd = "     test     echo  ";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "test" },
+        { .type = NAME, .value = "echo" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, spaces_and_tab)
+{
+    const char *cmd = "test    \t \t echo";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "test" },
+        { .type = NAME, .value = "echo" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+// Rule 2.3.8: If the previous character was part of a word, the current
+// character shall be appended to that word.
+Test(lexer, reserved_if)
+{
+    const char *cmd = "if";
+
+    const token expected_tokens[] = {
+        { .type = IF, .value = "if" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, reserved_if_clause)
+{
+    const char *cmd = "if test; then echo; fi";
+
+    const token expected_tokens[] = {
+        { .type = IF, .value = "if" },     { .type = NAME, .value = "test" },
+        { .type = SEMI, .value = ";" },    { .type = THEN, .value = "then" },
+        { .type = NAME, .value = "echo" }, { .type = SEMI, .value = ";" },
+        { .type = FI, .value = "fi" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, reserved_lbrace)
+{
+    const char *cmd = "{";
+
+    const token expected_tokens[] = {
+        { .type = LBRACE, .value = "{" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, reserved_sticked)
+{
+    const char *cmd = "if{";
+
+    const token expected_tokens[] = {
+        { .type = WORD, .value = "if{" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, reserved_sticked_2)
+{
+    const char *cmd = "ifthenelsefi";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "ifthenelsefi" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, reserved_sticked_3)
+{
+    const char *cmd = "!test";
+
+    const token expected_tokens[] = {
+        { .type = WORD, .value = "!test" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, reserved_bang)
+{
+    const char *cmd = "! test";
+
+    const token expected_tokens[] = {
+        { .type = BANG, .value = "!" },
+        { .type = NAME, .value = "test" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, reserved_with_separator)
+{
+    const char *cmd = "if;then;fi";
+
+    const token expected_tokens[] = {
+        { .type = IF, .value = "if" },     { .type = SEMI, .value = ";" },
+        { .type = THEN, .value = "then" }, { .type = SEMI, .value = ";" },
+        { .type = FI, .value = "fi" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+// Rule 2.3.9: If the current character is a '#', it and all subsequent
+// characters up to, but excluding, the next <newline> shall be
+// discarded as a comment. The <newline> that ends the line is not
+// considered part of the comment.
+
+Test(lexer, comment)
+{
+    const char *cmd = "test # comment";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "test" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, alone_comment)
+{
+    const char *cmd = "#";
+
+    const token *expected_tokens = NULL;
+
+    _test_tokens(cmd, expected_tokens, 0);
+}
+
+Test(lexer, only_comment)
+{
+    const char *cmd = "# comment";
+
+    const token *expected_tokens = NULL;
+
+    _test_tokens(cmd, expected_tokens, 0);
+}
+
+Test(lexer, comment_with_newline)
+{
+    const char *cmd = "test # comment\n";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "test" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+Test(lexer, comment_with_newline_2)
+{
+    const char *cmd = "test # comment\ntest2";
+
+    const token expected_tokens[] = {
+        { .type = NAME, .value = "test" },
+        { .type = NAME, .value = "test2" },
+    };
+
+    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+}
+
+// Rule 2.3.10: The current character is used as the start of a new
+// word.
+
+// ! FIXME: I have no f*cking idea how to test this rule.

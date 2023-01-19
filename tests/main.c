@@ -14,9 +14,15 @@ int main(void)
 {
     xalloc_init();
 
-    const char *cmd = "echo test eeee";
+    const char *cmd = "# comment";
 
     token *returned_tokens = get_tokens(cmd, strlen(cmd));
+
+    for (token *tok = returned_tokens; tok; tok = tok->next)
+    {
+        printf("Token type: %d, value: %s", tok->type, tok->value);
+        printf("\n");
+    }
 
     (void)returned_tokens;
     xalloc_deinit();

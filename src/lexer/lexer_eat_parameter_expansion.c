@@ -6,7 +6,7 @@
 
 void lexer_eat_parameter_expansion(lexer *lex)
 {
-    assert(strcmp(lex->str_token_end, "$") == 0);
+    assert(GET_CURRENT_CHAR(lex) == '$');
 
     lex->str_token_end += 1;
     while (!IS_END_OF_INPUT(lex)
