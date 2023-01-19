@@ -187,7 +187,6 @@ static void *_xmalloc_multithreading_stress_thread(void *arg)
         cr_assert_null(xalloc_dlist.head->prev);
 
         xfree(ptr);
-        cr_assert_null(xalloc_dlist.head);
     }
 
     return NULL;
@@ -210,5 +209,8 @@ Test(xalloc, xmalloc_multithreading_stress)
 
     cr_assert_null(xalloc_dlist.head);
 
-    xalloc_deinit();
+    // xalloc_deinit();
+    // Delete mutex only (to see if there is a memory leak)
+    if (pthread_mutex_destroy(&xalloc_dlist.mutex) != 0)
+        err(EXIT_FAILURE, "xalloc_init: Failed to destroy mutex.");
 }

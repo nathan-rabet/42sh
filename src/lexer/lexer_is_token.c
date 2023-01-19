@@ -62,15 +62,6 @@ static inline bool is_prefix(const char *pre, const char *str, size_t pre_size)
     return strncmp(pre, str, pre_size) == 0;
 }
 
-static inline bool is_separator(char c)
-{
-    // metacharacter: A character that, when unquoted, separates words. One of
-    // the following:
-    // || & && ; ;; ;& ;;& ( ) | |& <newline>
-    return IS_BLANK(c) || c == ';' || c == '&' || c == '|' || c == '('
-        || c == ')' || c == '\n';
-}
-
 token_t lexer_is_token(lexer *lex, size_t len)
 {
     assert(len > 0);
@@ -79,10 +70,15 @@ token_t lexer_is_token(lexer *lex, size_t len)
     if (lex->str_token_start[len - 1] == '<'
         || lex->str_token_start[len - 1] == '>')
     {
-        for (size_t i = 0; i < len - 1; i++)
+        if (len == 1)
+            return (lex->str_token_start[0] == '<') ? LESS : GREAT;
+
+        size_t i = 0;
+        for (; i < len - 1; i++)
             if (!isdigit(lex->str_token_start[i]))
-                goto ret;
-        return IO_NUMBER;
+                break;
+        if (i == len - 1)
+            return IO_NUMBER;
     }
 
     // NEWLINE
@@ -100,7 +96,6 @@ token_t lexer_is_token(lexer *lex, size_t len)
             && strncmp(lex->str_token_start, tokens_mapping[i], len) == 0)
             return i;
 
-ret:
     if (is_separator(lex->str_token_start[len - 1]))
         return TOKEN_UNDEFINED;
     else if (is_name(lex->str_token_start, len))
@@ -109,18 +104,33 @@ ret:
         return WORD;
 }
 
+token_t lexer_is_token_prefix_operator(lexer *lex, size_t len)
+{
+    for (size_t i = FIRST_HARD_CODED; i < LAST_HARD_CODED; i++)
+        if (is_prefix(lex->str_token_start, tokens_mapping[i], len))
+            return i;
+
+    return TOKEN_UNDEFINED;
+}
+
 token_t lexer_is_token_prefix(lexer *lex, size_t len)
 {
     assert(len > 0);
 
     // IO_NUMBER
-    for (size_t i = 0; i < len - 1; i++)
+    size_t i = 0;
+    for (; i < len - 1; i++)
         if (!isdigit(lex->str_token_start[i]))
-            goto ret;
+            break;
 
-    if (lex->str_token_start[len - 1] == '<'
-        || lex->str_token_start[len - 1] == '>')
-        return IO_NUMBER;
+    if (i == len - 1)
+    {
+        if (len == 1)
+            return (lex->str_token_start[0] == '<') ? LESS : GREAT;
+        else if (lex->str_token_start[len - 1] == '<'
+                 || lex->str_token_start[len - 1] == '>')
+            return IO_NUMBER;
+    }
 
     // NEWLINE
     if (lex->str_token_start[0] == '\n')
@@ -131,11 +141,10 @@ token_t lexer_is_token_prefix(lexer *lex, size_t len)
             return TOKEN_UNDEFINED;
     }
 
-    for (size_t i = FIRST_HARD_CODED; i < LAST_HARD_CODED; i++)
-        if (is_prefix(lex->str_token_start, tokens_mapping[i], len))
-            return i;
+    token_t operator= lexer_is_token_prefix_operator(lex, len);
+    if (operator!= TOKEN_UNDEFINED)
+        return operator;
 
-ret:
     if (is_separator(lex->str_token_start[len - 1]))
         return TOKEN_UNDEFINED;
     else if (is_name(lex->str_token_start, len))

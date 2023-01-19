@@ -17,12 +17,12 @@ static void _get_tokens(lexer *lex)
         if (HAS_PREVIOUS_CHAR(lex))
         {
             token_t prefix_previous_token =
-                lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex));
+                lexer_is_token_prefix_operator(lex, GET_LEN_PREVIOUS_CHAR(lex));
 
             if (IS_OPERATOR(prefix_previous_token))
             {
-                token_t prefix_current_token =
-                    lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex));
+                token_t prefix_current_token = lexer_is_token_prefix_operator(
+                    lex, GET_LEN_CURRENT_CHAR(lex));
                 if (IS_OPERATOR(prefix_current_token))
                     continue;
             }
@@ -35,7 +35,7 @@ static void _get_tokens(lexer *lex)
         if (HAS_PREVIOUS_CHAR(lex))
         {
             token_t prefix_previous_token =
-                lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex));
+                lexer_is_token_prefix_operator(lex, GET_LEN_PREVIOUS_CHAR(lex));
 
             if (IS_OPERATOR(prefix_previous_token))
             {
@@ -46,7 +46,7 @@ static void _get_tokens(lexer *lex)
                     token_t previous_token =
                         lexer_is_token(lex, GET_LEN_PREVIOUS_CHAR(lex));
                     token_add(lex, previous_token, GET_LEN_PREVIOUS_CHAR(lex));
-                    continue;
+                    // continue;
                 }
             }
         }
@@ -132,18 +132,20 @@ static void _get_tokens(lexer *lex)
         if (IS_BLANK(GET_CURRENT_CHAR(lex)))
         {
             if (HAS_PREVIOUS_CHAR(lex))
-                token_add(lex, WORD, GET_LEN_PREVIOUS_CHAR(lex));
+                token_add(lex, lexer_is_token(lex, GET_LEN_PREVIOUS_CHAR(lex)),
+                          GET_LEN_PREVIOUS_CHAR(lex));
 
             // Discard current character
             lex->str_token_start++;
-            lex->str_token_end++;
             continue;
         }
 
         // Rule 2.3.8: If the previous character was part of a word, the current
         // character shall be appended to that word.
         if (HAS_PREVIOUS_CHAR(lex)
-            && (lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex)) != TOKEN_UNDEFINED))
+            && (lexer_is_token_prefix(lex, GET_LEN_PREVIOUS_CHAR(lex))
+                != TOKEN_UNDEFINED)
+            && !is_separator(GET_CURRENT_CHAR(lex)))
             continue;
 
         // Rule 2.3.9: If the current character is a '#', it and all subsequent
@@ -159,13 +161,15 @@ static void _get_tokens(lexer *lex)
         // Rule 2.3.10: The current character is used as the start of a new
         // word.
         if (HAS_PREVIOUS_CHAR(lex))
-            token_add(lex, WORD, GET_LEN_PREVIOUS_CHAR(lex));
+            token_add(lex, lexer_is_token(lex, GET_LEN_PREVIOUS_CHAR(lex)),
+                      GET_LEN_PREVIOUS_CHAR(lex));
     }
 
     // Rule 2.3.1: If the end of input is recognized, the current token (if
     // any) shall be delimited.
     if (lex->str_token_start != GET_CURRENT_CHAR_ADDR(lex))
-        token_add(lex, WORD, GET_LEN_CURRENT_CHAR(lex));
+        token_add(lex, lexer_is_token(lex, GET_LEN_PREVIOUS_CHAR(lex)),
+                  GET_LEN_PREVIOUS_CHAR(lex));
 }
 
 token *get_tokens(const char *input, size_t len)

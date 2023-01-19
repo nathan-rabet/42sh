@@ -9,7 +9,7 @@ typedef int token_t;
 typedef struct token
 {
     token_t type;
-    void *value;
+    char *value;
     struct token *next;
 } token;
 
@@ -111,7 +111,7 @@ enum token_types
 #define HAS_PREVIOUS_CHAR(lex)                                                 \
     (GET_PREVIOUS_CHAR_ADDR(lex) >= lex->str_token_start)
 #define IS_END_OF_INPUT(lex)                                                   \
-    (GET_CURRENT_CHAR_ADDR(lex) > lex->input + lex->input_len)
+    (GET_CURRENT_CHAR_ADDR(lex) >= lex->input + lex->input_len)
 #define HAS_NEXT_CHAR(lex)                                                     \
     (GET_NEXT_CHAR_ADDR(lex) < lex->input + lex->input_len)
 
@@ -126,7 +126,7 @@ enum token_types
 // Operators utils
 #define FIRST_OPERATOR AND_IF
 #define LAST_OPERATOR CLOBBER
-#define IS_OPERATOR(token) (token >= FIRST_OPERATOR && token <= LAST_OPERATOR)
+#define IS_OPERATOR(tok) (tok >= FIRST_OPERATOR && tok <= LAST_OPERATOR)
 
 /**
  * @brief Create tokens from input string
@@ -161,20 +161,41 @@ void token_add(lexer *lex, token_t token_type, size_t value_size);
 bool is_name(const char *str, size_t len);
 
 /**
+ * @brief Tells if the character is a separator
+ *
+ * @note A separator is a character that separates words. It is one of
+ * the following: || & && ; ;; ;& ;;& ( ) | |& <newline>
+ *
+ * @param c The input character
+ * @return true
+ * @return false
+ */
+bool is_separator(char c);
+
+/**
  * @brief Telling which token type is the input string
  *
  * @param lex The lexer structure
  * @param len The length of the token string
- * @return token_t The token type
+ * @return token_t The token type, or TOKEN_UNDEFINED if not found
  */
 token_t lexer_is_token(lexer *lex, size_t len);
+
+/**
+ * @brief Tells which operator type is the prefix of the input string
+ * @param lex The lexer structure
+ * @param len The length of the token string
+ *
+ * @return token_t The prefix token type, or TOKEN_UNDEFINED if not found
+ */
+token_t lexer_is_token_prefix_operator(lexer *lex, size_t len);
 
 /**
  * @brief Tells which token type is the prefix of the input string
  * @param lex The lexer structure
  * @param len The length of the token string
  *
- * @return token_t The prefix token type
+ * @return token_t The prefix token type, or TOKEN_UNDEFINED if not found
  */
 token_t lexer_is_token_prefix(lexer *lex, size_t len);
 

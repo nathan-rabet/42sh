@@ -17,3 +17,14 @@ bool is_name(const char *str, size_t len)
 
     return false;
 }
+
+bool is_separator(char c)
+{
+    // metacharacter: A character that, when unquoted, separates words. One of
+    // the following:
+    // || & && ; ;; ;& ;;& ( ) | |& <newline>
+
+    // Adding < and > to the list of separators
+    return IS_BLANK(c) || c == ';' || c == '&' || c == '|' || c == '('
+        || c == ')' || c == '\n' || c == '<' || c == '>';
+}

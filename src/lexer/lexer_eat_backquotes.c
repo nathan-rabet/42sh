@@ -7,6 +7,7 @@ void lexer_eat_command_backquote(lexer *lex)
     assert(GET_CURRENT_CHAR(lex) == '`');
 
     char quote_c = GET_CURRENT_CHAR(lex);
+    lex->str_token_end++;
 
     // 2.2.2 Single-quotes: Preserve literal value of each character
     // if within single quotes.
