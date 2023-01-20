@@ -12,8 +12,4 @@ dep += [criterion_lib]
 c_args += ['-fsanitize=address']
 link_args += ['-fsanitize=address']
 
-sources += [
-    'tests/lexer/lexer_scl_tests.c',
-    'tests/lexer/lexer_yolo_tests.c',
-    'tests/xalloc/xalloc_tests.c'
-    ]
+subdir('parser')
