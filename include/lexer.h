@@ -28,7 +28,7 @@ enum token_types
     TOKEN_UNDEFINED = 0, // Undefined token
     /// @brief Tokens global
     WORD, // Any word
-    NAME, // /[a-zA-Z_][a-zA-Z0-9_]*/
+    // NAME, // /[a-zA-Z_][a-zA-Z0-9_]*/
     IO_NUMBER, // /[<>]\d+/
     NEWLINE, // \n
 

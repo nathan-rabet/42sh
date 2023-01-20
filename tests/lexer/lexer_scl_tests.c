@@ -55,9 +55,9 @@ Test(lexer_scl, simple_words)
     const char *cmd = "echo test eeee";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
-        { .type = NAME, .value = "test" },
-        { .type = NAME, .value = "eeee" },
+        { .type = WORD, .value = "echo" },
+        { .type = WORD, .value = "test" },
+        { .type = WORD, .value = "eeee" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -72,9 +72,9 @@ Test(lexer_scl, great_operator)
     const char *cmd = "a > b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = GREAT, .value = ">" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -85,9 +85,9 @@ Test(lexer_scl, pipe_operator)
     const char *cmd = "a | b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = PIPE, .value = "|" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -98,9 +98,9 @@ Test(lexer_scl, double_operator_dgreat)
     const char *cmd = "a >> b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = DGREAT, .value = ">>" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -111,9 +111,9 @@ Test(lexer_scl, or_if_operator)
     const char *cmd = "a && b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = AND_IF, .value = "&&" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -128,9 +128,9 @@ Test(lexer_scl, double_operator_without_spaces)
     const char *cmd = "a>>b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = DGREAT, .value = ">>" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -141,9 +141,9 @@ Test(lexer_scl, double_operator_with_spaces)
     const char *cmd = "a >> b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = DGREAT, .value = ">>" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -154,10 +154,10 @@ Test(lexer_scl, two_operators_concat)
     const char *cmd = "a >>&& b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = DGREAT, .value = ">>" },
         { .type = AND_IF, .value = "&&" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -168,9 +168,9 @@ Test(lexer_scl, three_operators_concat)
     const char *cmd = "a >>&&| b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },    { .type = DGREAT, .value = ">>" },
+        { .type = WORD, .value = "a" },    { .type = DGREAT, .value = ">>" },
         { .type = AND_IF, .value = "&&" }, { .type = PIPE, .value = "|" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -181,9 +181,9 @@ Test(lexer_scl, invalid_newline)
     const char *cmd = "a >>b\nbb";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },  { .type = DGREAT, .value = ">>" },
-        { .type = NAME, .value = "b" },  { .type = NEWLINE, .value = "\n" },
-        { .type = NAME, .value = "bb" },
+        { .type = WORD, .value = "a" },  { .type = DGREAT, .value = ">>" },
+        { .type = WORD, .value = "b" },  { .type = NEWLINE, .value = "\n" },
+        { .type = WORD, .value = "bb" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -194,9 +194,9 @@ Test(lexer_scl, DLESSDASH)
     const char *cmd = "a <<- b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = DLESSDASH, .value = "<<-" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -207,9 +207,9 @@ Test(lexer_scl, DLESSDASH_sticked)
     const char *cmd = "a<<-b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = DLESSDASH, .value = "<<-" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -220,10 +220,10 @@ Test(lexer_scl, concatened_operators)
     const char *cmd = "a &&& b";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "a" },
         { .type = AND_IF, .value = "&&" },
         { .type = AMPERSAND, .value = "&" },
-        { .type = NAME, .value = "b" },
+        { .type = WORD, .value = "b" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -243,7 +243,7 @@ Test(lexer_scl, quoted_operator)
     const char *cmd = "echo 'a > b'";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "'a > b'" },
     };
 
@@ -301,8 +301,8 @@ Test(lexer_scl, simple_backslash)
     const char *cmd = "echo \\a";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "echo" },
+        { .type = WORD, .value = "a" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -313,8 +313,8 @@ Test(lexer_scl, newline_joining)
     const char *cmd = "echo \\\n a";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "echo" },
+        { .type = WORD, .value = "a" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -325,8 +325,8 @@ Test(lexer_scl, two_newline_joining)
     const char *cmd = "echo \\\n\\\n a";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "echo" },
+        { .type = WORD, .value = "a" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -337,8 +337,8 @@ Test(lexer_scl, three_newline_joining)
     const char *cmd = "echo \\\n\\\n\\\n a";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
-        { .type = NAME, .value = "a" },
+        { .type = WORD, .value = "echo" },
+        { .type = WORD, .value = "a" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -365,7 +365,7 @@ Test(lexer_scl, simple_command_substitution)
     const char *cmd = "echo $(a)";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "$(a)" },
     };
 
@@ -377,7 +377,7 @@ Test(lexer_scl, simple_command_substitution_with_spaces)
     const char *cmd = "echo $(  a  )";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "$(  a  )" },
     };
 
@@ -389,7 +389,7 @@ Test(lexer_scl, simple_command_backquote)
     const char *cmd = "echo `a`";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "`a`" },
     };
 
@@ -401,7 +401,7 @@ Test(lexer_scl, simple_command_backquote_with_spaces)
     const char *cmd = "echo `  a  `";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "`  a  `" },
     };
 
@@ -413,7 +413,7 @@ Test(lexer_scl, simple_arithmetic_expansion)
     const char *cmd = "echo $((a))";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "$((a))" },
     };
 
@@ -425,7 +425,7 @@ Test(lexer_scl, simple_arithmetic_expansion_with_spaces)
     const char *cmd = "echo $((  a  ))";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "$((  a  ))" },
     };
 
@@ -437,7 +437,7 @@ Test(lexer_scl, simple_parameter_expansion_braces)
     const char *cmd = "echo ${a}";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "${a}" },
     };
 
@@ -449,7 +449,7 @@ Test(lexer_scl, simple_parameter_expansion_braces_with_spaces)
     const char *cmd = "echo ${  a  }";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "${  a  }" },
     };
 
@@ -461,7 +461,7 @@ Test(lexer_scl, simple_parameter_expansion)
     const char *cmd = "echo $a";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "$a" },
     };
 
@@ -473,7 +473,7 @@ Test(lexer_scl, simple_parameter_expansion_with_spaces)
     const char *cmd = "echo $a    ";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "echo" },
         { .type = WORD, .value = "$a" },
     };
 
@@ -490,7 +490,7 @@ Test(lexer_scl, simple_command_with_spaces)
     const char *cmd = "test;";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
+        { .type = WORD, .value = "test" },
         { .type = SEMI, .value = ";" },
     };
 
@@ -502,7 +502,7 @@ Test(lexer_scl, simple_command_with_spaces_and_newline)
     const char *cmd = "test&&";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
+        { .type = WORD, .value = "test" },
         { .type = AND_IF, .value = "&&" },
     };
 
@@ -517,7 +517,7 @@ Test(lexer_scl, spaces_before_word)
     const char *cmd = "     test";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
+        { .type = WORD, .value = "test" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -528,8 +528,8 @@ Test(lexer_scl, spaces_between_words)
     const char *cmd = "     test     echo  ";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "test" },
+        { .type = WORD, .value = "echo" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -540,8 +540,8 @@ Test(lexer_scl, spaces_and_tab)
     const char *cmd = "test    \t \t echo";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
-        { .type = NAME, .value = "echo" },
+        { .type = WORD, .value = "test" },
+        { .type = WORD, .value = "echo" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -565,9 +565,9 @@ Test(lexer_scl, reserved_if_clause)
     const char *cmd = "if test; then echo; fi";
 
     const token expected_tokens[] = {
-        { .type = IF, .value = "if" },     { .type = NAME, .value = "test" },
+        { .type = IF, .value = "if" },     { .type = WORD, .value = "test" },
         { .type = SEMI, .value = ";" },    { .type = THEN, .value = "then" },
-        { .type = NAME, .value = "echo" }, { .type = SEMI, .value = ";" },
+        { .type = WORD, .value = "echo" }, { .type = SEMI, .value = ";" },
         { .type = FI, .value = "fi" },
     };
 
@@ -601,7 +601,7 @@ Test(lexer_scl, reserved_sticked_2)
     const char *cmd = "ifthenelsefi";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "ifthenelsefi" },
+        { .type = WORD, .value = "ifthenelsefi" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -624,7 +624,7 @@ Test(lexer_scl, reserved_bang)
 
     const token expected_tokens[] = {
         { .type = BANG, .value = "!" },
-        { .type = NAME, .value = "test" },
+        { .type = WORD, .value = "test" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -653,7 +653,7 @@ Test(lexer_scl, comment)
     const char *cmd = "test # comment";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
+        { .type = WORD, .value = "test" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -682,7 +682,7 @@ Test(lexer_scl, comment_with_newline)
     const char *cmd = "test # comment\n";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
+        { .type = WORD, .value = "test" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
@@ -693,8 +693,8 @@ Test(lexer_scl, comment_with_newline_2)
     const char *cmd = "test # comment\ntest2";
 
     const token expected_tokens[] = {
-        { .type = NAME, .value = "test" },
-        { .type = NAME, .value = "test2" },
+        { .type = WORD, .value = "test" },
+        { .type = WORD, .value = "test2" },
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));

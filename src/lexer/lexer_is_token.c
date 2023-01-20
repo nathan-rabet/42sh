@@ -7,7 +7,7 @@
 static const char *tokens_mapping[] = {
     NULL, // UNDEFINED
     NULL, // WORD
-    NULL, // NAME
+    // NULL, // NAME
     NULL, // IO_NUMBER
     "\n", // NEWLINE
 
@@ -98,8 +98,8 @@ token_t lexer_is_token(lexer *lex, size_t len)
 
     if (is_separator(lex->str_token_start[len - 1]))
         return TOKEN_UNDEFINED;
-    else if (is_name(lex->str_token_start, len))
-        return NAME;
+    // else if (is_name(lex->str_token_start, len))
+    //     return NAME;
     else
         return WORD;
 }
@@ -147,8 +147,8 @@ token_t lexer_is_token_prefix(lexer *lex, size_t len)
 
     if (is_separator(lex->str_token_start[len - 1]))
         return TOKEN_UNDEFINED;
-    else if (is_name(lex->str_token_start, len))
-        return NAME;
+    // else if (is_name(lex->str_token_start, len))
+    //     return NAME;
     else
         return WORD;
 }
