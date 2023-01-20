@@ -20,12 +20,7 @@ struct ast *ast_pipe_init(size_t nb_command, struct ast **command)
 int pipe_run(struct ast *ast) {
     assert(ast && ast->type == AST_PIPE);
     struct ast_pipe *pipe_ast = (struct ast_pipe *)ast;
-    int res = 0;
-    int fds[2];
-    for (size_t i = 0; i < pipe_ast->nb_command; i++)
-    {
-        if (pipe(fds) == -1)
-    }
+
     return res;
 }
 

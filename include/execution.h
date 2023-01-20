@@ -12,6 +12,7 @@
 #include <errno.h>
 
 struct list_redir;
+struct ast_pipe;
 
 struct dup_item
 {
@@ -32,6 +33,7 @@ struct list_dup
 int exec_builtins(char **argv, int *error);
 int exec_cmd(char **argv, int *error);
 void exec_redir(struct list_redir *redir);
+int exec_pipeline(struct ast_pipe *ast);
 
 // Utils
 bool is_builtin(char *name);

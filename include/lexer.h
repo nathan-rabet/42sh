@@ -6,12 +6,12 @@
 
 typedef int token_t;
 
-struct token
+typedef struct token
 {
     token_t type;
     void *value;
     struct token *next;
-};
+} token;
 
 typedef struct
 {
