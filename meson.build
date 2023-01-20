@@ -1,4 +1,4 @@
-project('42sh', 'c', 
+project('42sh', 'c',
     version : '0,1', 
     default_options : [
         'warning_level=3',
@@ -18,6 +18,8 @@ endif
 
 dep = []
 link_args = []
+c_args += ['-fsanitize=address']
+link_args += ['-fsanitize=address']
 sources = []
 subdir('src')
 subdir('tests')

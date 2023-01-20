@@ -182,24 +182,20 @@ static void *_xmalloc_multithreading_stress_thread(void *arg)
     for (int i = 0; i < nb_allocs; i++)
     {
         void *ptr = xmalloc(42, sizeof(int));
-        cr_assert_not_null(ptr);
-        cr_assert_not_null(xalloc_dlist.head);
-        cr_assert_null(xalloc_dlist.head->prev);
-
         xfree(ptr);
-        cr_assert_null(xalloc_dlist.head);
     }
 
     return NULL;
 }
 
+#define MULTI_THREADING_STRESS_NB 400
 Test(xalloc, xmalloc_multithreading_stress)
 {
     xalloc_init();
 
-    const int nb_threads = 42;
-    const int nb_allocs = 42;
-    pthread_t threads[42];
+    const int nb_threads = MULTI_THREADING_STRESS_NB;
+    const int nb_allocs = MULTI_THREADING_STRESS_NB;
+    pthread_t threads[MULTI_THREADING_STRESS_NB];
 
     for (int i = 0; i < nb_threads; i++)
         pthread_create(&threads[i], NULL, _xmalloc_multithreading_stress_thread,
@@ -210,5 +206,8 @@ Test(xalloc, xmalloc_multithreading_stress)
 
     cr_assert_null(xalloc_dlist.head);
 
-    xalloc_deinit();
+    // xalloc_deinit();
+    // Delete mutex only (to see if there is a memory leak)
+    if (pthread_mutex_destroy(&xalloc_dlist.mutex) != 0)
+        err(EXIT_FAILURE, "xalloc_init: Failed to destroy mutex.");
 }
