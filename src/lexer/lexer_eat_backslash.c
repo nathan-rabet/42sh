@@ -2,7 +2,7 @@
 #include <err.h>
 #include <string.h>
 
-#include "lexer.h"
+#include "../../include/lexer.h"
 
 static void remove_input_character_forward(lexer *lex, size_t len)
 {

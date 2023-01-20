@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include "lexer.h"
+#include "../../include/lexer.h"
 
 void lexer_eat_command_backquote(lexer *lex)
 {

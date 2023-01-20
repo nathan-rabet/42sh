@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <string.h>
 
-#include "lexer.h"
-#include "xalloc.h"
+#include "../../include/lexer.h"
+#include "../../include/xalloc.h"
 
 void token_add(lexer *lex, token_t token_type, size_t value_size)
 {

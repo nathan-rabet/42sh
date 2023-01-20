@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "lexer.h"
+#include "../../include/lexer.h"
 
 void lexer_eat_arithmetics_expansion(lexer *lex)
 {
