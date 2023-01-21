@@ -5,7 +5,7 @@
 //| funcdec { redirection }
 //;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 
 struct ast *parser_command(struct token_list *tokens)

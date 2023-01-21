@@ -1,5 +1,5 @@
-#include "../../include/ast.h"
-#include "../../include/xalloc.h"
+#include "../include/ast.h"
+#include "../include/xalloc.h"
 
 
 struct ast *ast_pipe_init(size_t nb_command, struct ast **command)

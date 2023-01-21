@@ -1,7 +1,7 @@
 // GRAMMAR
 // case_item = ['('] WORD { '|' WORD } ')' {'\n'} [compound_list] ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct list_case_item *parser_case_item(struct token_list *tokens)
 {

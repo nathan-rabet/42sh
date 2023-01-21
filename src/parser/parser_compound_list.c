@@ -1,7 +1,7 @@
 // GRAMMAR
 // compound_list = {'\n'} and_or { ';' | '\n' {'\n'} and_or } [';'] {'\n'} ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_compound_list(struct token_list *tokens)
 {

@@ -1,7 +1,7 @@
 // GRAMMAR
 // rule_if = 'if' compound_list 'then' compound_list [else_clause] 'fi' ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_rule_if(struct token_list *tokens)
 {

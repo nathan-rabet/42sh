@@ -1,7 +1,7 @@
 // GRAMMAR
 // rule_while = 'while' compound_list 'do' compound_list 'done' ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_rule_while(struct token_list *tokens)
 {

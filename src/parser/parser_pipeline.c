@@ -1,7 +1,7 @@
 // GRAMMAR
 // pipeline = ['!'] command { '|' {'\n'} command } ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_pipeline(struct token_list *tokens)
 {

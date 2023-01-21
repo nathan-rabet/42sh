@@ -4,7 +4,7 @@
 //| redirection
 //;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 char **parser_element(struct token_list *tokens, char **words)
 {

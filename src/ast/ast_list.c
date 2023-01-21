@@ -1,5 +1,5 @@
-#include "../../include/ast.h"
-#include "../../include/xalloc.h"
+#include "../include/ast.h"
+#include "../include/xalloc.h"
 
 
 struct ast *ast_list_init(size_t nb_children, struct ast **children)

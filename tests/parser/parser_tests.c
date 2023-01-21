@@ -1,4 +1,4 @@
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 void test1()
 {
@@ -1044,7 +1044,7 @@ void test18()
     ast->vtable->pretty_print(ast);
 }
 
-int main(void)
+int parser_test(void)
 {
     xalloc_init();
     test1();
