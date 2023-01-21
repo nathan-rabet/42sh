@@ -7,8 +7,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "lexer.h"
-#include "xalloc.h"
+#include "../../include/lexer.h"
+#include "../../include/xalloc.h"
 
 int main(void)
 {

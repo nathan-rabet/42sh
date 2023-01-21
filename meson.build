@@ -22,17 +22,21 @@ c_args += ['-fsanitize=address']
 link_args += ['-fsanitize=address']
 sources = []
 subdir('src')
-subdir('tests')
 inc = include_directories('include')
 
-# 42sh
-executable('42sh', sources, include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
+
 
 if get_option('enable_tests') == true
     # Tests main
+    subdir('tests')
+
     executable('42sh_tests_main', sources + ['tests/main.c'], include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
 
     # Tests
-    subdir('tests')
-    executable('42sh_tests', sources, include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
+    #executable('42sh_tests', sources, include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
+else
+   # 42sh
+   executable('42sh', sources + ['src/main.c'], include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
+
+
 endif
