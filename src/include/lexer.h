@@ -1,6 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -10,6 +11,7 @@ typedef int token_t;
 typedef struct token
 {
     token_t type;
+
     char *value;
     struct token *next;
 } token;
@@ -86,6 +88,7 @@ enum token_types
 
     LESS, // <
     GREAT, // >
+
 
     //// @brief out of SCL tokens
     SEMI, // ;

@@ -1,4 +1,6 @@
-#include "../include/parser.h"
+
+#include "../../src/include/parser.h"
+
 
 void test1()
 {
@@ -1043,6 +1045,7 @@ void test18()
 
     ast->vtable->pretty_print(ast);
 }
+
 
 int parser_test(void)
 {

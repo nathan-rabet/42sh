@@ -1,0 +1,1 @@
+sources += files('execution_tests.c')

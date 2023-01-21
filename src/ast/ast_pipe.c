@@ -20,8 +20,8 @@ struct ast *ast_pipe_init(size_t nb_command, struct ast **command)
 int pipe_run(struct ast *ast) {
     assert(ast && ast->type == AST_PIPE);
     //struct ast_pipe *pipe_ast = (struct ast_pipe *)ast;
-    //TODO(clara)
-    return false;
+    int res = 0;
+    return res;
 }
 
 void pipe_free(struct ast *ast)

@@ -6,7 +6,7 @@
 struct list_redir *parser_redirection(struct token_list *tokens, struct list_redir *next)
 {
     struct list_redir *ast = NULL;
-    char *IONumber = "1";
+    char *IONumber = "-1";
     char *target;
     enum ast_redir_type type;
 
@@ -17,7 +17,7 @@ struct list_redir *parser_redirection(struct token_list *tokens, struct list_red
     }
     if (is_redirection(tokens->current_token->type))
     {
-        type = tokens->current_token->type;
+        type = redirection_type(tokens->current_token->type);
         eat(tokens, tokens->current_token->type);
     }
     else
@@ -30,6 +30,8 @@ struct list_redir *parser_redirection(struct token_list *tokens, struct list_red
     }
     else
         parser_grammar_return_error_2(tokens->current_token);
+
+    IONumber = strcmp(IONumber, "-1") == 0 ? IONumbertype(type) : IONumber;
 
     ast = list_redir_init(type, IONumber, target, next);
     return ast;
