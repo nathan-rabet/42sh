@@ -4,7 +4,7 @@
 //| 'elif' compound_list 'then' compound_list [else_clause]
 //;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_else_clause(struct token_list *tokens)
 {

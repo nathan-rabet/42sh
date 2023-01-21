@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "../../include/lexer.h"
+#include "lexer.h"
 
 void lexer_eat_parameter_expansion(lexer *lex)
 {

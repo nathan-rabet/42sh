@@ -5,7 +5,7 @@
 //| '\n'
 //| EOF
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_input(struct token *list_tokens)
 {

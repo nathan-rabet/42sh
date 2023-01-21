@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <string.h>
 
-#include "../../include/lexer.h"
-#include "../../include/xalloc.h"
+#include "lexer.h"
+#include "xalloc.h"
 
 static void _get_tokens(lexer *lex)
 {

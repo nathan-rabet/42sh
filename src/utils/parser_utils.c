@@ -1,4 +1,4 @@
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 bool is_redirection(enum token_types type)
 {

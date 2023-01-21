@@ -1,7 +1,7 @@
 // GRAMMAR
 // rule_case = 'case' WORD {'\n'} 'in' {'\n'} [case_clause] 'esac' ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_rule_case(struct token_list *tokens)
 {

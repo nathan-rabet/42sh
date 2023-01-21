@@ -1,5 +1,5 @@
-#include "../../include/ast.h"
-#include "../../include/xalloc.h"
+#include "../include/ast.h"
+#include "../include/xalloc.h"
 
 
 struct ast *ast_for_init(char *name, struct ast *word, struct ast *to_execute)

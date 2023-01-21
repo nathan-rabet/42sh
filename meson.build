@@ -22,7 +22,7 @@ c_args += ['-fsanitize=address']
 link_args += ['-fsanitize=address']
 sources = []
 subdir('src')
-inc = include_directories('include')
+inc = include_directories('src/include')
 
 
 

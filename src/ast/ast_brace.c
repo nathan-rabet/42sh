@@ -1,5 +1,5 @@
-#include "../../include/ast.h"
-#include "../../include/xalloc.h"
+#include "../include/ast.h"
+#include "../include/xalloc.h"
 
 
 struct ast *ast_brace_init(struct ast *command)

@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "../../include/lexer.h"
+#include "lexer.h"
 
 void lexer_eat_command_substitution(lexer *lex)
 {

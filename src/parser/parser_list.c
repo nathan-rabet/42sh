@@ -1,7 +1,7 @@
 // GRAMMAR
 // list = and_or { ';' | '&' and_or } [ ';' | '&' ] ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_list(struct token_list *tokens)
 {

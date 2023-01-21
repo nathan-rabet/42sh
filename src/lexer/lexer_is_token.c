@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "../../include/lexer.h"
+#include "lexer.h"
 
 static const char *tokens_mapping[] = {
     NULL, // UNDEFINED

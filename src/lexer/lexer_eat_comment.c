@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include "../../include/lexer.h"
+#include "lexer.h"
 
 void lexer_eat_comment(lexer *lex)
 {
