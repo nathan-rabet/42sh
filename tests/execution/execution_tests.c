@@ -89,4 +89,5 @@ int test(void)
     test_exec_redir();
     //test_exec_input();
     xfree_all();
+    return 0;
 }
