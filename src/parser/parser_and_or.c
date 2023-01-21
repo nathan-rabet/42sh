@@ -1,7 +1,7 @@
 // GRAMMAR
 // pipeline { '&&' | '||' {'\n'} pipeline } ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_and_or(struct token_list *tokens)
 {

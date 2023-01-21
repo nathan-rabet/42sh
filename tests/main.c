@@ -2,40 +2,30 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "xalloc.h"
-
-extern struct xalloc xalloc_dlist;
-
-void func(void)
-{
-    xalloc_init();
-
-    void *ptr = xmalloc(42, sizeof(int));
-
-    xfree(ptr);
-
-    xalloc_deinit();
-
-    printf("Done\n");
-}
+#include "../include/lexer.h"
+#include "../include/xalloc.h"
 
 int main(void)
 {
-    pid_t pid = fork();
+    xalloc_init();
 
-    if (pid == 0) // Child process
-        func();
-    else if (pid > 0) // Parent process
+    const char *cmd = "# comment";
+
+    token *returned_tokens = get_tokens(cmd, strlen(cmd));
+
+    for (token *tok = returned_tokens; tok; tok = tok->next)
     {
-        if (wait(NULL) == -1)
-            errx(EXIT_FAILURE, "Failed to wait for child process.");
+        printf("Token type: %d, value: %s", tok->type, tok->value);
+        printf("\n");
     }
-    else // Error
-        errx(EXIT_FAILURE, "Failed to fork process.");
+
+    (void)returned_tokens;
+    xalloc_deinit();
 
     return 0;
 }

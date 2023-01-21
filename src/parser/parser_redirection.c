@@ -1,7 +1,7 @@
 // GRAMMAR
 // redirection = [IONUMBER] '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' WORD ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct list_redir *parser_redirection(struct token_list *tokens, struct list_redir *next)
 {

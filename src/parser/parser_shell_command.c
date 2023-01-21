@@ -9,7 +9,7 @@
 //| rule_if
 //;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_shell_command(struct token_list *tokens)
 {

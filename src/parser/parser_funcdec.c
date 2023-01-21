@@ -1,7 +1,7 @@
 // GRAMMAR
 // funcdec = WORD '(' ')' {'\n'} shell_command ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 
 struct ast *parser_funcdec(struct token_list *tokens)

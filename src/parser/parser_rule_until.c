@@ -1,7 +1,7 @@
 // GRAMMAR
 // rule_until = 'until' compound_list 'do' compound_list 'done' ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_rule_until(struct token_list *tokens)
 {

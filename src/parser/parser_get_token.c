@@ -1,4 +1,4 @@
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 void eat(struct token_list *tokens, token_t type)
 {

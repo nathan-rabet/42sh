@@ -1,7 +1,7 @@
 // GRAMMAR
 // case_clause = case_item { ';;' {'\n'} case_item } [';;'] {'\n'} ;
 
-#include "../../include/parser.h"
+#include "../include/parser.h"
 
 struct ast *parser_case_clause(struct token_list *tokens)
 {

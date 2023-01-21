@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "execution.h"
 
+
 /**
  * @brief Node of the AST
  */
@@ -120,6 +121,7 @@ enum ast_redir_type {
 
     /// @brief Token clobber
         REDIR_CLOBBER, // >| redirecting output
+
 };
 
 /**

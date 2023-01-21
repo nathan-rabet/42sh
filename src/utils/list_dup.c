@@ -1,4 +1,4 @@
-#include "../../include/execution.h"
+#include "../include/execution.h"
 
 struct list_dup list_dup = {
         .head = NULL,
