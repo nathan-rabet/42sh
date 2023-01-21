@@ -16,7 +16,7 @@ struct ast *parser_pipeline(struct token_list *tokens)
 
     command[0] = parser_command(tokens);
 
-    while (tokens->current_token->type == PIPE)
+    while (tokens->current_token && tokens->current_token->type == PIPE)
     {
         eat(tokens, PIPE);
         while (tokens->current_token->type == NEWLINE)

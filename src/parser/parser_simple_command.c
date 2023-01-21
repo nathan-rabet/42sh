@@ -1,6 +1,6 @@
 // GRAMMAR
 // simple_command =
-//prefix { prefix }
+// prefix { prefix }
 //| { prefix } WORD { element }
 //;
 
@@ -9,7 +9,7 @@
 struct ast *parser_simple_command(struct token_list *tokens)
 {
     struct list_redir *list = NULL;
-    char **words = xmalloc(100, sizeof (char *));
+    char **words = xmalloc(100, sizeof(char *));
     words[0] = NULL;
 
     while (is_prefix(tokens))
@@ -20,13 +20,14 @@ struct ast *parser_simple_command(struct token_list *tokens)
             words = parser_element(tokens, words);
     }
 
-
     if (tokens->current_token->type == WORD)
     {
         words = parser_element(tokens, words);
     }
 
-    while (is_redirection(tokens->current_token->type) || tokens->current_token->type == WORD)
+    while (tokens->current_token
+           && (is_redirection(tokens->current_token->type)
+               || tokens->current_token->type == WORD))
     {
         if (is_redirection(tokens->current_token->type))
             list = parser_redirection(tokens, list);

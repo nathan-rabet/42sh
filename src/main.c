@@ -30,16 +30,16 @@ int main(int argc, char *argv[])
             // Read input from string
             input_from_stdin = false;
             input_string = optarg;
-            size_t input_size = sizeof(input_string);
+            size_t input_size = strlen(input_string);
 
             // print stdin input (debug)
-            printf("reading from -c:\n %s", input_string);
+            // printf("reading from -c:\n %s", input_string);
             // send the input_string to the lexer & parser
             xalloc_init();
             struct token *input_tokens = get_tokens(input_string, input_size);
             struct ast *ast = parser_input(input_tokens);
             ast->vtable->run(ast);
-            ast->vtable->pretty_print(ast);
+            // ast->vtable->pretty_print(ast);
             xalloc_deinit();
 
             break;
