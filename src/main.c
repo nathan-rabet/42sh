@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
             struct ast *ast = parser_input(input_tokens);
             int status = ast->vtable->run(ast);
             if (status != 0)
-              exit(2);
+                exit(2);
             xalloc_deinit();
 
             break;
@@ -102,7 +102,9 @@ int main(int argc, char *argv[])
             xalloc_init();
             struct token *input_tokens = get_tokens(input_string, input_size);
             struct ast *ast = parser_input(input_tokens);
-            ast->vtable->run(ast);
+            int status = ast->vtable->run(ast);
+            if (status != 0)
+                exit(2);
             xalloc_deinit();
 
             // Free memory
@@ -127,11 +129,11 @@ int main(int argc, char *argv[])
         xalloc_init();
         struct token *input_tokens = get_tokens(input_string, input_size);
         struct ast *ast = parser_input(input_tokens);
-        ast->vtable->run(ast);
+        int status = ast->vtable->run(ast);
+        if (status != 0)
+            exit(2);
         xalloc_deinit();
     }
 
     return 0;
 }
-
-
