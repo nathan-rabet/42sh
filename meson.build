@@ -33,7 +33,7 @@ if get_option('enable_tests') == true
     executable('42sh_tests_main', sources + ['tests/main.c'], include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
 
     # Tests
-    #executable('42sh_tests', sources, include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
+    executable('42sh_tests', sources, include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
 else
    # 42sh
    executable('42sh', sources + ['src/main.c'], include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
