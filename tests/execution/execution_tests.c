@@ -1,6 +1,6 @@
-#include "../../include/execution.h"
-#include "../../include/lexer.h"
-#include "../../include/parser.h"
+#include "../../src/include/execution.h"
+#include "../../src/include/lexer.h"
+#include "../../src/include/parser.h"
 
 void test_exec_cmd()
 {
@@ -13,7 +13,7 @@ void test_exec_cmd()
 
 void test_exec_redir()
 {
-    printf("\n----------------TEST 6-----------------\n");
+    printf("\n----------------TEST 1-----------------\n");
     printf("\n---------------- REDIRECTION STDOUT-----------------\n\n");
 
 
@@ -51,7 +51,7 @@ void test_exec_redir()
 
 void test_exec_input()
 {
-    printf("\n----------------TEST 6-----------------\n");
+    printf("\n----------------TEST 2-----------------\n");
     printf("\n---------------- REDIRECTION STDIN-----------------\n\n");
 
 
@@ -82,7 +82,7 @@ void test_exec_input()
     ast->vtable->run(ast);
 }
 
-int main(void)
+int test(void)
 {
     xalloc_init();
     test_exec_cmd();

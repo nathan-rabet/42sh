@@ -1,9 +1,9 @@
-#include "../../include/execution.h"
+#include "../include/execution.h"
 
 int exec_cmd(char **argv, int *error)
 {
-    //if (is_builtin(*argv))
-      //  return exec_builtins(argv, error);
+    if (is_builtin(*argv))
+        return exec_builtins(argv, error);
     (void) error;
     pid_t pid = fork();
     int status = 0;

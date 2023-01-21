@@ -19,8 +19,8 @@ struct ast *ast_pipe_init(size_t nb_command, struct ast **command)
 
 int pipe_run(struct ast *ast) {
     assert(ast && ast->type == AST_PIPE);
-    struct ast_pipe *pipe_ast = (struct ast_pipe *)ast;
-
+    //struct ast_pipe *pipe_ast = (struct ast_pipe *)ast;
+    int res = 0;
     return res;
 }
 

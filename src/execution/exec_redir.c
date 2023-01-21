@@ -1,5 +1,5 @@
-#include "../../include/execution.h"
-#include "../../include/ast.h"
+#include "../include/execution.h"
+#include "../include/ast.h"
 
 void exec_redir(struct list_redir *redir)
 {
