@@ -32,14 +32,13 @@ int main(int argc, char *argv[])
             input_string = optarg;
             size_t input_size = strlen(input_string);
 
-            // print stdin input (debug)
-            // printf("reading from -c:\n %s", input_string);
             // send the input_string to the lexer & parser
             xalloc_init();
             struct token *input_tokens = get_tokens(input_string, input_size);
             struct ast *ast = parser_input(input_tokens);
-            ast->vtable->run(ast);
-            // ast->vtable->pretty_print(ast);
+            int status = ast->vtable->run(ast);
+            if (status != 0)
+              exit(2);
             xalloc_deinit();
 
             break;
@@ -98,11 +97,13 @@ int main(int argc, char *argv[])
                 }
                 strcat(file_contents, line);
             }
-
-            // print from file (debug)
-            printf("reading from file:\n %s", file_contents);
-
             // send the file_contents to the lexer & parser
+            size_t input_size = strlen(file_contents);
+            xalloc_init();
+            struct token *input_tokens = get_tokens(input_string, input_size);
+            struct ast *ast = parser_input(input_tokens);
+            ast->vtable->run(ast);
+            xalloc_deinit();
 
             // Free memory
             free(line);
@@ -122,10 +123,12 @@ int main(int argc, char *argv[])
         }
 
         // print stdin input (debug)
-        printf("reading from stdin:\n %s", input_stdin);
-
-        // send the input_string to the lexer & parser
-        // struct Node *node = parse_simple_command(input_stdin);
+        size_t input_size = strlen(input_stdin);
+        xalloc_init();
+        struct token *input_tokens = get_tokens(input_string, input_size);
+        struct ast *ast = parser_input(input_tokens);
+        ast->vtable->run(ast);
+        xalloc_deinit();
     }
 
     return 0;
