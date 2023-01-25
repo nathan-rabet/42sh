@@ -1,13 +1,14 @@
 // GRAMMAR
 // rule_for =
-//'for' WORD [';'] [ {'\n'} 'in' { WORD } ';' | '\n' ] {'\n'} 'do' compound_list 'done' ;
+//'for' WORD [';'] [ {'\n'} 'in' { WORD } ';' | '\n' ] {'\n'} 'do' compound_list
+//'done' ;
 
 #include "../include/parser.h"
 
 struct ast *parser_rule_for(struct token_list *tokens)
 {
     char *name = NULL;
-    char **names = xmalloc(100, sizeof (char **));
+    char **names = xmalloc(100, sizeof(char **));
     names[0] = NULL;
     struct ast *words = NULL;
     struct ast *to_execute = NULL;
@@ -19,7 +20,7 @@ struct ast *parser_rule_for(struct token_list *tokens)
     if (look_ahead(tokens) == SEMI)
         eat(tokens, SEMI);
 
-    while(look_ahead(tokens) == NEWLINE)
+    while (look_ahead(tokens) == NEWLINE)
         eat(tokens, NEWLINE);
 
     if (look_ahead(tokens) == IN)
@@ -34,7 +35,7 @@ struct ast *parser_rule_for(struct token_list *tokens)
             parser_grammar_return_error_2(tokens->current_token);
     }
 
-    while(look_ahead(tokens) == NEWLINE)
+    while (look_ahead(tokens) == NEWLINE)
         eat(tokens, NEWLINE);
 
     eat(tokens, DO);
