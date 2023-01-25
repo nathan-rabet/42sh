@@ -1,5 +1,5 @@
-#include "../include/execution.h"
 #include "../include/ast.h"
+#include "../include/execution.h"
 
 int exec_pipeline(struct ast_pipe *ast)
 {

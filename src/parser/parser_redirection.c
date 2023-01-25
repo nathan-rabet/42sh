@@ -3,7 +3,8 @@
 
 #include "../include/parser.h"
 
-struct list_redir *parser_redirection(struct token_list *tokens, struct list_redir *next)
+struct list_redir *parser_redirection(struct token_list *tokens,
+                                      struct list_redir *next)
 {
     struct list_redir *ast = NULL;
     char *IONumber = "-1";
@@ -26,7 +27,6 @@ struct list_redir *parser_redirection(struct token_list *tokens, struct list_red
     {
         target = tokens->current_token->value;
         eat(tokens, WORD);
-
     }
     else
         parser_grammar_return_error_2(tokens->current_token);

@@ -3,7 +3,6 @@
 
 #include "../include/parser.h"
 
-
 struct ast *parser_funcdec(struct token_list *tokens)
 {
     char *name;
@@ -13,7 +12,7 @@ struct ast *parser_funcdec(struct token_list *tokens)
     eat(tokens, WORD);
 
     if (strcmp(tokens->current_token->value, "(") == 0
-    && strcmp(tokens->current_token->next->value, ")") == 0)
+        && strcmp(tokens->current_token->next->value, ")") == 0)
     {
         eat(tokens, WORD);
         eat(tokens, WORD);

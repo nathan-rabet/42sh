@@ -1,14 +1,13 @@
 #include "../include/ast.h"
 #include "../include/xalloc.h"
 
-
-struct ast *ast_if_init(struct ast *condition,
-        struct ast *then_body, struct ast *else_body)
+struct ast *ast_if_init(struct ast *condition, struct ast *then_body,
+                        struct ast *else_body)
 {
     static struct ast_vtable vtable = {
-            .run = &if_run,
-            .free = &if_free,
-            .pretty_print = &if_pretty_print,
+        .run = &if_run,
+        .free = &if_free,
+        .pretty_print = &if_pretty_print,
     };
     struct ast_if *if_ast = xmalloc(1, sizeof(struct ast_if));
     if_ast->base.type = AST_IF;
@@ -19,7 +18,8 @@ struct ast *ast_if_init(struct ast *condition,
     return &if_ast->base;
 }
 
-int if_run(struct ast *ast) {
+int if_run(struct ast *ast)
+{
     assert(ast && ast->type == AST_IF);
     struct ast_if *if_ast = (struct ast_if *)ast;
     if (if_ast->condition)
@@ -32,7 +32,7 @@ int if_run(struct ast *ast) {
 void if_free(struct ast *ast)
 {
     assert(ast && ast->type == AST_IF);
-    struct ast_if *if_ast = (struct ast_if*) ast;
+    struct ast_if *if_ast = (struct ast_if *)ast;
     if_ast->then_body->vtable->free(if_ast->then_body);
     if (if_ast->else_body != NULL)
         if_ast->else_body->vtable->free(if_ast->else_body);
@@ -42,7 +42,7 @@ void if_free(struct ast *ast)
 void if_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_IF);
-    struct ast_if *if_ast = (struct ast_if*) ast;
+    struct ast_if *if_ast = (struct ast_if *)ast;
     printf("IF condition: ");
     if_ast->condition->vtable->pretty_print(if_ast->condition);
     printf("\nTHEN [ ");
@@ -54,5 +54,4 @@ void if_pretty_print(struct ast *ast)
         if_ast->else_body->vtable->pretty_print(if_ast->else_body);
         printf("]\n");
     }
-
 }

@@ -1,5 +1,5 @@
-#include "../include/execution.h"
 #include "../include/builtins.h"
+#include "../include/execution.h"
 
 int count_argc(char **argv)
 {
@@ -20,9 +20,8 @@ int exec_builtins(char **argv, int *error)
         my_echo(argc, argv + 1);
         return 0;
     }
-    (void) argv;
-    (void) error; // if (strcmp(*argv, "echo") exec_echo(argv);
+    (void)argv;
+    (void)error; // if (strcmp(*argv, "echo") exec_echo(argv);
     fflush(stdout);
     return true;
 }
-

@@ -1,11 +1,11 @@
-#include "builtins.h"
-
 #include <stdio.h>
+
+#include "builtins.h"
 
 /**
  * Prints given character. If an escape sequence is passed, it is printer as a
  * string and is not interpreted.
-*/
+ */
 static void non_interpreted_print(char *str)
 {
     while (*str)
@@ -33,7 +33,7 @@ static void non_interpreted_print(char *str)
 
 // Prints elements passed in argv with options given for echo command.
 static void print_elements(int elements_count, char **elements,
-               struct echo_options *options)
+                           struct echo_options *options)
 {
     if (options->flag_e)
     {
