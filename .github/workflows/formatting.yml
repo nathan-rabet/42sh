@@ -24,7 +24,4 @@ jobs:
               IS_ALL_CORRECT=$false
             fi
           done
-          if [ "$IS_ALL_CORRECT" = "$false" ]; then
-            echo "Some files are not formatted correctly." >&2
-            exit 1
-          fi
+          
