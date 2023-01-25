@@ -16,13 +16,12 @@ struct token *add_Newline(struct token *tmp)
         list = list->next;
     if (list->type == NEWLINE)
         return tmp;
-    struct token *token = xmalloc(1, sizeof (struct token));
+    struct token *token = xmalloc(1, sizeof(struct token));
     token->type = NEWLINE;
     token->next = NULL;
     list->next = token;
     return tmp;
 }
-
 
 struct ast *parser_input(struct token *list_tokens)
 {
