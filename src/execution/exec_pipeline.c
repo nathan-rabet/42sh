@@ -14,6 +14,5 @@ int exec_pipeline(struct ast_pipe *ast)
         if (pid < 0)
             return_and_free("Failed to fork", 1);
 
-        if (pid == 0)
     }
 }
