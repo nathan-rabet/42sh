@@ -4,7 +4,7 @@ int exec_cmd(char **argv, int *error)
 {
     if (is_builtin(*argv))
         return exec_builtins(argv, error);
-    (void) error;
+    (void)error;
     pid_t pid = fork();
     int status = 0;
 
