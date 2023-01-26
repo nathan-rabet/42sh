@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
                 status = 0;
             else
                 status = ast->vtable->run(ast);
-            if (status != 0 && status != 1)
+            if (status != 0)
             {
                 xalloc_deinit();
                 exit(status);
@@ -59,38 +59,6 @@ int main(int argc, char *argv[])
 
             break;
         case 'a':
-            xalloc_init();
-            struct token *token6 = xmalloc(1, sizeof(struct token));
-            token6->type = NEWLINE;
-            token6->value = "\n";
-            token6->next = NULL;
-
-            struct token *token4 = xmalloc(1, sizeof(struct token));
-            token4->type = WORD;
-            token4->value = "file.txt";
-            token4->next = token6;
-
-            struct token *token3 = xmalloc(1, sizeof(struct token));
-            token3->type = GREAT;
-            token3->value = ">";
-            token3->next = token4;
-
-            struct token *token2 = xmalloc(1, sizeof(struct token));
-            token2->type = WORD;
-            token2->value = "tofile";
-            token2->next = token3;
-
-            struct token *token = xmalloc(1, sizeof(struct token));
-            token->type = WORD;
-            token->value = "echo";
-            token->next = token2;
-
-            struct ast *asta = parser_input(token);
-            if (ast == NULL)
-                return 0;
-            //ast->vtable->pretty_print(asta);
-            ast->vtable->run(asta);
-            xalloc_deinit();
             break;
         default:
             // Invalid option
@@ -107,6 +75,8 @@ int main(int argc, char *argv[])
     {
         if (optind < argc)
         {
+            printf("going file :\n");
+
             // Read input from file
             input_from_stdin = false;
             // Open file
@@ -164,16 +134,29 @@ int main(int argc, char *argv[])
     // If no input source was specified, read from standard input
     if (input_from_stdin)
     {
-        if (fgets(input_stdin, BUFFER_SIZE, stdin) == NULL)
-        {
-            fprintf(stderr, "Error: Failed to read input\n");
-            exit(2);
-        }
-        if (input_stdin[0] == '\n')
-            exit(2);
-        size_t input_size = strlen(input_stdin);
         xalloc_init();
-        struct token *input_tokens = get_tokens(input_stdin, input_size);
+        char *stdin_contents = xmalloc(BUFFER_SIZE, sizeof(char));
+        size_t contents_size = 0;
+
+        // printf("going stdin :\n");
+        while (fgets(input_stdin, BUFFER_SIZE, stdin) != NULL)
+        {
+            if (input_stdin[0] == '\n')
+                continue;
+
+            size_t line_size = strlen(input_stdin);
+
+            // Allocate memory for the input string and concatenate the current
+            // line
+            stdin_contents = xrealloc(
+                stdin_contents, contents_size + line_size + 1, sizeof(char));
+            memcpy(stdin_contents + contents_size, input_stdin, line_size);
+            contents_size += line_size;
+            stdin_contents[contents_size] = '\0';
+        }
+        //printf("stdin :\n%s\n", stdin_contents);
+
+        struct token *input_tokens = get_tokens(stdin_contents, contents_size);
         struct ast *ast = parser_input(input_tokens);
         int status = 0;
         if (ast == NULL)
