@@ -15,7 +15,7 @@ struct list_redir *parser_redirection(struct token_list *tokens, struct list_red
         IONumber = tokens->current_token->value;
         eat(tokens, IO_NUMBER);
     }
-    if (is_redirection(tokens->current_token->type))
+    if (tokens->current_token && is_redirection(tokens->current_token->type))
     {
         type = redirection_type(tokens->current_token->type);
         eat(tokens, tokens->current_token->type);

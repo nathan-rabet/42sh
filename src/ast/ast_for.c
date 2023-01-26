@@ -41,7 +41,8 @@ void for_pretty_print(struct ast *ast)
     assert(ast && ast->type == AST_FOR);
     struct ast_for *for_ast = (struct ast_for*) ast;
     printf("FOR name: %s in ", for_ast->name);
-    for_ast->word->vtable->pretty_print(for_ast->word);
+    if (for_ast->word != NULL)
+        for_ast->word->vtable->pretty_print(for_ast->word);
     printf("do : ");
     for_ast->to_execute->vtable->pretty_print(for_ast->to_execute);
     printf("done\n");

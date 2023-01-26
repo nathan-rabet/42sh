@@ -30,7 +30,7 @@ struct ast *parser_shell_command(struct token_list *tokens)
         ast = ast_brace_init(parser_compound_list(tokens));
         eat(tokens, RBRACE);
     }
-    else if (strcmp(tokens->current_token->value, "(") == 0)
+    else if (tokens->current_token && strcmp(tokens->current_token->value, "(") == 0)
     {
         eat(tokens, WORD);
         ast = ast_subshell_init(parser_compound_list(tokens));

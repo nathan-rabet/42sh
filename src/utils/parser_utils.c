@@ -102,6 +102,11 @@ char *IONumbertype(enum ast_redir_type type)
 
 void parser_grammar_return_error_2(struct token *token)
 {
+    if (token != NULL)
+        fprintf(stderr, "42sh: syntax error near unexpected token '%s'\n", (char *)token->value);
+    else
+        fprintf(stderr, "42sh: syntax error\n");
     xfree_all();
-    err(2, "42sh: syntax error near unexpected token '%s'\n", (char *)token->value);
+    xalloc_deinit();
+    exit(2);
 }

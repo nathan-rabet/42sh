@@ -36,7 +36,16 @@ int main(int argc, char *argv[])
             // send the input_string to the lexer & parser
             xalloc_init();
             struct token *input_tokens = get_tokens(input_string, input_size);
+
+            /*while (input_tokens != NULL)
+            {
+                printf("tok : %s\n", input_tokens->value);
+                input_tokens = input_tokens->next;
+            }*/
+
             struct ast *ast = parser_input(input_tokens);
+            if (ast == NULL)
+                return 0;
             // ast->vtable->pretty_print(ast);
             int status = ast->vtable->run(ast);
             if (status != 0 && status != 1)
@@ -75,6 +84,8 @@ int main(int argc, char *argv[])
             token->next = token2;
 
             struct ast *asta = parser_input(token);
+            if (ast == NULL)
+                return 0;
             //ast->vtable->pretty_print(asta);
             ast->vtable->run(asta);
             xalloc_deinit();
@@ -127,6 +138,8 @@ int main(int argc, char *argv[])
             struct token *input_tokens =
                 get_tokens(file_contents, file_contents_size);
             struct ast *ast = parser_input(input_tokens);
+            if (ast == NULL)
+                return 0;
             int status = ast->vtable->run(ast);
             if (status != 0)
             {
@@ -156,6 +169,8 @@ int main(int argc, char *argv[])
         xalloc_init();
         struct token *input_tokens = get_tokens(input_stdin, input_size);
         struct ast *ast = parser_input(input_tokens);
+        if (ast == NULL)
+            return 0;
         int status = ast->vtable->run(ast);
         if (status != 0)
             exit(2);
