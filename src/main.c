@@ -10,7 +10,7 @@
 #include "./include/lexer.h"
 #include "./include/parser.h"
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
 int main(int argc, char *argv[])
 {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     char input_stdin[BUFFER_SIZE];
 
     // Parse command-line options
-    while ((opt = getopt(argc, argv, "c:")) != -1)
+    while ((opt = getopt(argc, argv, "ac:")) != -1)
     {
         switch (opt)
         {
@@ -30,17 +30,54 @@ int main(int argc, char *argv[])
             // Read input from string
             input_from_stdin = false;
             input_string = optarg;
+
             size_t input_size = strlen(input_string);
 
             // send the input_string to the lexer & parser
             xalloc_init();
             struct token *input_tokens = get_tokens(input_string, input_size);
             struct ast *ast = parser_input(input_tokens);
+            // ast->vtable->pretty_print(ast);
             int status = ast->vtable->run(ast);
-            if (status != 0)
-                exit(2);
+            if (status != 0 && status != 1)
+            {
+                xalloc_deinit();
+                exit(status);
+            }
             xalloc_deinit();
 
+            break;
+        case 'a':
+            xalloc_init();
+            struct token *token6 = xmalloc(1, sizeof(struct token));
+            token6->type = NEWLINE;
+            token6->value = "\n";
+            token6->next = NULL;
+
+            struct token *token4 = xmalloc(1, sizeof(struct token));
+            token4->type = WORD;
+            token4->value = "file.txt";
+            token4->next = token6;
+
+            struct token *token3 = xmalloc(1, sizeof(struct token));
+            token3->type = GREAT;
+            token3->value = ">";
+            token3->next = token4;
+
+            struct token *token2 = xmalloc(1, sizeof(struct token));
+            token2->type = WORD;
+            token2->value = "tofile";
+            token2->next = token3;
+
+            struct token *token = xmalloc(1, sizeof(struct token));
+            token->type = WORD;
+            token->value = "echo";
+            token->next = token2;
+
+            struct ast *asta = parser_input(token);
+            //ast->vtable->pretty_print(asta);
+            ast->vtable->run(asta);
+            xalloc_deinit();
             break;
         default:
             // Invalid option
@@ -59,7 +96,6 @@ int main(int argc, char *argv[])
         {
             // Read input from file
             input_from_stdin = false;
-
             // Open file
             const char *filename = argv[optind];
             FILE *fp = fopen(filename, "r");
@@ -68,48 +104,39 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Error opening file\n");
                 exit(2);
             }
-
+            xalloc_init();
             // Allocate memory for file contents
-            char *file_contents = malloc(BUFFER_SIZE);
-            if (file_contents == NULL)
-            {
-                fprintf(stderr, "Error: Failed to allocate memory\n");
-                fclose(fp);
-                exit(2);
-            }
+            char *file_contents = xmalloc(BUFFER_SIZE, sizeof(char));
             memset(file_contents, 0, BUFFER_SIZE); // zero the memory
 
             // Read file contents line by line and store them in the string
             // file_contents
             char *line = NULL;
             size_t len = 0;
+            size_t file_contents_size = 0;
             while ((getline(&line, &len, fp)) != -1)
             {
                 // Reallocate memory for file_contents
-                file_contents = realloc(
-                    file_contents, strlen(file_contents) + strlen(line) + 1);
-                if (file_contents == NULL)
-                {
-                    fprintf(stderr, "Error: Failed to reallocate memory\n");
-                    free(line);
-                    fclose(fp);
-                    exit(2);
-                }
-                strcat(file_contents, line);
+                file_contents = xrealloc(file_contents,
+                                         file_contents_size + strlen(line) + 1,
+                                         sizeof(char));
+                file_contents_size += strlen(line);
+                strncat(file_contents, line, strlen(line));
             }
             // send the file_contents to the lexer & parser
-            size_t input_size = strlen(file_contents);
-            xalloc_init();
-            struct token *input_tokens = get_tokens(input_string, input_size);
+            struct token *input_tokens =
+                get_tokens(file_contents, file_contents_size);
             struct ast *ast = parser_input(input_tokens);
             int status = ast->vtable->run(ast);
             if (status != 0)
-                exit(2);
+            {
+                xalloc_deinit();
+                exit(status);
+            }
             xalloc_deinit();
 
             // Free memory
             free(line);
-            free(file_contents);
             // Close file
             fclose(fp);
         }
@@ -123,17 +150,16 @@ int main(int argc, char *argv[])
             fprintf(stderr, "Error: Failed to read input\n");
             exit(2);
         }
-
-        // print stdin input (debug)
+        if (input_stdin[0] == '\n')
+            exit(2);
         size_t input_size = strlen(input_stdin);
         xalloc_init();
-        struct token *input_tokens = get_tokens(input_string, input_size);
+        struct token *input_tokens = get_tokens(input_stdin, input_size);
         struct ast *ast = parser_input(input_tokens);
         int status = ast->vtable->run(ast);
         if (status != 0)
             exit(2);
         xalloc_deinit();
     }
-
     return 0;
 }

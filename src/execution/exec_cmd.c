@@ -15,7 +15,7 @@ int exec_cmd(char **argv, int *error)
         if (execvp(*argv, argv) == -1)
         {
             fprintf(stderr, "42sh : %s command not found\n", *argv);
-            exit(2);
+            exit(127);
         }
         fflush(stdout);
         fflush(stdin);
