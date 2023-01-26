@@ -3,6 +3,13 @@
 
 #include "ast.h"
 
+typedef struct alias
+{
+    const char *name;
+    const char *value;
+    struct alias *next;
+} alias;
+
 typedef struct loop_stack
 {
     struct ast *current_loop_ast;
@@ -11,6 +18,7 @@ typedef struct loop_stack
 
 typedef struct global_sh
 {
+    alias *alias_ll;
     struct ast *ast;
     int last_exit_status;
     loop_stack *loop_stack;
