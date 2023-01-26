@@ -4,6 +4,12 @@
 
 void add_alias(const char *name, const char *value)
 {
+    if (value == NULL || strlen(value) == 0)
+    {
+        remove_alias(name);
+        return;
+    }
+
     global_sh *global = get_global_sh();
 
     alias *new_alias = xcalloc(1, sizeof(alias));
@@ -33,7 +39,7 @@ void add_alias(const char *name, const char *value)
     }
 }
 
-const char *get_alias(const char *name)
+const char *get_alias_value(const char *name)
 {
     global_sh *global = get_global_sh();
 
@@ -72,6 +78,48 @@ void remove_alias(const char *name)
             previous = current;
             current = current->next;
         }
+    }
+}
+
+bool is_alias_used(const char *name)
+{
+    global_sh *global = get_global_sh();
+
+    alias *current = global->alias_ll;
+    while (current != NULL)
+    {
+        if (strcmp(current->name, name) == 0)
+            return current->is_used;
+        current = current->next;
+    }
+    return false;
+}
+
+void use_alias(const char *name)
+{
+    global_sh *global = get_global_sh();
+
+    alias *current = global->alias_ll;
+    while (current != NULL)
+    {
+        if (strcmp(current->name, name) == 0)
+        {
+            current->is_used = true;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+void unuse_all_alias(void)
+{
+    global_sh *global = get_global_sh();
+
+    alias *current = global->alias_ll;
+    while (current != NULL)
+    {
+        current->is_used = false;
+        current = current->next;
     }
 }
 

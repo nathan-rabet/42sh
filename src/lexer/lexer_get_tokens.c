@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "alias.h"
 #include "lexer.h"
 #include "xalloc.h"
 
@@ -198,6 +199,88 @@ token *get_tokens(const char *input, size_t len)
     lex.tokens = NULL;
     _get_tokens(&lex);
 
+    // Replace aliases
+    if (lex.tokens)
+    {
+        token *prev_token = NULL;
+        token *current_token = lex.tokens;
+        while (current_token)
+        {
+            // If can be substituted by an alias
+            if (lex.tokens->type == WORD
+                && (prev_token == NULL || IS_OPERATOR(prev_token->type)
+                    || is_separator(prev_token->value[0])))
+            {
+                const char *alias_name = lex.tokens->value;
+                const char *alias_value = get_alias_value(alias_name);
+
+                // If alias exists and is not used
+                if (alias_value && !is_alias_used(alias_name))
+                {
+                    token *aliases_tokens =
+                        get_tokens(alias_value, strlen(alias_value));
+
+                    // Calculate the length of the alias
+                    size_t alias_value_nb_tokens = 0;
+                    token *tmp_token = aliases_tokens;
+                    while (tmp_token)
+                    {
+                        alias_value_nb_tokens++;
+                        tmp_token = tmp_token->next;
+                    }
+
+                    // Replace current token by the alias tokens
+                    if (alias_value_nb_tokens == 1)
+                    {
+                        // If the alias is a single token
+                        token *alias_token = aliases_tokens;
+                        xfree(current_token->value);
+                        current_token->value = alias_token->value;
+                        current_token->type = alias_token->type;
+                        xfree(alias_token);
+                    }
+                    else
+                    {
+                        // If the alias is multiple tokens
+                        token *last_alias_token = aliases_tokens;
+                        while (last_alias_token->next)
+                            last_alias_token = last_alias_token->next;
+
+                        // If the alias is multiple tokens
+                        if (prev_token)
+                            prev_token->next = aliases_tokens;
+                        else
+                            lex.tokens = aliases_tokens;
+                        last_alias_token->next = current_token->next;
+                        xfree(current_token->value);
+                        xfree(current_token);
+                        current_token = last_alias_token;
+                    }
+
+                    // Mark the alias as used
+                    use_alias(alias_name);
+
+                    // Go to the next token (after the alias tokens)
+                    while (alias_value_nb_tokens--)
+                    {
+                        prev_token = current_token;
+                        current_token = current_token->next;
+                    }
+                }
+                else
+                {
+                    prev_token = current_token;
+                    current_token = current_token->next;
+                }
+            }
+            else
+            {
+                prev_token = current_token;
+                current_token = current_token->next;
+            }
+            unuse_all_aliases();
+        }
+    }
     token *tokens = lex.tokens;
     xfree(input_cpy);
     return tokens;

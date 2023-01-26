@@ -5,6 +5,7 @@
 
 typedef struct alias
 {
+    bool is_used;
     const char *name;
     const char *value;
     struct alias *next;
