@@ -74,3 +74,13 @@ void remove_alias(const char *name)
         }
     }
 }
+
+void builtin_alias(const char *name, const char *value)
+{
+    add_alias(name, value);
+}
+
+void builtin_unalias(const char *name)
+{
+    remove_alias(name);
+}
