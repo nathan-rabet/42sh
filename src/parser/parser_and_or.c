@@ -14,7 +14,7 @@ struct ast *parser_and_or(struct token_list *tokens)
     {
         enum token_types type = tokens->current_token->type;
         eat(tokens, type);
-        while (tokens->current_token->type == NEWLINE)
+        while (look_ahead(tokens) == NEWLINE)
             eat(tokens, NEWLINE);
         if (type == AND_IF)
             ast = ast_and_init(ast, parser_pipeline(tokens));

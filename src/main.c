@@ -44,10 +44,12 @@ int main(int argc, char *argv[])
             }*/
 
             struct ast *ast = parser_input(input_tokens);
+
+            int status = 0;
             if (ast == NULL)
-                return 0;
-            // ast->vtable->pretty_print(ast);
-            int status = ast->vtable->run(ast);
+                status = 0;
+            else
+                status = ast->vtable->run(ast);
             if (status != 0 && status != 1)
             {
                 xalloc_deinit();
@@ -138,9 +140,13 @@ int main(int argc, char *argv[])
             struct token *input_tokens =
                 get_tokens(file_contents, file_contents_size);
             struct ast *ast = parser_input(input_tokens);
+            int status = 0;
             if (ast == NULL)
-                return 0;
-            int status = ast->vtable->run(ast);
+                status = 0;
+            else
+                status = ast->vtable->run(ast);
+            // ast->vtable->pretty_print(ast);
+
             if (status != 0)
             {
                 xalloc_deinit();
@@ -169,9 +175,11 @@ int main(int argc, char *argv[])
         xalloc_init();
         struct token *input_tokens = get_tokens(input_stdin, input_size);
         struct ast *ast = parser_input(input_tokens);
+        int status = 0;
         if (ast == NULL)
-            return 0;
-        int status = ast->vtable->run(ast);
+            status = 0;
+        else
+            status = ast->vtable->run(ast);
         if (status != 0)
             exit(2);
         xalloc_deinit();
