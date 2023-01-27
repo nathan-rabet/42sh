@@ -1,4 +1,5 @@
 #include "alias.h"
+#include "builtins.h"
 #include "global.h"
 #include "xalloc.h"
 
