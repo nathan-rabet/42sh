@@ -16,4 +16,19 @@ struct echo_options
 void my_echo(int argc, char **argv);
 void my_cd(char **argv);
 
-#endif /* !BUILTINS_H_ */
+/**
+ * @brief `alias` builtin command
+ *
+ * @param name The name of the alias
+ * @param value The value of the alias
+ */
+void builtin_alias(const char *name, const char *value);
+
+/**
+ * @brief `unalias` builtin command
+ *
+ * @param name The name of the alias to remove
+ */
+void builtin_unalias(const char *name);
+
+#endif /* BUILTINS_H */

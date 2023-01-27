@@ -1,1 +1,1 @@
-sources += files('builtin_echo.c', 'builtin_cd.c')
+sources += files('builtin_alias.c', 'builtin_echo.c', 'builtin_cd.c')

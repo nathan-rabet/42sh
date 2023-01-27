@@ -1,6 +1,6 @@
 // GRAMMAR
 // input =
-//list '\n'
+// list '\n'
 //| list EOF
 //| '\n'
 //| EOF
@@ -28,6 +28,7 @@ struct ast *parser_input(struct token *list_tokens)
 
     if (tokens->current_token != NULL)
         wrong_look_ahead(tokens, "parse_input");
+
 
     return ast;
 }

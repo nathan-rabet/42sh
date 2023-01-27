@@ -16,7 +16,8 @@ struct list_case_item *parser_case_item(struct token_list *tokens)
     {
         word[i++] = tokens->current_token->value;
         eat(tokens, WORD);
-    } else
+    }
+    else
         parser_grammar_return_error_2(tokens->current_token);
 
     while (look_ahead(tokens) == PIPE)

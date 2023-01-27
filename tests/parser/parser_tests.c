@@ -1,15 +1,13 @@
 
 #include "../../src/include/parser.h"
 
-
 void test1()
 {
     printf("\n----------------TEST 1-----------------\n");
     printf("\n---------------- COMMAND -----------------\n\n");
 
-    
-    //token list = malloc(3 * sizeof (token));
-    //list = malloc(sizeof(token *));
+    // token list = malloc(3 * sizeof (token));
+    // list = malloc(sizeof(token *));
     struct token *token4 = xmalloc(1, sizeof(struct token));
     token4->type = NEWLINE;
     token4->value = "\n";
@@ -40,10 +38,8 @@ void test2()
     printf("\n----------------TEST 2-----------------\n");
     printf("\n---------------- SIMPLE LIST -----------------\n\n");
 
-
-    
-    //token list = malloc(3 * sizeof (token));
-    //list = malloc(sizeof(token *));
+    // token list = malloc(3 * sizeof (token));
+    // list = malloc(sizeof(token *));
     struct token *token4 = xmalloc(1, sizeof(struct token));
     token4->type = NEWLINE;
     token4->value = "\n";
@@ -63,7 +59,6 @@ void test2()
     token->type = WORD;
     token->value = "ls";
     token->next = token2;
-
 
     struct token *tok4 = xmalloc(1, sizeof(struct token));
     tok4->type = SEMI;
@@ -95,10 +90,8 @@ void test3()
     printf("\n----------------TEST 3-----------------\n");
     printf("\n---------------- SIMPLE IF -----------------\n\n");
 
-
-    
-    //token list = malloc(3 * sizeof (token));
-    //list = malloc(sizeof(token *));
+    // token list = malloc(3 * sizeof (token));
+    // list = malloc(sizeof(token *));
     struct token *token5 = xmalloc(1, sizeof(struct token));
     token5->type = NEWLINE;
     token5->value = "\n";
@@ -123,7 +116,6 @@ void test3()
     token->type = WORD;
     token->value = "toto";
     token->next = token2;
-
 
     struct token *tok4 = xmalloc(1, sizeof(struct token));
     tok4->type = WORD;
@@ -155,10 +147,8 @@ void test4()
     printf("\n----------------TEST 4-----------------\n");
     printf("\n---------------- IF ELIF IMBRIQUE -----------------\n\n");
 
-
-    
-    //token list = malloc(3 * sizeof (token));
-    //list = malloc(sizeof(token *));
+    // token list = malloc(3 * sizeof (token));
+    // list = malloc(sizeof(token *));
 
     struct token *token12 = xmalloc(1, sizeof(struct token));
     token12->type = NEWLINE;
@@ -190,7 +180,7 @@ void test4()
     token7->value = "\n";
     token7->next = token8;
 
-    struct token *token6= xmalloc(1, sizeof(struct token));
+    struct token *token6 = xmalloc(1, sizeof(struct token));
     token6->type = WORD;
     token6->value = "thenif euh";
     token6->next = token7;
@@ -214,7 +204,6 @@ void test4()
     token->type = WORD;
     token->value = "toto";
     token->next = token2;
-
 
     struct token *tok4 = xmalloc(1, sizeof(struct token));
     tok4->type = WORD;
@@ -246,10 +235,8 @@ void test5()
     printf("\n----------------TEST 5-----------------\n");
     printf("\n---------------- IF AND LIST -----------------\n\n");
 
-
-    
-    //token list = malloc(3 * sizeof (token));
-    //list = malloc(sizeof(token *));
+    // token list = malloc(3 * sizeof (token));
+    // list = malloc(sizeof(token *));
 
     struct token *token12 = xmalloc(1, sizeof(struct token));
     token12->type = NEWLINE;
@@ -276,7 +263,7 @@ void test5()
     token7->value = "echo";
     token7->next = token8;
 
-    struct token *token6= xmalloc(1, sizeof(struct token));
+    struct token *token6 = xmalloc(1, sizeof(struct token));
     token6->type = NEWLINE;
     token6->value = "\n";
     token6->next = token7;
@@ -300,7 +287,6 @@ void test5()
     token->type = SEMI;
     token->value = ";";
     token->next = token2;
-
 
     struct token *tok4 = xmalloc(1, sizeof(struct token));
     tok4->type = WORD;
@@ -331,8 +317,6 @@ void test6()
 {
     printf("\n----------------TEST 6-----------------\n");
     printf("\n---------------- REDIRECTION -----------------\n\n");
-
-    
 
     struct token *token6 = xmalloc(1, sizeof(struct token));
     token6->type = NEWLINE;
@@ -368,8 +352,6 @@ void test7()
 {
     printf("\n----------------TEST 7-----------------\n");
     printf("\n---------------- REDIRECTION IF -----------------\n\n");
-
-    
 
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
@@ -441,8 +423,6 @@ void test8()
     printf("\n----------------TEST 8-----------------\n");
     printf("\n---------------- Multiple REDIRECTION -----------------\n\n");
 
-    
-
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
     tokenend->value = "\n";
@@ -457,7 +437,6 @@ void test8()
     token5->type = GREAT;
     token5->value = ">";
     token5->next = token6;
-
 
     struct token *token4 = xmalloc(1, sizeof(struct token));
     token4->type = WORD;
@@ -489,8 +468,6 @@ void test9()
     printf("\n----------------TEST 9-----------------\n");
     printf("\n---------------- SIMPLE PIPELINE -----------------\n\n");
 
-    
-
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
     tokenend->value = "\n";
@@ -500,7 +477,6 @@ void test9()
     token5->type = WORD;
     token5->value = "a";
     token5->next = tokenend;
-
 
     struct token *token4 = xmalloc(1, sizeof(struct token));
     token4->type = WORD;
@@ -531,8 +507,6 @@ void test10()
 {
     printf("\n----------------TEST 10-----------------\n");
     printf("\n---------------- SIMPLE NEGATION -----------------\n\n");
-
-    
 
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
@@ -579,8 +553,6 @@ void test11()
     printf("\n----------------TEST 11-----------------\n");
     printf("\n---------------- NEGATION / PIPELINE-----------------\n\n");
 
-    
-
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
     tokenend->value = "\n";
@@ -590,7 +562,6 @@ void test11()
     token5->type = WORD;
     token5->value = "a";
     token5->next = tokenend;
-
 
     struct token *token4 = xmalloc(1, sizeof(struct token));
     token4->type = WORD;
@@ -626,8 +597,6 @@ void test12()
 {
     printf("\n----------------TEST 12-----------------\n");
     printf("\n---------------- SIMPLE WHILE -----------------\n\n");
-
-    
 
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
@@ -674,8 +643,6 @@ void test13()
     printf("\n----------------TEST 13-----------------\n");
     printf("\n---------------- SIMPLE UNTIL -----------------\n\n");
 
-    
-
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
     tokenend->value = "\n";
@@ -720,8 +687,6 @@ void test14()
 {
     printf("\n----------------TEST 14-----------------\n");
     printf("\n---------------- AND OR -----------------\n\n");
-
-    
 
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
@@ -772,8 +737,6 @@ void test15()
 {
     printf("\n----------------TEST 15-----------------\n");
     printf("\n---------------- IF AND REDIRECTION-----------------\n\n");
-
-    
 
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
@@ -850,8 +813,6 @@ void test16()
     printf("\n----------------TEST 16-----------------\n");
     printf("\n---------------- FOR -----------------\n\n");
 
-    
-
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
     tokenend->value = "\n";
@@ -927,8 +888,6 @@ void test17()
     printf("\n----------------TEST 17-----------------\n");
     printf("\n---------------- FUNCTION -----------------\n\n");
 
-    
-
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
     tokenend->value = "\n";
@@ -978,8 +937,6 @@ void test18()
 {
     printf("\n----------------TEST 18-----------------\n");
     printf("\n---------------- CASE -----------------\n\n");
-
-    
 
     struct token *tokenend = xmalloc(1, sizeof(struct token));
     tokenend->type = NEWLINE;
@@ -1045,7 +1002,6 @@ void test18()
 
     ast->vtable->pretty_print(ast);
 }
-
 
 int parser_test(void)
 {

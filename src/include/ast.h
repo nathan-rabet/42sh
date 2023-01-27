@@ -2,16 +2,17 @@
 #define AST_H
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
-#include "execution.h"
 
+#include "execution.h"
 
 /**
  * @brief Node of the AST
  */
-enum ast_type {
+enum ast_type
+{
     AST_CMD,
     AST_IF,
     AST_LIST,
@@ -36,7 +37,8 @@ struct ast_vtable;
  * @param type the type of the node
  * @param vtable the different available functions
  */
-struct ast {
+struct ast
+{
     enum ast_type type;
     struct ast_vtable *vtable;
 };
@@ -47,7 +49,8 @@ struct ast {
  * @param free the free function
  * @param pretty_print the print function
  */
-struct ast_vtable {
+struct ast_vtable
+{
     int (*run)(struct ast *ast);
     void (*free)(struct ast *ast);
     void (*pretty_print)(struct ast *ast);
@@ -58,7 +61,8 @@ struct ast_vtable {
  * @param base the linked of the ast structure
  * @param word the linked list of instruction
  */
-struct ast_cmd {
+struct ast_cmd
+{
     struct ast base;
     char **words; // NULL terminated char* list
 };
@@ -75,15 +79,16 @@ void cmd_pretty_print(struct ast *ast);
  * @param then_body if the condition is true
  * @param else_body if the condition is false, may be NULL
  */
- struct ast_if {
+struct ast_if
+{
     struct ast base;
     struct ast *condition;
     struct ast *then_body;
     struct ast *else_body;
 };
 
-struct ast *ast_if_init(struct ast *condition,
-                        struct ast *then_body, struct ast *else_body);
+struct ast *ast_if_init(struct ast *condition, struct ast *then_body,
+                        struct ast *else_body);
 int if_run(struct ast *ast);
 void if_free(struct ast *ast);
 void if_pretty_print(struct ast *ast);
@@ -94,7 +99,8 @@ void if_pretty_print(struct ast *ast);
  * @param nb_children number of children of the children arg
  * @param children the list of children
  */
-struct ast_list {
+struct ast_list
+{
     struct ast base;
     size_t nb_children;
     struct ast **children;
@@ -108,19 +114,20 @@ void list_pretty_print(struct ast *ast);
 /**
  * @brief the different type of redirection
  */
-enum ast_redir_type {
+enum ast_redir_type
+{
     /// @brief Tokens redirection
-        REDIR_LESS, // < redirecting input
-        REDIR_GREAT, // > redirecting output no clobber
-        REDIR_DLESS, // << here document
-        REDIR_DGREAT, // >> Appending redirection output
-        REDIR_LESSAND, // <& Duplicate an input file descriptor
-        REDIR_GREATAND, // >& Duplicate an output file descriptor
-        REDIR_LESSGREAT, // <> open file descriptor for reading and writing
-        REDIR_DLESSDASH, // <<- here document
+    REDIR_LESS, // < redirecting input
+    REDIR_GREAT, // > redirecting output no clobber
+    REDIR_DLESS, // << here document
+    REDIR_DGREAT, // >> Appending redirection output
+    REDIR_LESSAND, // <& Duplicate an input file descriptor
+    REDIR_GREATAND, // >& Duplicate an output file descriptor
+    REDIR_LESSGREAT, // <> open file descriptor for reading and writing
+    REDIR_DLESSDASH, // <<- here document
 
     /// @brief Token clobber
-        REDIR_CLOBBER, // >| redirecting output
+    REDIR_CLOBBER, // >| redirecting output
 
 };
 
@@ -130,13 +137,13 @@ enum ast_redir_type {
  * @param IONumber the ionumber
  * @param target the name of the target file of the redirection
  */
-struct list_redir {
+struct list_redir
+{
     enum ast_redir_type type;
     char *IONumber;
     char *target;
     struct list_redir *next;
 };
-
 
 /**
  * @brief the redir node
@@ -144,15 +151,16 @@ struct list_redir {
  * @param command the command of what we display
  * @param list of the all the redirection
  */
-struct ast_redir {
+struct ast_redir
+{
     struct ast base;
     struct ast *command;
     struct list_redir *list;
 };
 
-
 struct ast *ast_redir_init(struct list_redir *redir, struct ast *command);
-struct list_redir *list_redir_init(enum ast_redir_type type,char *IONumber, char *target, struct list_redir *next);
+struct list_redir *list_redir_init(enum ast_redir_type type, char *IONumber,
+                                   char *target, struct list_redir *next);
 int redir_run(struct ast *ast);
 void redir_free(struct ast *ast);
 void redir_pretty_print(struct ast *ast);
@@ -163,7 +171,8 @@ void redir_pretty_print(struct ast *ast);
  * @param ast_left the left side of the and
  * @param ast_right the right side of the and
  */
-struct ast_and {
+struct ast_and
+{
     struct ast base;
     struct ast *ast_left;
     struct ast *ast_right;
@@ -180,7 +189,8 @@ void and_pretty_print(struct ast *ast);
  * @param ast_left the left side of the or
  * @param ast_right the right side of the or
  */
-struct ast_or {
+struct ast_or
+{
     struct ast base;
     struct ast *ast_left;
     struct ast *ast_right;
@@ -196,7 +206,8 @@ void or_pretty_print(struct ast *ast);
  * @param base the linked of the ast structure
  * @param ast_not the ast where the not is apply
  */
-struct ast_not {
+struct ast_not
+{
     struct ast base;
     struct ast *ast_not;
 };
@@ -212,7 +223,8 @@ void not_pretty_print(struct ast *ast);
  * @param condition the condition
  * @param to_execute the execution part of the while
  */
-struct ast_while {
+struct ast_while
+{
     struct ast base;
     struct ast *condition;
     struct ast *to_execute;
@@ -229,11 +241,11 @@ void while_pretty_print(struct ast *ast);
  * @param condition the condition
  * @param to_execute the execution part of the until
  */
- struct ast_until {
+struct ast_until
+{
     struct ast base;
     struct ast *condition;
     struct ast *to_execute;
-
 };
 
 struct ast *ast_until_init(struct ast *condition, struct ast *to_execute);
@@ -248,7 +260,8 @@ void until_pretty_print(struct ast *ast);
  * @param word the list of word that will be the condition
  * @param to_execute the execution part of the for
  */
-struct ast_for {
+struct ast_for
+{
     struct ast base;
     char *name;
     struct ast *word;
@@ -266,7 +279,8 @@ void for_pretty_print(struct ast *ast);
  * @param name the name of the function
  * @param to_execute the execution part of the function
  */
-struct ast_func {
+struct ast_func
+{
     struct ast base;
     char *name;
     struct ast *to_execute;
@@ -283,13 +297,15 @@ void func_pretty_print(struct ast *ast);
  * @param nb_word number of matching word
  * @param to_execute the ast to execute if the word match
  */
-struct list_case_item {
+struct list_case_item
+{
     char **word;
     size_t nb_word;
     struct ast *to_execute;
 };
 
-struct list_case_item *list_case_item_init(char **word, size_t nb_word, struct ast *to_execute);
+struct list_case_item *list_case_item_init(char **word, size_t nb_word,
+                                           struct ast *to_execute);
 
 /**
  * @brief the case node
@@ -297,14 +313,16 @@ struct list_case_item *list_case_item_init(char **word, size_t nb_word, struct a
  * @param name the name of the variable that will be compare
  * @param case_clause clauses where the name will be compare to
  */
-struct ast_case {
+struct ast_case
+{
     struct ast base;
     char *name;
     size_t nb_item;
     struct list_case_item **case_item;
 };
 
-struct ast *ast_case_init(char *name, struct list_case_item **case_item, size_t nb_item);
+struct ast *ast_case_init(char *name, struct list_case_item **case_item,
+                          size_t nb_item);
 int case_run(struct ast *ast);
 void case_free(struct ast *ast);
 void case_pretty_print(struct ast *ast);
@@ -315,7 +333,8 @@ void case_pretty_print(struct ast *ast);
  * @param nb_command the number of command to run
  * @param command the ast node to run
  */
-struct ast_pipe {
+struct ast_pipe
+{
     struct ast base;
     size_t nb_command;
     struct ast **command;
@@ -331,7 +350,8 @@ void pipe_pretty_print(struct ast *ast);
  * @param base the linked of the ast structure
  * @param command the ast node to run
  */
-struct ast_brace {
+struct ast_brace
+{
     struct ast base;
     struct ast *command;
 };
@@ -346,7 +366,8 @@ void brace_pretty_print(struct ast *ast);
  * @param base the linked of the ast structure
  * @param command the ast node to run
  */
-struct ast_subshell {
+struct ast_subshell
+{
     struct ast base;
     struct ast *command;
 };
@@ -356,4 +377,4 @@ int subshell_run(struct ast *ast);
 void subshell_free(struct ast *ast);
 void subshell_pretty_print(struct ast *ast);
 
-#endif //AST_H
+#endif // AST_H

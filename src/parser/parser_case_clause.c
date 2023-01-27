@@ -5,7 +5,8 @@
 
 struct ast *parser_case_clause(struct token_list *tokens)
 {
-    struct list_case_item **case_item = xmalloc(1, sizeof(struct list_case_item**));
+    struct list_case_item **case_item =
+        xmalloc(1, sizeof(struct list_case_item **));
     size_t i = 0;
     char *name = NULL;
 
@@ -26,4 +27,3 @@ struct ast *parser_case_clause(struct token_list *tokens)
 
     return ast_case_init(name, case_item, i);
 }
-
