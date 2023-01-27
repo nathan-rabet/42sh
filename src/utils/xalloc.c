@@ -1,5 +1,7 @@
 #include "xalloc.h"
 
+#include <string.h>
+
 #ifndef DEBUG
 static
 #endif
@@ -178,4 +180,12 @@ void xfree_all(void)
     }
     xalloc_dlist.head = NULL;
     UNLOCK_MUTEX();
+}
+
+// xstrdup
+char *xstrdup(const char *s)
+{
+    char *new_s = xcalloc(strlen(s) + 1, sizeof(char));
+    strcpy(new_s, s);
+    return new_s;
 }

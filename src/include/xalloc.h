@@ -92,4 +92,17 @@ void xfree(void *ptr);
  */
 void xfree_all(void);
 
+// XALLOC UTILS
+
+/**
+ * @brief Strdup wrapper which uses xalloc functions.
+ *
+ * @warning Must be used instead of `strdup` in case you are using xalloc,
+ * else you will have memory leaks.
+ *
+ * @param s String to duplicate
+ * @return char*
+ */
+char *xstrdup(const char *s);
+
 #endif /* XALLOC_H */
