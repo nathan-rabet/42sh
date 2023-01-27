@@ -127,7 +127,8 @@ enum token_types
 // Operators utils
 #define FIRST_OPERATOR AND_IF
 #define LAST_OPERATOR CLOBBER
-#define IS_OPERATOR(tok) (tok >= FIRST_OPERATOR && tok <= LAST_OPERATOR)
+#define IS_OPERATOR(token_type)                                                \
+    (token_type >= FIRST_OPERATOR && token_type <= LAST_OPERATOR)
 
 /**
  * @brief Create tokens from input string
