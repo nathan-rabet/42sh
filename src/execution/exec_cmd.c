@@ -7,6 +7,7 @@ int exec_cmd(char **argv, int *error)
     (void)error;
     pid_t pid = fork();
     int status = 0;
+    int status_pid = 0;
 
     if (pid == 0)
     {
@@ -22,8 +23,8 @@ int exec_cmd(char **argv, int *error)
     }
     else
     {
-        waitpid(pid, &status, 0);
-        status = WEXITSTATUS(status);
+        waitpid(pid, &status_pid, 0);
+        status = WEXITSTATUS(status_pid);
     }
     return status;
 }
