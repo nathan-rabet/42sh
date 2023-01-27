@@ -14,5 +14,6 @@ struct echo_options
 };
 
 void my_echo(int argc, char **argv);
+void my_cd(char **argv);
 
 #endif /* !BUILTINS_H_ */

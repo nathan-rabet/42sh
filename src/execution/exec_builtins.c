@@ -20,7 +20,11 @@ int exec_builtins(char **argv, int *error)
         my_echo(argc, argv + 1);
         return 0;
     }
-    (void) argv;
+    else if (strcmp(*argv, "cd") == 0)
+    {
+        my_cd(argv + 1);
+        return 0;
+    }
     (void) error; // if (strcmp(*argv, "echo") exec_echo(argv);
     fflush(stdout);
     return true;

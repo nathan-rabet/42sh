@@ -1,0 +1,1 @@
+sources += files('builtin_echo.c', 'builtin_cd.c')
