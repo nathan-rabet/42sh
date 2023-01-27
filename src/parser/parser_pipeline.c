@@ -8,7 +8,7 @@ struct ast *parser_pipeline(struct token_list *tokens)
     struct ast **command = xmalloc(100, sizeof(struct ast **));
     size_t i = 1;
     bool negation = false;
-    if (tokens->current_token->type == BANG)
+    if (look_ahead(tokens) == BANG)
     {
         eat(tokens, BANG);
         negation = true;
@@ -16,7 +16,7 @@ struct ast *parser_pipeline(struct token_list *tokens)
 
     command[0] = parser_command(tokens);
 
-    while (tokens->current_token->type == PIPE)
+    while (tokens->current_token && tokens->current_token->type == PIPE)
     {
         eat(tokens, PIPE);
         while (tokens->current_token->type == NEWLINE)

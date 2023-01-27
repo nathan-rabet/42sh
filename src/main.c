@@ -5,103 +5,198 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "lexer.h"
+#include "./include/ast.h"
+#include "./include/execution.h"
+#include "./include/lexer.h"
+#include "./include/parser.h"
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
-/// Parser /////////////
-
-struct Node
+int exec_stdin_noargs()
 {
-    char *type;
-    char **words;
-    int num_words;
-};
+    char input_stdin[BUFFER_SIZE];
 
-struct Node *parse_simple_command(char *input)
-{
-    token *token = get_tokens(
-        input, strlen(input)); // call the lexer's get_next_token function
-    struct Node *node = malloc(sizeof(struct Node));
-    node->type = "SIMPLE_COMMAND";
-    node->words = malloc(sizeof(char *));
-    node->words[0] = token->value;
-    node->num_words = 1;
-
-    while ((token = get_tokens(input, strlen(input))) != NULL)
-    { // use the NULL token value from the lexer
-        node->words =
-            realloc(node->words, (node->num_words + 1) * sizeof(char *));
-        node->words[node->num_words++] = token->value;
-    }
-
-    return node;
-}
-
-/// Execution module using execvp with wait /////////////
-int execute_simple_command(struct Node *node)
-{
-    pid_t pid = fork();
-    if (pid == 0)
+    if (fgets(input_stdin, BUFFER_SIZE, stdin) == NULL)
     {
-        execvp(node->words[0], node->words);
-        perror("execvp");
-        exit(1);
+        fprintf(stderr, "Error: Failed to read input\n");
+        exit(2);
     }
+
+    if (input_stdin[0] == '\n')
+        exit(0);
+    size_t input_size = strlen(input_stdin);
+    xalloc_init();
+    struct token *input_tokens = get_tokens(input_stdin, input_size);
+    struct ast *ast = parser_input(input_tokens);
+    int status = 0;
+    if (ast == NULL)
+        status = 0;
     else
+        status = ast->vtable->run(ast);
+    if (status != 0)
     {
-        int status;
-        waitpid(pid, &status, 0);
-        return WEXITSTATUS(status);
+        xalloc_deinit();
+        exit(status);
     }
+    xalloc_deinit();
+    return status;
 }
 
-/// Parser printer /////////////
-void parser_print(struct Node *node)
+int exec_stdin()
 {
-    if (node == NULL)
-    {
-        return;
-    }
+    char input_stdin[BUFFER_SIZE];
+    xalloc_init();
+    char *stdin_contents = xmalloc(BUFFER_SIZE, sizeof(char));
+    size_t contents_size = 0;
 
-    printf("Node type: %s\n", node->type);
-    printf("Number of words: %d\n", node->num_words);
-    printf("Words: ");
-    for (int i = 0; i < node->num_words; i++)
+    // printf("going stdin :\n");
+    while (fgets(input_stdin, BUFFER_SIZE, stdin) != NULL)
     {
-        printf("%s ", node->words[i]);
+        if (input_stdin[0] == '\n')
+            continue;
+
+        size_t line_size = strlen(input_stdin);
+
+        // Allocate memory for the input string and concatenate the
+        // current line
+        stdin_contents = xrealloc(stdin_contents, contents_size + line_size + 1,
+                                  sizeof(char));
+        memcpy(stdin_contents + contents_size, input_stdin, line_size);
+        contents_size += line_size;
+        stdin_contents[contents_size] = '\0';
+        // printf("stdin :\n%s", stdin_contents);
     }
-    printf("\n\n");
+    struct token *input_tokens = get_tokens(stdin_contents, contents_size);
+    struct ast *ast = parser_input(input_tokens);
+
+    int status = 0;
+    if (ast == NULL)
+        status = 0;
+    else
+        status = ast->vtable->run(ast);
+    if (status != 0)
+    {
+        xalloc_deinit();
+        exit(status);
+    }
+    xalloc_deinit();
+    return status;
 }
 
-/// main /////////////
+int exec_file(char *argv)
+{
+    const char *filename = argv;
+    FILE *fp = fopen(filename, "r");
+    if (!fp)
+    {
+        fprintf(stderr, "Error opening file\n");
+        exit(2);
+    }
+    xalloc_init();
+    // Allocate memory for file contents
+    char *file_contents = xmalloc(BUFFER_SIZE, sizeof(char));
+    memset(file_contents, 0, BUFFER_SIZE); // zero the memory
+
+    // Read file contents line by line and store them in the string
+    // file_contents
+    char *line = NULL;
+    size_t len = 0;
+    size_t file_contents_size = 0;
+    while ((getline(&line, &len, fp)) != -1)
+    {
+        // Reallocate memory for file_contents
+        file_contents = xrealloc(
+            file_contents, file_contents_size + strlen(line) + 1, sizeof(char));
+        file_contents_size += strlen(line);
+        strncat(file_contents, line, strlen(line));
+    }
+    // send the file_contents to the lexer & parser
+    struct token *input_tokens = get_tokens(file_contents, file_contents_size);
+    struct ast *ast = parser_input(input_tokens);
+    int status = 0;
+    if (ast == NULL)
+        status = 0;
+    else
+        status = ast->vtable->run(ast);
+    // ast->vtable->pretty_print(ast);
+
+    if (status != 0)
+    {
+        free(line);
+        fclose(fp);
+        xalloc_deinit();
+        exit(status);
+    }
+    xalloc_deinit();
+
+    // Free memory
+    free(line);
+    // Close file
+    fclose(fp);
+
+    return status;
+}
+
+int exec_argument(char *input_string)
+{
+    size_t input_size = strlen(input_string);
+
+    // send the input_string to the lexer & parser
+    xalloc_init();
+    struct token *input_tokens = get_tokens(input_string, input_size);
+
+    /*while (input_tokens != NULL)
+    {
+        printf("tok : %s\n", input_tokens->value);
+        input_tokens = input_tokens->next;
+    }*/
+
+    struct ast *ast = parser_input(input_tokens);
+    if (ast == NULL)
+        return 0;
+    int status = 0;
+    status = ast->vtable->run(ast);
+    if (status != 0)
+    {
+        xalloc_deinit();
+        exit(status);
+    }
+    xalloc_deinit();
+    return status;
+}
+
 int main(int argc, char *argv[])
 {
+    int status = 0;
     int opt;
+
     opterr = 0; // deletes the error line generated by getopt function as we
                 // handle the error on the default case
     bool input_from_stdin = true;
-    char *input_string = NULL;
-    char input_stdin[BUFFER_SIZE];
 
     // Parse command-line options
-    while ((opt = getopt(argc, argv, "c:")) != -1)
+    while ((opt = getopt(argc, argv, "c:a:")) != -1)
     {
         switch (opt)
         {
         case 'c':
             // Read input from string
             input_from_stdin = false;
-            input_string = optarg;
-
-            // send the input_string to the lexer & parser
-            struct Node *node = parse_simple_command(input_string);
-
-            parser_print(node); // debug
-
-            int status = execute_simple_command(node);
-            printf("Command exited with status %d\n", status); // debug
-
+            if (argv[optind] == NULL)
+                return exec_argument(optarg);
+            else
+            {
+                status = exec_argument(optarg);
+                int i = optind;
+                while (argv[i] != NULL)
+                {
+                    status = exec_argument(argv[i]);
+                    i++;
+                }
+            }
+            return status;
+            break;
+        case 'a':
             break;
         default:
             // Invalid option
@@ -118,69 +213,26 @@ int main(int argc, char *argv[])
     {
         if (optind < argc)
         {
-            // Read input from file
             input_from_stdin = false;
-
-            // Open file
-            const char *filename = argv[optind];
-            FILE *fp = fopen(filename, "r");
-            if (!fp)
+            int i = optind;
+            while (argv[i] != NULL)
             {
-                fprintf(stderr, "Error opening file\n");
-                exit(2);
+                status = exec_file(argv[i]);
+                i++;
             }
-
-            // Allocate memory for file contents
-            char *file_contents = malloc(BUFFER_SIZE);
-            if (file_contents == NULL)
-            {
-                fprintf(stderr, "Error: Failed to allocate memory\n");
-                exit(2);
-            }
-
-            // Read file contents line by line and store them in the string
-            // file_contents
-            char *line = NULL;
-            size_t len = 0;
-            while ((getline(&line, &len, fp)) != -1)
-            {
-                strcat(file_contents, line);
-            }
-
-            // send the file_contents to the lexer & parser
-            struct Node *node = parse_simple_command(file_contents);
-
-            parser_print(node); // debug
-
-            int status = execute_simple_command(node);
-            printf("Command exited with status %d\n", status); // debug
-
-            // Free memory
-            free(line);
-            // Close file
-            fclose(fp);
+            return status;
         }
     }
-
     // If no input source was specified, read from standard input
-    if (input_from_stdin)
+    if ((isatty(STDIN_FILENO)))
     {
-        if (fgets(input_stdin, BUFFER_SIZE, stdin) == NULL)
-        {
-            fprintf(stderr, "Error: Failed to read input\n");
-            exit(2);
-        }
-
-        // print stdin input (debug)
-        printf("reading from stdin:\n %s", input_stdin);
-
-        // send the input_string to the lexer & parser
-        struct Node *node = parse_simple_command(input_stdin);
-
-        parser_print(node); // debug
-
-        int status = execute_simple_command(node);
-        printf("Command exited with status %d\n", status); // debug
+        // stdin from terminal
+        return exec_stdin_noargs();
+    }
+    else
+    {
+        // stdin from a file
+        return exec_stdin();
     }
 
     return 0;

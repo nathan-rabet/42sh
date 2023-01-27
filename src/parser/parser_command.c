@@ -15,7 +15,8 @@ struct ast *parser_command(struct token_list *tokens)
         ast = parser_shell_command(tokens);
         struct list_redir *list = NULL;
 
-        while (is_redirection(tokens->current_token->type))
+        while (tokens->current_token != NULL
+               && is_redirection(tokens->current_token->type))
             list = parser_redirection(tokens, list);
         if (list != NULL)
             return ast_redir_init(list, ast);

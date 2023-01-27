@@ -12,7 +12,7 @@ struct ast *parser_simple_command(struct token_list *tokens)
     char **words = xmalloc(100, sizeof(char *));
     words[0] = NULL;
 
-    while (is_prefix(tokens))
+    while (tokens->current_token && is_prefix(tokens))
     {
         if (is_redirection(tokens->current_token->type))
             list = parser_redirection(tokens, list);
@@ -20,21 +20,23 @@ struct ast *parser_simple_command(struct token_list *tokens)
             words = parser_element(tokens, words);
     }
 
-    if (tokens->current_token->type == WORD)
+    if (look_ahead(tokens) == WORD)
     {
         words = parser_element(tokens, words);
     }
 
-    while (is_redirection(tokens->current_token->type)
-           || tokens->current_token->type == WORD)
+    while (tokens->current_token
+           && (is_redirection(tokens->current_token->type)
+               || tokens->current_token->type == WORD))
     {
         if (is_redirection(tokens->current_token->type))
             list = parser_redirection(tokens, list);
         if (tokens->current_token->type == WORD)
             words = parser_element(tokens, words);
     }
-
-    if (list == NULL)
+    if (words[0] == NULL)
+        return NULL;
+    else if (list == NULL)
         return ast_cmd_init(words);
     return ast_redir_init(list, ast_cmd_init(words));
 }

@@ -2,7 +2,8 @@
 
 void eat(struct token_list *tokens, token_t type)
 {
-    assert(tokens->current_token != NULL);
+    if (tokens->current_token == NULL)
+        parser_grammar_return_error_2(NULL);
     if (tokens->current_token->type == type)
         tokens->current_token = tokens->current_token->next;
     else
@@ -13,7 +14,9 @@ void eat(struct token_list *tokens, token_t type)
 
 token_t look_ahead(struct token_list *tokens)
 {
-    assert(tokens->current_token != NULL);
+    // assert(tokens->current_token != NULL);
+    if (tokens->current_token == NULL)
+        return -1;
     return tokens->current_token->type;
 }
 

@@ -16,5 +16,6 @@ void return_and_free(char *msg, int exit_code)
     fprintf(stderr, "42sh %s\n", msg);
     close_all_list_dup();
     xfree_all();
+    xalloc_deinit();
     exit(exit_code);
 }
