@@ -9,12 +9,14 @@
 
 #include "../include/lexer.h"
 #include "../include/xalloc.h"
+#include "alias.h"
 
 int main(void)
 {
     xalloc_init();
+    add_alias("foo", "bar baz");
 
-    const char *cmd = "# comment";
+    const char *cmd = "foo bar baz";
 
     token *returned_tokens = get_tokens(cmd, strlen(cmd));
 
@@ -24,7 +26,6 @@ int main(void)
         printf("\n");
     }
 
-    (void)returned_tokens;
     xalloc_deinit();
 
     return 0;

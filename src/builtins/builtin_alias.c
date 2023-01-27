@@ -111,7 +111,7 @@ void use_alias(const char *name)
     }
 }
 
-void unuse_all_alias(void)
+void unuse_all_aliases(void)
 {
     global_sh *global = get_global_sh();
 
