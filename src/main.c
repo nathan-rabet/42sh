@@ -12,6 +12,34 @@
 
 #define BUFFER_SIZE 4096
 
+int exec_argument(char *input_string)
+{
+    size_t input_size = strlen(input_string);
+
+    // send the input_string to the lexer & parser
+    xalloc_init();
+    struct token *input_tokens = get_tokens(input_string, input_size);
+
+    /*while (input_tokens != NULL)
+    {
+        printf("tok : %s\n", input_tokens->value);
+        input_tokens = input_tokens->next;
+    }*/
+
+    struct ast *ast = parser_input(input_tokens);
+    if (ast == NULL)
+        exit(2);
+    int status = 0;
+    status = ast->vtable->run(ast);
+    if (status != 0)
+    {
+        xalloc_deinit();
+        exit(status);
+    }
+    xalloc_deinit();
+    return status;
+}
+
 int main(int argc, char *argv[])
 {
     int opt;
@@ -30,33 +58,7 @@ int main(int argc, char *argv[])
             // Read input from string
             input_from_stdin = false;
             input_string = optarg;
-
-            size_t input_size = strlen(input_string);
-
-            // send the input_string to the lexer & parser
-            xalloc_init();
-            struct token *input_tokens = get_tokens(input_string, input_size);
-
-            /*while (input_tokens != NULL)
-            {
-                printf("tok : %s\n", input_tokens->value);
-                input_tokens = input_tokens->next;
-            }*/
-
-            struct ast *ast = parser_input(input_tokens);
-
-            int status = 0;
-            if (ast == NULL)
-                status = 0;
-            else
-                status = ast->vtable->run(ast);
-            if (status != 0)
-            {
-                xalloc_deinit();
-                exit(status);
-            }
-            xalloc_deinit();
-
+            return exec_argument(input_string);
             break;
         case 'a':
             break;
@@ -75,7 +77,7 @@ int main(int argc, char *argv[])
     {
         if (optind < argc)
         {
-            printf("going file :\n");
+            //printf("going file :\n");
 
             // Read input from file
             input_from_stdin = false;
