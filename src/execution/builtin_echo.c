@@ -1,11 +1,12 @@
-#include "builtins.h"
-
 #include <stdio.h>
+#include <string.h>
+
+#include "builtins.h"
 
 /**
  * Prints given character. If an escape sequence is passed, it is printer as a
  * string and is not interpreted.
-*/
+ */
 static void non_interpreted_print(char *str)
 {
     while (*str)
@@ -31,10 +32,42 @@ static void non_interpreted_print(char *str)
     }
 }
 
+// Strips leading and trailing quotes from strings to be printed.
+char *strip_quotes(char *str)
+{
+    size_t i = 0;
+    size_t j = strlen(str);
+    char quote;
+
+    // Strip quotes if string is not empty.
+    if (j != 0 && (str[0] == '"' || str[0] == '\''))
+    {
+        if (str[0] == '"')
+            quote = '"';
+        else if (str[0] == '\'')
+            quote = '\'';
+
+        while (str[i] != '\0' && (str[i] == quote && str[j - 1] == quote))
+        {
+            i++;
+            str[j - 1] = '\0';
+            j--;
+        }
+    }
+
+    return str + i;
+}
+
 // Prints elements passed in argv with options given for echo command.
 static void print_elements(int elements_count, char **elements,
-               struct echo_options *options)
+                           struct echo_options *options)
 {
+    // Strip leading or trailing quotes.
+    for (int i = 0; i < elements_count; i++)
+    {
+        elements[i] = strip_quotes(elements[i]);
+    }
+
     if (options->flag_e)
     {
         for (int i = 0; i < elements_count - 1; i++)
