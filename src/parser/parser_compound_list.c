@@ -23,7 +23,6 @@ struct ast *parser_compound_list(struct token_list *tokens)
         children[i] = parser_and_or(tokens);
         if (children[i] != NULL)
             i++;
-
     }
 
     if (look_ahead(tokens) == SEMI)

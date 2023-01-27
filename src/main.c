@@ -14,7 +14,6 @@
 
 int exec_stdin_noargs()
 {
-
     char input_stdin[BUFFER_SIZE];
 
     if (fgets(input_stdin, BUFFER_SIZE, stdin) == NULL)

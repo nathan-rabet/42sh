@@ -12,7 +12,7 @@ struct ast *parser_funcdec(struct token_list *tokens)
     eat(tokens, WORD);
 
     if (tokens->current_token && strcmp(tokens->current_token->value, "(") == 0
-    && strcmp(tokens->current_token->next->value, ")") == 0)
+        && strcmp(tokens->current_token->next->value, ")") == 0)
     {
         eat(tokens, WORD);
         eat(tokens, WORD);

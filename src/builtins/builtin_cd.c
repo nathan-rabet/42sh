@@ -1,17 +1,16 @@
-#include "builtins.h"
-#include "xalloc.h"
-
 #include <err.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "builtins.h"
+#include "xalloc.h"
+
 // Checks if given string starts with dot or dot-dot.
 int has_dot_prefix(char *str)
 {
-    return !strncmp(".", str, 1)
-        || !strncmp("..", str, 2);
+    return !strncmp(".", str, 1) || !strncmp("..", str, 2);
 }
 
 // Gets PWD. Size of current buffer is returned as well.
@@ -19,8 +18,8 @@ char *get_current_dir(size_t *buffer_size)
 {
     char *buffer = xcalloc(*buffer_size, sizeof(char));
     char *path = NULL;
-    while ((path = getcwd(buffer, *buffer_size)) == NULL &&
-        errno == ENAMETOOLONG)
+    while ((path = getcwd(buffer, *buffer_size)) == NULL
+           && errno == ENAMETOOLONG)
     {
         *buffer_size *= 2;
         buffer = xrealloc(buffer, *buffer_size, sizeof(char));
@@ -67,7 +66,7 @@ char *create_full_path(const char *curpath)
 /**
  * Canonicalizes given path and returns it.
  * Returns error code of 1 if path is too long.
-*/
+ */
 char *canonicalize_path(const char *path, int *err_code)
 {
     // Error occured during full path creation.
@@ -77,7 +76,7 @@ char *canonicalize_path(const char *path, int *err_code)
     char *curpath = xcalloc(strlen(path) + 1, sizeof(char));
     char *destination = curpath;
 
-    // Add slash for absolute path if any. 
+    // Add slash for absolute path if any.
     if (path[0] == '/')
     {
         destination[0] = '/';
@@ -100,8 +99,8 @@ char *canonicalize_path(const char *path, int *err_code)
             path += *(path + 1) == '\0' ? 1 : 2;
             continue;
         }
-        else if (strncmp("..", path, 2) && (*(path + 2) == '\0'
-            || *(path + 2) == '/'))
+        else if (strncmp("..", path, 2)
+                 && (*(path + 2) == '\0' || *(path + 2) == '/'))
         {
             // Handle case for dot dot (move back to previous directory).
             path += *(path + 1) == '\0' ? 2 : 3;
@@ -109,7 +108,7 @@ char *canonicalize_path(const char *path, int *err_code)
             /**
              * Moving back to previous directory is only done if destination
              * pointer has been incremented.
-            */
+             */
             while (destination > curpath + 1)
             {
                 if (*destination != '/')
@@ -140,7 +139,7 @@ char *canonicalize_path(const char *path, int *err_code)
     // Remove final '/'.
     if (destination > curpath + 1 && *(destination - 1) == '/')
         *(destination - 1) = '\0';
-    
+
     // If final path is too long, return NULL.
     if (strlen(curpath) >= PATH_MAX)
         *err_code = 1;
