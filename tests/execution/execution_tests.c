@@ -16,8 +16,6 @@ void test_exec_redir()
     printf("\n----------------TEST 1-----------------\n");
     printf("\n---------------- REDIRECTION STDOUT-----------------\n\n");
 
-
-
     struct token *token6 = xmalloc(1, sizeof(struct token));
     token6->type = NEWLINE;
     token6->value = "\n";
@@ -43,7 +41,6 @@ void test_exec_redir()
     token->value = "echo";
     token->next = token2;
 
-
     struct ast *ast = parser_input(token);
     ast->vtable->pretty_print(ast);
     ast->vtable->run(ast);
@@ -53,8 +50,6 @@ void test_exec_input()
 {
     printf("\n----------------TEST 2-----------------\n");
     printf("\n---------------- REDIRECTION STDIN-----------------\n\n");
-
-
 
     struct token *token6 = xmalloc(1, sizeof(struct token));
     token6->type = NEWLINE;
@@ -76,7 +71,6 @@ void test_exec_input()
     token->value = "cat";
     token->next = token2;
 
-
     struct ast *ast = parser_input(token);
     ast->vtable->pretty_print(ast);
     ast->vtable->run(ast);
@@ -87,7 +81,7 @@ int test(void)
     xalloc_init();
     test_exec_cmd();
     test_exec_redir();
-    //test_exec_input();
+    // test_exec_input();
     xfree_all();
     return 0;
 }

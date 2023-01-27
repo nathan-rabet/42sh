@@ -25,6 +25,7 @@ struct ast *parser_simple_command(struct token_list *tokens)
         words = parser_element(tokens, words);
     }
 
+
     while (tokens->current_token
            && (is_redirection(tokens->current_token->type)
                || tokens->current_token->type == WORD))

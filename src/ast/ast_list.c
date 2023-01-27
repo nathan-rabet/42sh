@@ -1,13 +1,12 @@
 #include "../include/ast.h"
 #include "../include/xalloc.h"
 
-
 struct ast *ast_list_init(size_t nb_children, struct ast **children)
 {
     static struct ast_vtable vtable = {
-            .run = &list_run,
-            .free = &list_free,
-            .pretty_print = &list_pretty_print,
+        .run = &list_run,
+        .free = &list_free,
+        .pretty_print = &list_pretty_print,
     };
     struct ast_list *list_ast = xmalloc(1, sizeof(struct ast_list));
     list_ast->base.type = AST_LIST;
@@ -17,7 +16,8 @@ struct ast *ast_list_init(size_t nb_children, struct ast **children)
     return &list_ast->base;
 }
 
-int list_run(struct ast *ast) {
+int list_run(struct ast *ast)
+{
     assert(ast && ast->type == AST_LIST);
     struct ast_list *list_ast = (struct ast_list *)ast;
     int status = 0;
@@ -29,10 +29,10 @@ int list_run(struct ast *ast) {
 void list_free(struct ast *ast)
 {
     assert(ast && ast->type == AST_LIST);
-    struct ast_list *list_ast = (struct ast_list*) ast;
+    struct ast_list *list_ast = (struct ast_list *)ast;
     if (list_ast->children)
     {
-        for (size_t i = 0; i < list_ast->nb_children;i++)
+        for (size_t i = 0; i < list_ast->nb_children; i++)
             list_ast->children[i]->vtable->free(list_ast->children[i]);
         xfree(list_ast->children);
     }
@@ -42,12 +42,11 @@ void list_free(struct ast *ast)
 void list_pretty_print(struct ast *ast)
 {
     assert(ast && ast->type == AST_LIST);
-    struct ast_list *list_ast = (struct ast_list*) ast;
+    struct ast_list *list_ast = (struct ast_list *)ast;
     printf("LIST nb children: %zu: \n", list_ast->nb_children);
-    for (size_t i = 0; i < list_ast->nb_children;i++)
+    for (size_t i = 0; i < list_ast->nb_children; i++)
     {
         printf("Child %zu : \n", i);
         list_ast->children[i]->vtable->pretty_print(list_ast->children[i]);
     }
 }
-

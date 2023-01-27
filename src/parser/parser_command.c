@@ -1,12 +1,11 @@
 // GRAMMAR
 // command =
-//simple_command
+// simple_command
 //| shell_command { redirection }
 //| funcdec { redirection }
 //;
 
 #include "../include/parser.h"
-
 
 struct ast *parser_command(struct token_list *tokens)
 {

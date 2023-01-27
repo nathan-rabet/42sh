@@ -8,7 +8,6 @@
 
 char **parser_element(struct token_list *tokens, char **words)
 {
-
         size_t i = 0;
         while (words && words[i] != NULL)
             i++;

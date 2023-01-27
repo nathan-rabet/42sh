@@ -14,6 +14,7 @@
 
 int exec_stdin_noargs()
 {
+
     char input_stdin[BUFFER_SIZE];
 
     if (fgets(input_stdin, BUFFER_SIZE, stdin) == NULL)
@@ -21,6 +22,7 @@ int exec_stdin_noargs()
         fprintf(stderr, "Error: Failed to read input\n");
         exit(2);
     }
+
     if (input_stdin[0] == '\n')
         exit(0);
     size_t input_size = strlen(input_stdin);
@@ -233,5 +235,6 @@ int main(int argc, char *argv[])
         // stdin from a file
         return exec_stdin();
     }
+
     return 0;
 }

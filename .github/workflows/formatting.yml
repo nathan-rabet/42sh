@@ -1,0 +1,20 @@
+name: Check `clang-format` formatting
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
+
+jobs:
+  check_formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+    
+      - name: Installing clang-format
+        run: |
+          sudo apt install clang-format
+      - name: Check formatting for all .h and .c file.
+        run: |
+          bash ./.github/scripts/check_formatting.sh

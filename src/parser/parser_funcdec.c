@@ -3,7 +3,6 @@
 
 #include "../include/parser.h"
 
-
 struct ast *parser_funcdec(struct token_list *tokens)
 {
     char *name;

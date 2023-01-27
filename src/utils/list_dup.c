@@ -1,12 +1,12 @@
 #include "../include/execution.h"
 
 struct list_dup list_dup = {
-        .head = NULL,
+    .head = NULL,
 };
 
 void push_top_dup(int fd_source, int fd_destination)
 {
-    struct dup_item *item = xmalloc(1, sizeof (struct dup_item));
+    struct dup_item *item = xmalloc(1, sizeof(struct dup_item));
     item->fd_source = fd_source;
     item->fd_dest = fd_destination;
     item->fd_source_dup = -1;
@@ -37,13 +37,14 @@ void dup2_all_list()
 
 bool is_std(int IO)
 {
-    switch (IO) {
-        case 1:
-        case 2:
-        case 3:
-            return true;
-        default:
-            return false;
+    switch (IO)
+    {
+    case 1:
+    case 2:
+    case 3:
+        return true;
+    default:
+        return false;
     }
 }
 
