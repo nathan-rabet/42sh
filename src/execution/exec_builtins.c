@@ -39,6 +39,21 @@ int exec_builtins(char **argv, int *error)
         return 0;
     else if (strcmp(*argv, "false") == 0)
         return 1;
+    else if (strcmp(*argv, "export") == 0)
+    {
+        builtin_export(argv[1]);
+        return 0;
+    }
+    else if (strcmp(*argv, "unset") == 0)
+    {
+        builtin_unset(argv + 1);
+        return 0;
+    }
+        else if (strcmp(*argv, ".") == 0)
+    {
+        return builtin_dot(argv + 1);
+        return 0;
+    }
 
     (void)error; // if (strcmp(*argv, "echo") exec_echo(argv);
     fflush(stdout);
