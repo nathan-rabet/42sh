@@ -16,10 +16,12 @@ struct ast *parser_pipeline(struct token_list *tokens)
 
     command[0] = parser_command(tokens);
 
-    while (tokens->current_token && tokens->current_token->type == PIPE)
+    while (tokens->current_token && look_ahead(tokens) == PIPE)
     {
+        if (command[0] == NULL)
+            parser_grammar_return_error_2(tokens->current_token);
         eat(tokens, PIPE);
-        while (tokens->current_token->type == NEWLINE)
+        while (look_ahead(tokens) == NEWLINE)
             eat(tokens, NEWLINE);
         if (tokens->current_token)
             command[i++] = parser_command(tokens);

@@ -21,10 +21,12 @@ struct ast *parser_rule_case(struct token_list *tokens)
     eat(tokens, IN);
     while (look_ahead(tokens) == NEWLINE)
         eat(tokens, NEWLINE);
-    ast = (struct ast_case *)parser_case_clause(tokens);
-    if (ast)
-        ast->name = name;
-
+    if (look_ahead(tokens) != ESAC)
+    {
+        ast = (struct ast_case *)parser_case_clause(tokens);
+        if (ast)
+            ast->name = name;
+    }
     eat(tokens, ESAC);
     return (struct ast *)ast;
 }

@@ -10,7 +10,7 @@ struct list_case_item *parser_case_item(struct token_list *tokens)
     struct ast *to_execute = NULL;
 
     if (tokens->current_token && strcmp(tokens->current_token->value, "(") == 0)
-        eat(tokens, WORD);
+        eat(tokens, TOKEN_UNDEFINED);
 
     if (look_ahead(tokens) == WORD)
     {
@@ -32,7 +32,7 @@ struct list_case_item *parser_case_item(struct token_list *tokens)
     }
 
     if (tokens->current_token && strcmp(tokens->current_token->value, ")") == 0)
-        eat(tokens, WORD);
+        eat(tokens, TOKEN_UNDEFINED);
     else
         parser_grammar_return_error_2(tokens->current_token);
 
