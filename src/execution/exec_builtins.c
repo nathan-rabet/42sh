@@ -12,7 +12,7 @@ int count_argc(char **argv)
     return i;
 }
 
-int exec_builtins(char **argv, int *error)
+int exec_builtins(char **argv)
 {
     if (strcmp(*argv, "echo") == 0)
     {
@@ -55,7 +55,6 @@ int exec_builtins(char **argv, int *error)
         return 0;
     }
 
-    (void)error; // if (strcmp(*argv, "echo") exec_echo(argv);
     fflush(stdout);
     return true;
 }

@@ -20,9 +20,10 @@ int while_run(struct ast *ast)
 {
     assert(ast && ast->type == AST_WHILE);
     struct ast_while *while_ast = (struct ast_while *)ast;
-    while (while_ast->condition->vtable->run(while_ast->condition))
-        while_ast->to_execute->vtable->run(while_ast->to_execute);
-    return true;
+    int status = 0;
+    while (while_ast->condition->vtable->run(while_ast->condition) == 0)
+        status = while_ast->to_execute->vtable->run(while_ast->to_execute);
+    return status;
 }
 
 void while_free(struct ast *ast)
