@@ -54,7 +54,7 @@ const char *get_alias_value(const char *name)
     return NULL;
 }
 
-void remove_alias(const char *name)
+bool remove_alias(const char *name)
 {
     global_sh *global = get_global_sh();
 
@@ -74,12 +74,14 @@ void remove_alias(const char *name)
                 xfree(current->name);
                 xfree(current->value);
                 xfree(current);
-                return;
+                return true;
             }
             previous = current;
             current = current->next;
         }
     }
+
+    return false;
 }
 
 bool is_alias_used(const char *name)
@@ -124,12 +126,64 @@ void unuse_all_aliases(void)
     }
 }
 
-void builtin_alias(const char *name, const char *value)
+void builtin_alias(char **argv)
 {
-    add_alias(name, value);
+    if (*argv == NULL)
+    {
+        // Print all aliases
+        for (alias *current = get_global_sh()->alias_ll; current != NULL;
+             current = current->next)
+            printf("%s='%s'\n", current->name, current->value);
+    }
+    else
+    {
+        for (; *argv != NULL; ++argv)
+        {
+            // Check if argv[0] is form "name=value"
+            const char *equal = strchr(*argv, '=');
+            if (equal != NULL && equal[1] != '\0' && &equal[-1] >= *argv)
+            {
+                // argv[0] is form "name=value"
+                size_t name_len = equal - *argv;
+                char *name = xmalloc(name_len + 1, sizeof(char));
+                strncpy(name, *argv, name_len);
+                name[name_len] = '\0';
+                add_alias(name, equal + 1);
+                xfree(name);
+            }
+            else
+            {
+                // argv[0] is form "name"
+                const char *value = get_alias_value(*argv);
+                if (value == NULL)
+                    fprintf(stderr, "42sh: alias: %s : not found\n", *argv);
+                else
+                    printf("%s='%s'\n", *argv, value);
+            }
+        }
+    }
 }
 
-void builtin_unalias(const char *name)
+void builtin_unalias(char **argv)
 {
-    remove_alias(name);
+    if (*argv == NULL)
+    {
+        fprintf(stderr, "unalias: usage: unalias [-a] name [name ...]\n");
+    }
+    else
+    {
+        if (strcmp(*argv, "-a") == 0)
+        {
+            // Remove all aliases
+            while (get_global_sh()->alias_ll != NULL)
+                remove_alias(get_global_sh()->alias_ll->name);
+        }
+        else
+        {
+            // Remove arguments aliases
+            for (; *argv != NULL; ++argv)
+                if (!remove_alias(*argv))
+                    fprintf(stderr, "42sh: unalias: %s : not found\n", *argv);
+        }
+    }
 }

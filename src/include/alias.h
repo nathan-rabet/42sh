@@ -26,11 +26,11 @@ const char *get_alias_value(const char *name);
 /**
  * @brief Remove an alias from the alias list
  *
- * @note If the alias does not exist, nothing will happen
- *
  * @param name The name of the alias to delete
+ *
+ * @return True if the alias was removed, false otherwise (if it did not exist)
  */
-void remove_alias(const char *name);
+bool remove_alias(const char *name);
 
 /**
  * @brief Check if an alias as already been used
