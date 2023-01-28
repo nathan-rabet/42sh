@@ -1,47 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "builtins.h"
 
-enum UNSET_OPT
+/**
+ * @brief unset the attributes of a variable
+ *
+ * @param argv -v variable, -f functions, no_options -> unset var
+ */
+void builtin_unset(char **argv)
 {
-    UNSET_VAR,
-    UNSET_FUNC,
-    UNSET_NONE
-};
-
-void builtin_unset(const char *args)
-{
-    char *arg_copy = strdup(args);
-    char *arg = strtok(arg_copy, " ");
-    enum UNSET_OPT opt = UNSET_NONE;
-    while (arg != NULL)
+    if (strcmp(argv[0], "-v") == 0)
     {
-        if (strcmp(arg, "-v") == 0)
+        int i = 1;
+        while (argv[i] != NULL)
         {
-            opt = UNSET_VAR;
-        }
-        else if (strcmp(arg, "-f") == 0)
-        {
-            opt = UNSET_FUNC;
-        }
-        else
-        {
-            if (opt == UNSET_VAR)
+            if (unsetenv(argv[i]) != 0)
             {
-                unsetenv(arg);
+                fprintf(stderr,
+                        "Error: Failed to unset environment variable '%s'\n",
+                        argv[i]);
+                exit(1);
             }
-            else if (opt == UNSET_FUNC)
-            {
-                // TODO : handle function
-            }
-            else
-            {
-                unsetenv(arg);
-            }
+            i++;
         }
-        arg = strtok(NULL, " ");
     }
-    free(arg_copy);
+    else if (strcmp(argv[0], "-v") != 0)
+    {
+        int i = 0;
+        while (argv[i] != NULL)
+        {
+            if (unsetenv(argv[i]) != 0)
+            {
+                fprintf(stderr,
+                        "Error: Failed to unset environment variable '%s'\n",
+                        argv[i]);
+                exit(1);
+            }
+            i++;
+        }
+    }
 }

@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/xalloc.h"
 #include "builtins.h"
 
 /**

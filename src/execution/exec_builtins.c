@@ -32,14 +32,14 @@ int exec_builtins(char **argv)
     }
     else if (strcmp(*argv, "unset") == 0)
     {
-        builtin_export(argv[1]);
+        builtin_unset(argv + 1);
         return 0;
     }
-        else if (strcmp(*argv, "true") == 0)
+    else if (strcmp(*argv, "true") == 0)
     {
         return 0;
     }
-        else if (strcmp(*argv, "false") == 0)
+    else if (strcmp(*argv, "false") == 0)
     {
         return 1;
     }
