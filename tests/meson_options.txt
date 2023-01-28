@@ -1,5 +1,0 @@
-option('enable_tests',
-    type : 'boolean',
-    value : false,
-    description : 'Enable tests'
-)

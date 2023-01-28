@@ -1,3 +1,4 @@
+# meson.build for tests
 c_args += ['-DDEBUG']
 
 # Link criterion
@@ -17,3 +18,4 @@ subdir('execution')
 
 subdir('xalloc')
 subdir('lexer')
+
