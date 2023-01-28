@@ -153,7 +153,6 @@ int exec_argument(char *input_string)
     }*/
 
     int status = exec_final(input_tokens);
-
     if (status != 0)
     {
         xalloc_deinit();

@@ -16,6 +16,9 @@ struct echo_options
 void my_echo(int argc, char **argv);
 void my_cd(char **argv);
 
+void builtin_export(char *arg);
+void builtin_unset(char **argv);
+
 /**
  * @brief `alias` builtin command
  *
