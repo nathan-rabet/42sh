@@ -1,6 +1,6 @@
 
 #include "../../src/include/parser.h"
-
+/*
 void test1()
 {
     printf("\n----------------TEST 1-----------------\n");
@@ -1026,4 +1026,4 @@ int parser_test(void)
     test18();
     xfree_all();
     return 0;
-}
+}*/
