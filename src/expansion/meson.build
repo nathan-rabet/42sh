@@ -1,0 +1,1 @@
+sources += files('arithmetic_expansion.c', 'command_substitution.c', 'evalexpr.c', 'fifo_basic.c', 'fifo_medium.c', 'fifo_hard.c', 'handler.c', 'stack.c', 'tilde_expansion.c', 'helper.c')
