@@ -21,8 +21,10 @@ int exec_final(struct token *input_tokens)
     struct token_list *tokens = xmalloc(1, sizeof(struct tokens *));
     tokens->current_token = input_tokens;
 
-    while (tokens->current_token && (ast = parser_input(tokens)) != NULL)
+    while (tokens->current_token && (ast = parser_input(tokens)) != NULL) {
+        ast->vtable->pretty_print(ast);
         status = ast->vtable->run(ast);
+    }
 
     return status;
 }

@@ -10,10 +10,13 @@ struct ast *parser_rule_if(struct token_list *tokens)
     // IF
     eat(tokens, IF);
     struct ast *if_condition = parser_compound_list(tokens);
-
+    if (if_condition == NULL)
+        parser_grammar_return_error_2(tokens->current_token);
     // THEN
     eat(tokens, THEN);
     struct ast *then = parser_compound_list(tokens);
+    if (then == NULL)
+        parser_grammar_return_error_2(tokens->current_token);
 
     // ELSE may be NULL
     struct ast *else_clause = parser_else_clause(tokens);

@@ -10,6 +10,8 @@
 struct ast *parser_command(struct token_list *tokens)
 {
     struct ast *ast = NULL;
+    if (tokens->current_token == NULL)
+        return NULL;
     if (is_shell_command(tokens->current_token))
     {
         ast = parser_shell_command(tokens);

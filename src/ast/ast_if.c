@@ -22,7 +22,7 @@ int if_run(struct ast *ast)
 {
     assert(ast && ast->type == AST_IF);
     struct ast_if *if_ast = (struct ast_if *)ast;
-    if (if_ast->condition)
+    if (if_ast->condition->vtable->run(if_ast->condition) == 0)
         return if_ast->then_body->vtable->run(if_ast->then_body);
     else if (if_ast->else_body != NULL)
         return if_ast->else_body->vtable->run(if_ast->else_body);
