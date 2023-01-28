@@ -31,8 +31,8 @@ struct list_dup
     struct dup_item *head; // head of the list
 };
 
-int exec_builtins(char **argv, int *error);
-int exec_cmd(char **argv, int *error);
+int exec_builtins(char **argv);
+int exec_cmd(char **argv);
 void exec_redir(struct list_redir *redir);
 int exec_pipeline(struct ast_pipe *ast);
 

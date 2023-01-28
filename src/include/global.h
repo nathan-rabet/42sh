@@ -11,6 +11,13 @@ typedef struct alias
     struct alias *next;
 } alias;
 
+typedef struct variable
+{
+    char *name;
+    char *value;
+    struct variable *next;
+} variable;
+
 typedef struct loop_stack
 {
     struct ast *current_loop_ast;
@@ -20,6 +27,7 @@ typedef struct loop_stack
 typedef struct global_sh
 {
     alias *alias_ll;
+    variable *variable;
     struct ast *ast;
     int last_exit_status;
     loop_stack *loop_stack;
@@ -43,5 +51,22 @@ void push_loop_stack(struct ast *ast);
  * @return The popped loop ast
  */
 struct ast *pop_loop_stack(void);
+
+/**
+ *  @brief push variable parameter
+ * @param name the name of the variable
+ * @param value the value of the variable
+ */
+void push_variable(char *name, char *value);
+
+/**
+ * @brief Get the value of the name variable return NULL if not find
+ * @param name
+ * @return
+ */
+char *get_variable(char *name);
+
+void remove_variable(char *name);
+
 
 #endif /* GLOBAL_H */
