@@ -17,27 +17,28 @@ static void expand_arguments(int argc, char **argv)
 {
     for (int i = 0; i < argc; i++)
     {
+        if (argv[i][strlen(argv[i]) - 1] == '\n')
+            argv[i][strlen(argv[i]) - 1] = '\0';
+        char *argument = argv[i];
+        // Check if elements are quoted.
+        size_t current_arg_len = strlen(argv[i]);
+        if (current_arg_len > 1 && (argv[i][0] == '"' && argv[i][current_arg_len - 1] == '"'))
+        {
+            argv[i][current_arg_len - 1] = '\0';
+            argument++;
+        }
+
         // Try all possible expansions.
-        char *expansion = tilde_expansion(argv[i]);
+        char *expansion = tilde_expansion(argument);
         if (expansion)
         {
             xfree(argv[i]);
             argv[i] = expansion;
         }
-        /**
-         * if (expansion == NULL)
-         * {
-         *     expansion = parameter_expansion(argv[i]);
-         *     if (expansion)
-         *     {
-         *         xfree(argv[i]);
-         *         argv[i] = expansion;
-         *     }
-         * }
-        */
+
         if (expansion == NULL)
         {
-            expansion = arithmetic_expansion(argv[i]);
+            expansion = arithmetic_expansion(argument);
             if (expansion)
             {
                 xfree(argv[i]);
@@ -46,7 +47,7 @@ static void expand_arguments(int argc, char **argv)
         }
         if (expansion == NULL)
         {
-            expansion = command_substitution(argv[i]);
+            expansion = command_substitution(argument);
             if (expansion)
             {
                 xfree(argv[i]);
