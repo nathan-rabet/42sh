@@ -25,6 +25,17 @@ int exec_builtins(char **argv, int *error)
         my_cd(argv + 1);
         return 0;
     }
+    else if (strcmp(*argv, "alias") == 0)
+    {
+        builtin_alias(argv + 1);
+        return 0;
+    }
+    else if (strcmp(*argv, "unalias") == 0)
+    {
+        builtin_unalias(argv + 1);
+        return 0;
+    }
+
     (void)error; // if (strcmp(*argv, "echo") exec_echo(argv);
     fflush(stdout);
     return true;

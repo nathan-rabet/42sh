@@ -1,1 +1,1 @@
-sources += files('execution_tests.c')
+sources += files('aliases_tests.c','execution_tests.c')

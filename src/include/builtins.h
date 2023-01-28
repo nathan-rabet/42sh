@@ -19,16 +19,15 @@ void my_cd(char **argv);
 /**
  * @brief `alias` builtin command
  *
- * @param name The name of the alias
- * @param value The value of the alias
+ * @param argv The arguments to the alias command
  */
-void builtin_alias(const char *name, const char *value);
+void builtin_alias(char **argv);
 
 /**
  * @brief `unalias` builtin command
  *
- * @param name The name of the alias to remove
+ * @param name argv The arguments to the unalias command
  */
-void builtin_unalias(const char *name);
+void builtin_unalias(char **argv);
 
 #endif /* BUILTINS_H */
