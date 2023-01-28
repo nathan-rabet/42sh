@@ -8,7 +8,7 @@ void test_exec_cmd()
     argv[0] = "echo";
     argv[1] = "2";
     int *error = 0;
-    exec_cmd(argv, error);
+    exec_cmd(argv);
 }
 
 void test_exec_redir()
