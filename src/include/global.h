@@ -66,7 +66,18 @@ void push_variable(char *name, char *value);
  */
 char *get_variable(char *name);
 
+/**
+ * @brief remove variable
+ * @param name
+ */
 void remove_variable(char *name);
+
+/**
+ * @brief update the variable
+ * @param name
+ * @param value
+ */
+void update_variable(char *name, char *value);
 
 
 #endif /* GLOBAL_H */

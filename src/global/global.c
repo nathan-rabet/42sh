@@ -16,6 +16,8 @@ void push_variable(char *name, char *value)
         tmp->next = NULL;
     else
         tmp->next = global.variable;
+    tmp->name = name;
+    tmp->value = value;
     global.variable = tmp;
 }
 
@@ -31,6 +33,7 @@ char *get_variable(char *name)
     return NULL;
 }
 
+
 void remove_variable(char *name)
 {
     if (global.variable == NULL)
@@ -40,6 +43,7 @@ void remove_variable(char *name)
     {
         global.variable = global.variable->next;
         xfree(tmp);
+        return;
     }
     if (global.variable->next == NULL && strcmp(global.variable->name, name) != 0)
         return;
@@ -50,6 +54,21 @@ void remove_variable(char *name)
     struct variable *tmp2 = tmp->next;
     tmp->next = tmp->next->next;
     xfree(tmp2);
+}
+
+void update_variable(char *name, char *value)
+{
+    struct variable *tmp = global.variable;
+    while (tmp)
+    {
+        if (strcmp(tmp->name, name) == 0)
+        {
+            tmp->value = value;
+            return;
+        }
+        tmp = tmp->next;
+    }
+    return;
 }
 
 void push_loop_stack(struct ast *ast)
