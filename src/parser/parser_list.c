@@ -15,7 +15,12 @@ struct ast *parser_list(struct token_list *tokens)
         while (look_ahead(tokens) == NEWLINE)
             eat(tokens, NEWLINE);
         if (tokens->current_token)
-            children[i++] = parser_and_or(tokens);
+        {
+            children[i] = parser_and_or(tokens);
+            if (children[i++] == NULL)
+                parser_grammar_return_error_2(tokens->current_token);
+        }
+
     }
 
     children[i] = NULL;

@@ -12,6 +12,23 @@
 
 #define BUFFER_SIZE 4096
 
+int exec_final(struct token *input_tokens)
+{
+    if (input_tokens == NULL)
+        return 0;
+    struct ast *ast = NULL;
+    int status = 0;
+    struct token_list *tokens = xmalloc(1, sizeof(struct tokens *));
+    tokens->current_token = input_tokens;
+
+    while (tokens->current_token && (ast = parser_input(tokens)) != NULL) {
+        // ast->vtable->pretty_print(ast);
+        status = ast->vtable->run(ast);
+    }
+
+    return status;
+}
+
 int exec_stdin_noargs()
 {
     char input_stdin[BUFFER_SIZE];
@@ -27,12 +44,7 @@ int exec_stdin_noargs()
     size_t input_size = strlen(input_stdin);
     xalloc_init();
     struct token *input_tokens = get_tokens(input_stdin, input_size);
-    struct ast *ast = parser_input(input_tokens);
-    int status = 0;
-    if (ast == NULL)
-        status = 0;
-    else
-        status = ast->vtable->run(ast);
+    int status = exec_final(input_tokens);
     if (status != 0)
     {
         xalloc_deinit();
@@ -67,13 +79,8 @@ int exec_stdin()
         // printf("stdin :\n%s", stdin_contents);
     }
     struct token *input_tokens = get_tokens(stdin_contents, contents_size);
-    struct ast *ast = parser_input(input_tokens);
+    int status = exec_final(input_tokens);
 
-    int status = 0;
-    if (ast == NULL)
-        status = 0;
-    else
-        status = ast->vtable->run(ast);
     if (status != 0)
     {
         xalloc_deinit();
@@ -112,13 +119,7 @@ int exec_file(char *argv)
     }
     // send the file_contents to the lexer & parser
     struct token *input_tokens = get_tokens(file_contents, file_contents_size);
-    struct ast *ast = parser_input(input_tokens);
-    int status = 0;
-    if (ast == NULL)
-        status = 0;
-    else
-        status = ast->vtable->run(ast);
-    // ast->vtable->pretty_print(ast);
+    int status = exec_final(input_tokens);
 
     if (status != 0)
     {
@@ -151,11 +152,8 @@ int exec_argument(char *input_string)
         input_tokens = input_tokens->next;
     }*/
 
-    struct ast *ast = parser_input(input_tokens);
-    if (ast == NULL)
-        return 0;
-    int status = 0;
-    status = ast->vtable->run(ast);
+    int status = exec_final(input_tokens);
+
     if (status != 0)
     {
         xalloc_deinit();

@@ -7,13 +7,9 @@
 
 #include "../include/parser.h"
 
-struct ast *parser_input(struct token *list_tokens)
+struct ast *parser_input(struct token_list *tokens)
 {
-    if (list_tokens == NULL)
-        return NULL;
     struct ast *ast = NULL;
-    struct token_list *tokens = xmalloc(1, sizeof(struct tokens *));
-    tokens->current_token = list_tokens;
 
     while (look_ahead(tokens) == NEWLINE)
         eat(tokens, NEWLINE);
@@ -26,8 +22,9 @@ struct ast *parser_input(struct token *list_tokens)
     while (look_ahead(tokens) == NEWLINE)
         eat(tokens, NEWLINE);
 
-    if (tokens->current_token != NULL)
-        wrong_look_ahead(tokens, "parse_input");
+    // printf("value : %s",tokens->current_token->value);
+    // if (tokens->current_token != NULL)
+        // wrong_look_ahead(tokens, "parse_input");
 
     return ast;
 }

@@ -18,7 +18,7 @@ void wrong_look_ahead(struct token_list *tokens, char *function);
 token_t look_ahead(struct token_list *tokens);
 
 // Parser grammar
-struct ast *parser_input(struct token *tokens);
+struct ast *parser_input(struct token_list *tokens);
 struct ast *parser_and_or(struct token_list *tokens);
 struct ast *parser_list(struct token_list *tokens);
 struct ast *parser_pipeline(struct token_list *tokens);

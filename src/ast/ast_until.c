@@ -20,10 +20,11 @@ int until_run(struct ast *ast)
 {
     assert(ast && ast->type == AST_UNTIL);
     struct ast_until *until_ast = (struct ast_until *)ast;
+    int status = 0;
     do
-        until_ast->to_execute->vtable->run(until_ast->to_execute);
-    while (until_ast->condition->vtable->run(until_ast->condition));
-    return true;
+        status = until_ast->to_execute->vtable->run(until_ast->to_execute);
+    while (until_ast->condition->vtable->run(until_ast->condition) == 0);
+    return status;
 }
 
 void until_free(struct ast *ast)

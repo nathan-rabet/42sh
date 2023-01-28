@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "execution.h"
+#include "global.h"
 
 /**
  * @brief Node of the AST

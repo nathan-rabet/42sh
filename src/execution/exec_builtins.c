@@ -12,7 +12,7 @@ int count_argc(char **argv)
     return i;
 }
 
-int exec_builtins(char **argv, int *error)
+int exec_builtins(char **argv)
 {
     if (strcmp(*argv, "echo") == 0)
     {
@@ -35,8 +35,11 @@ int exec_builtins(char **argv, int *error)
         builtin_unalias(argv + 1);
         return 0;
     }
+    else if (strcmp(*argv, "true") == 0)
+        return 0;
+    else if (strcmp(*argv, "false") == 0)
+        return 1;
 
-    (void)error; // if (strcmp(*argv, "echo") exec_echo(argv);
     fflush(stdout);
     return true;
 }
