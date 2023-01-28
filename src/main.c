@@ -22,7 +22,7 @@ int exec_final(struct token *input_tokens)
     tokens->current_token = input_tokens;
 
     while (tokens->current_token && (ast = parser_input(tokens)) != NULL) {
-        ast->vtable->pretty_print(ast);
+        // ast->vtable->pretty_print(ast);
         status = ast->vtable->run(ast);
     }
 
