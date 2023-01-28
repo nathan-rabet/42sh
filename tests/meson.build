@@ -1,42 +1,19 @@
-project('42sh', 'c',
-    version : '0,1', 
-    default_options : [
-        'warning_level=3',
-        'c_std=c99',
-        'strip=false', 
-        'default_library=shared',
-        ])
+c_args += ['-DDEBUG']
 
-cc = meson.get_compiler('c')
-c_args = ['-std=c99', '-D_POSIX_C_SOURCE=200809L', '-pedantic', '-Werror', '-Wall', '-Wextra', '-Wvla']
+# Link criterion
+criterion_dep = dependency('criterion', required: true)
+criterion_lib = criterion_dep.get_pkgconfig_variable('libdir')
+criterion_lib = criterion_lib + '/libcriterion.so'
+criterion_lib = cc.find_library('criterion', dirs: criterion_lib)
+dep += [criterion_lib]
 
-# Debug with -Werror flag (usage : "meson setup buildir --buildtype=debug")
-if get_option('buildtype') == 'debug'
-    c_args += ['-g', '-O0']
-    c_args += ['-D DEBUG']
-endif
-
-dep = []
-link_args = []
+# Adding ASAN
 c_args += ['-fsanitize=address']
 link_args += ['-fsanitize=address']
-sources = []
-subdir('src')
-inc = include_directories('src/include')
 
+subdir('parser')
 
+subdir('execution')
 
-if get_option('enable_tests') == true
-    # Tests main
-    subdir('tests')
-
-    executable('42sh_tests_main', sources + ['tests/main.c'], include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
-
-    # Tests
-    executable('42sh_tests', sources, include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
-else
-   # 42sh
-   executable('42sh', sources + ['src/main.c'], include_directories: inc, c_args: c_args, dependencies: dep, link_args: link_args)
-
-
-endif
+subdir('xalloc')
+subdir('lexer')
