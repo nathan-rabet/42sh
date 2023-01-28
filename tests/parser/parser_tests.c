@@ -28,11 +28,11 @@ void test1()
     token->value = "ls";
     token->next = token2;
 
-    // struct ast *ast = parser_input(token);
+    struct ast *ast = parser_input(token);
 
-    // ast->vtable->pretty_print(ast);
+    ast->vtable->pretty_print(ast);
 }
-/*
+
 void test2()
 {
     printf("\n----------------TEST 2-----------------\n");
@@ -1026,4 +1026,4 @@ int parser_test(void)
     test18();
     xfree_all();
     return 0;
-}*/
+}

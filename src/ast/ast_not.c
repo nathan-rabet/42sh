@@ -38,3 +38,4 @@ void not_pretty_print(struct ast *ast)
     not_ast->ast_not->vtable->pretty_print(not_ast->ast_not);
     printf("]\n");
 }
+

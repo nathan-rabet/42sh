@@ -43,3 +43,4 @@ void or_pretty_print(struct ast *ast)
     or_ast->ast_right->vtable->pretty_print(or_ast->ast_right);
     printf("]\n");
 }
+

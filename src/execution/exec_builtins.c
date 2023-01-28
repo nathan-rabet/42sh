@@ -25,21 +25,24 @@ int exec_builtins(char **argv)
         my_cd(argv + 1);
         return 0;
     }
-    else if (strcmp(*argv, "alias") == 0)
+    else if (strcmp(*argv, "export") == 0)
     {
-        builtin_alias(argv + 1);
+        builtin_export(argv[1]);
         return 0;
     }
-    else if (strcmp(*argv, "unalias") == 0)
+    else if (strcmp(*argv, "unset") == 0)
     {
-        builtin_unalias(argv + 1);
+        builtin_export(argv[1]);
         return 0;
     }
-    else if (strcmp(*argv, "true") == 0)
+        else if (strcmp(*argv, "true") == 0)
+    {
         return 0;
-    else if (strcmp(*argv, "false") == 0)
+    }
+        else if (strcmp(*argv, "false") == 0)
+    {
         return 1;
-
+    }
     fflush(stdout);
     return true;
 }

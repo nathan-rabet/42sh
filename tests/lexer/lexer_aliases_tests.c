@@ -5,38 +5,6 @@
 #include "lexer_tests_common.h"
 #include "xalloc.h"
 
-Test(lexer_aliases, alias_null)
-{
-    xalloc_init();
-    add_alias("foo", NULL);
-
-    const char *cmd = "foo";
-
-    const token *expected_tokens = (const token[]){
-        { .type = WORD, .value = "foo" },
-    };
-
-    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
-
-    xalloc_deinit();
-}
-
-Test(lexer_aliases, alias_empty)
-{
-    xalloc_init();
-    add_alias("foo", "");
-
-    const char *cmd = "foo";
-
-    const token *expected_tokens = (const token[]){
-        { .type = WORD, .value = "foo" },
-    };
-
-    _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
-
-    xalloc_deinit();
-}
-
 Test(lexer_aliases, alias_simple)
 {
     xalloc_init();

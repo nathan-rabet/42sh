@@ -1,0 +1,7 @@
+subdir('ast')
+subdir('builtins') 
+subdir('lexer') 
+subdir('utils')
+subdir('parser')
+subdir('execution')
+subdir('global')
