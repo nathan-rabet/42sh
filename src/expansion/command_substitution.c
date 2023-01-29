@@ -46,12 +46,12 @@ char *command_substitution(char *input)
     if (input == NULL)
         return NULL;
 
-    char *substitution = xcalloc(1, sizeof(char));
-    size_t substitution_length = 0;
-
     // Check if input is command substitution.
     if (strncmp(input, "$(", 2) == 0 || strncmp(input, "`", 1) == 0)
     {
+        char *substitution = xcalloc(1, sizeof(char));
+        size_t substitution_length = 0;
+
         int fd[2];
         pipe(fd);
 
@@ -106,7 +106,9 @@ char *command_substitution(char *input)
             execvp(argv[0], argv);
             err(1, "Command substitution: Execution failed in child process");
         }
+
+        return substitution;
     }
 
-    return substitution;
+    return NULL;
 }
