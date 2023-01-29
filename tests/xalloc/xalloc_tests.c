@@ -102,7 +102,8 @@ Test(xalloc, xfree_null)
     xalloc_deinit();
 }
 
-Test(xalloc, xfree_not_found, .exit_code = EXIT_FAILURE, .init = cr_redirect_stderr)
+Test(xalloc, xfree_not_found, .exit_code = EXIT_FAILURE,
+     .init = cr_redirect_stderr)
 {
     xalloc_init();
 
@@ -111,7 +112,8 @@ Test(xalloc, xfree_not_found, .exit_code = EXIT_FAILURE, .init = cr_redirect_std
     cr_assert_fail();
 }
 
-Test(xalloc, xfree_double_free, .exit_code = EXIT_FAILURE, .init = cr_redirect_stderr)
+Test(xalloc, xfree_double_free, .exit_code = EXIT_FAILURE,
+     .init = cr_redirect_stderr)
 {
     xalloc_init();
 

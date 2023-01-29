@@ -11,11 +11,11 @@ struct ast *parser_funcdec(struct token_list *tokens)
     name = tokens->current_token->value;
     eat(tokens, WORD);
 
-    if (strcmp(tokens->current_token->value, "(") == 0
+    if (tokens->current_token && strcmp(tokens->current_token->value, "(") == 0
         && strcmp(tokens->current_token->next->value, ")") == 0)
     {
-        eat(tokens, WORD);
-        eat(tokens, WORD);
+        eat(tokens, TOKEN_UNDEFINED);
+        eat(tokens, TOKEN_UNDEFINED);
     }
     else
         parser_grammar_return_error_2(tokens->current_token);

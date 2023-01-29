@@ -1,10 +1,11 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "lexer.h"
-#include "ast.h"
-#include "xalloc.h"
 #include <ctype.h>
+
+#include "ast.h"
+#include "lexer.h"
+#include "xalloc.h"
 
 struct token_list
 {
@@ -17,7 +18,7 @@ void wrong_look_ahead(struct token_list *tokens, char *function);
 token_t look_ahead(struct token_list *tokens);
 
 // Parser grammar
-struct ast *parser_input(struct token *tokens);
+struct ast *parser_input(struct token_list *tokens);
 struct ast *parser_and_or(struct token_list *tokens);
 struct ast *parser_list(struct token_list *tokens);
 struct ast *parser_pipeline(struct token_list *tokens);
@@ -27,7 +28,8 @@ struct ast *parser_simple_command(struct token_list *tokens);
 char **parser_element(struct token_list *tokens, char **words);
 struct ast *parser_compound_list(struct token_list *tokens);
 struct ast *parser_funcdec(struct token_list *tokens);
-struct list_redir *parser_redirection(struct token_list *tokens, struct list_redir *next);
+struct list_redir *parser_redirection(struct token_list *tokens,
+                                      struct list_redir *next);
 
 // Parser rule
 struct ast *parser_rule_if(struct token_list *tokens);
@@ -40,7 +42,6 @@ struct ast *parser_rule_case(struct token_list *tokens);
 struct ast *parser_case_clause(struct token_list *tokens);
 struct list_case_item *parser_case_item(struct token_list *tokens);
 
-
 // Utils
 bool is_redirection(enum token_types type);
 bool is_shell_command(struct token *token);
@@ -52,9 +53,4 @@ char *IONumbertype(enum ast_redir_type type);
 void parser_grammar_return_error_2(struct token *token);
 enum ast_redir_type redirection_type(enum token_types type);
 
-
-
-
-
-
-#endif //PARSER_H
+#endif // PARSER_H

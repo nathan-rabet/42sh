@@ -18,9 +18,8 @@ struct ast *ast_cmd_init(char **word)
 int cmd_run(struct ast *ast)
 {
     assert(ast && ast->type == AST_CMD);
-    int *error = NULL;
     struct ast_cmd *cmd = (struct ast_cmd *)ast;
-    return exec_cmd(cmd->words, error);
+    return exec_cmd(cmd->words);
 }
 
 void cmd_free(struct ast *ast)

@@ -9,22 +9,20 @@
 
 #include "../include/lexer.h"
 #include "../include/xalloc.h"
+#include "builtins.h"
 
 int main(void)
 {
     xalloc_init();
 
-    const char *cmd = "# comment";
+    char *cmd[] = { "alias", "foo=bar", NULL };
+    char *cmd1[] = { "alias", "foo1=bar1", NULL };
+    char *cmd2[] = { "alias", NULL };
 
-    token *returned_tokens = get_tokens(cmd, strlen(cmd));
+    builtin_alias(cmd + 1);
+    builtin_alias(cmd1 + 1);
+    builtin_alias(cmd2 + 1);
 
-    for (token *tok = returned_tokens; tok; tok = tok->next)
-    {
-        printf("Token type: %d, value: %s", tok->type, tok->value);
-        printf("\n");
-    }
-
-    (void)returned_tokens;
     xalloc_deinit();
 
     return 0;

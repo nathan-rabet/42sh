@@ -8,13 +8,18 @@ struct ast *parser_list(struct token_list *tokens)
     struct ast **children = xmalloc(100, sizeof(struct ast **));
     size_t i = 1;
     children[0] = parser_and_or(tokens);
-    // printf("test %i\n", tokens->current_token->type);
 
     while (tokens->current_token && tokens->current_token->type == SEMI)
     {
         eat(tokens, SEMI);
+        while (look_ahead(tokens) == NEWLINE)
+            eat(tokens, NEWLINE);
         if (tokens->current_token)
-            children[i++] = parser_and_or(tokens);
+        {
+            children[i] = parser_and_or(tokens);
+            if (children[i++] == NULL)
+                parser_grammar_return_error_2(tokens->current_token);
+        }
     }
 
     children[i] = NULL;

@@ -20,7 +20,9 @@ struct ast *parser_compound_list(struct token_list *tokens)
         while (look_ahead(tokens) == NEWLINE)
             eat(tokens, NEWLINE);
 
-        children[i++] = parser_and_or(tokens);
+        children[i] = parser_and_or(tokens);
+        if (children[i] != NULL)
+            i++;
     }
 
     if (look_ahead(tokens) == SEMI)
@@ -28,7 +30,6 @@ struct ast *parser_compound_list(struct token_list *tokens)
     while (look_ahead(tokens) == NEWLINE)
         eat(tokens, NEWLINE);
     children[i] = NULL;
-
     // if 1 child
     if (i < 2)
         return children[0];

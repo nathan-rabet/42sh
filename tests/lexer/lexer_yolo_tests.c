@@ -1,46 +1,12 @@
 #include <criterion/criterion.h>
 
 #include "lexer.h"
+#include "lexer_tests_common.h"
 #include "xalloc.h"
-
-/**
- * @brief Test the lexer's token recognition
- *
- * @param input The input string
- * @param expected_tokens A contiguous array of tokens
- * @param nb_tokens The number of tokens in the array
- */
-static inline void _test_tokens(const char *input, const token *expected_tokens,
-                                size_t nb_tokens)
-{
-    xalloc_init();
-
-    token *returned_tokens = get_tokens(input, strlen(input));
-
-    if (!expected_tokens)
-        cr_assert_null(returned_tokens, "Got tokens, expected none");
-
-    for (size_t i = 0; i < nb_tokens; i++)
-    {
-        bool is_value_correct =
-            strcmp(returned_tokens->value, expected_tokens[i].value) == 0;
-        bool is_type_correct = returned_tokens->type == expected_tokens[i].type;
-
-        if (!is_value_correct || !is_type_correct)
-        {
-            cr_assert_fail("Token %zu is incorrect: got type %d, value %s, "
-                           "expected type %d, value %s",
-                           i, returned_tokens->type, returned_tokens->value,
-                           expected_tokens[i].type, expected_tokens[i].value);
-        }
-        returned_tokens = returned_tokens->next;
-    }
-    xfree(returned_tokens);
-    xalloc_deinit();
-}
 
 Test(lexer_yolo, chatgpt_1)
 {
+    xalloc_init();
     const char *cmd = "echo hello world";
 
     const token expected_tokens[] = {
@@ -50,10 +16,13 @@ Test(lexer_yolo, chatgpt_1)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, chatgpt_2)
 {
+    xalloc_init();
     const char *cmd = "cat file1.txt file2.txt > output.txt";
 
     const token expected_tokens[] = {
@@ -65,10 +34,13 @@ Test(lexer_yolo, chatgpt_2)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, chatgpt_3)
 {
+    xalloc_init();
     const char *cmd = "cat file1.txt file2.txt > output.txt 2>&1";
 
     const token expected_tokens[] = {
@@ -83,10 +55,13 @@ Test(lexer_yolo, chatgpt_3)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, complex_lvl_1)
 {
+    xalloc_init();
     const char *cmd = "cat file1.txt file2.txt > output.txt 2>&1 | wc -l";
 
     const token expected_tokens[] = {
@@ -104,10 +79,13 @@ Test(lexer_yolo, complex_lvl_1)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, complex_lvl_2)
 {
+    xalloc_init();
     const char *cmd = "cat file1.txt file2.txt > output.txt 2>&1 | wc -l | "
                       "grep -v \"hello world\"";
 
@@ -130,10 +108,13 @@ Test(lexer_yolo, complex_lvl_2)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, complex_lvl_3)
 {
+    xalloc_init();
     const char *cmd = "cat file1.txt file2.txt > output.txt 2>&1 | wc -l | "
                       "grep -v \"hello world\" | sed -e \"s/hello/hi/g\"";
 
@@ -160,10 +141,13 @@ Test(lexer_yolo, complex_lvl_3)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, complex_lvl_4)
 {
+    xalloc_init();
     const char *cmd = "cat file1.txt file2.txt > output.txt 2>&1 | wc -l | "
                       "grep -v \"hello world\" | sed -e \"s/hello/hi/g\" | "
                       "grep -v \"hi world\"";
@@ -195,10 +179,13 @@ Test(lexer_yolo, complex_lvl_4)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, lot_of_symbols)
 {
+    xalloc_init();
     const char *cmd = "cat file1.txt file2.txt > output.txt 2>&1 && wc -l || "
                       "grep -v \"hello world\" | sed -e \"s/hello/hi/g\" ; "
                       "grep -v \"hi world\" &";
@@ -231,10 +218,13 @@ Test(lexer_yolo, lot_of_symbols)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, only_concatenated_operators)
 {
+    xalloc_init();
     const char *cmd = "&&|||&|";
 
     const token expected_tokens[] = {
@@ -244,10 +234,13 @@ Test(lexer_yolo, only_concatenated_operators)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, only_concatenated_operators_with_spaces)
 {
+    xalloc_init();
     const char *cmd = "&& || | &";
 
     const token expected_tokens[] = {
@@ -258,10 +251,13 @@ Test(lexer_yolo, only_concatenated_operators_with_spaces)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, only_concatenated_operators_with_spaces_and_words)
 {
+    xalloc_init();
     const char *cmd = "&& || | & cat file1.txt file2.txt";
 
     const token expected_tokens[] = {
@@ -275,10 +271,13 @@ Test(lexer_yolo, only_concatenated_operators_with_spaces_and_words)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, backslash_n_nightmare)
 {
+    xalloc_init();
     const char *cmd = "cat '\ntest\n' && \\\necho newline";
 
     const token expected_tokens[] = {
@@ -290,10 +289,13 @@ Test(lexer_yolo, backslash_n_nightmare)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, no_braces_and_bang)
 {
+    xalloc_init();
     const char *cmd = "echo {a,b}c !d";
 
     const token expected_tokens[] = {
@@ -303,10 +305,13 @@ Test(lexer_yolo, no_braces_and_bang)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }
 
 Test(lexer_yolo, yes_braces_and_bang)
 {
+    xalloc_init();
     const char *cmd = "echo { a, b } c ! d";
 
     const token expected_tokens[] = {
@@ -317,4 +322,6 @@ Test(lexer_yolo, yes_braces_and_bang)
     };
 
     _test_tokens(cmd, expected_tokens, sizeof(expected_tokens) / sizeof(token));
+
+    xalloc_deinit();
 }

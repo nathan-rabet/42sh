@@ -31,9 +31,19 @@ struct list_case_item *list_case_item_init(char **word, size_t nb_word,
 int case_run(struct ast *ast)
 {
     assert(ast && ast->type == AST_CASE);
-    // struct ast_case *case_ast = (struct ast_case *)ast;
-    // TODO(clara)
-    return false;
+    struct ast_case *case_ast = (struct ast_case *)ast;
+    int status = 0;
+    for (size_t i = 0; i < case_ast->nb_item; i++)
+    {
+        for (size_t j = 0; j < case_ast->case_item[i]->nb_word; j++)
+        {
+            if (strcmp(case_ast->name, case_ast->case_item[i]->word[j]) == 0)
+                status = case_ast->case_item[i]->to_execute->vtable->run(
+                    case_ast->case_item[i]->to_execute);
+        }
+    }
+
+    return status;
 }
 
 void case_free(struct ast *ast)

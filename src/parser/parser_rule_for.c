@@ -41,6 +41,8 @@ struct ast *parser_rule_for(struct token_list *tokens)
     eat(tokens, DO);
 
     to_execute = parser_compound_list(tokens);
+    if (to_execute == NULL)
+        parser_grammar_return_error_2(tokens->current_token);
 
     eat(tokens, DONE);
     return ast_for_init(name, words, to_execute);
