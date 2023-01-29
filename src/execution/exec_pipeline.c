@@ -14,13 +14,10 @@ int exec_pipeline(struct ast_pipe *ast)
         if (pipe(fds) == -1)
             return_and_free("Failed to create pipe file descriptor", 1);
 
-
         push_top_dup(fds[1], STDOUT_FILENO);
         push_top_dup(fd_in, STDIN_FILENO);
 
-        struct ast_cmd *cmd = (struct ast_cmd*) ast->command[i];
+        struct ast_cmd *cmd = (struct ast_cmd *)ast->command[i];
         res = exec_cmd(cmd->words, &error);
-
     }
-
 }

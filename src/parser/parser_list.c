@@ -20,7 +20,6 @@ struct ast *parser_list(struct token_list *tokens)
             if (children[i++] == NULL)
                 parser_grammar_return_error_2(tokens->current_token);
         }
-
     }
 
     children[i] = NULL;

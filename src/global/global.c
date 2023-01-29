@@ -1,7 +1,7 @@
 #include "../include/global.h"
 
 static global_sh global = {
-        .variable = NULL,
+    .variable = NULL,
 };
 
 global_sh *get_global_sh(void)
@@ -11,7 +11,7 @@ global_sh *get_global_sh(void)
 
 void push_variable(char *name, char *value)
 {
-    struct variable *tmp = xmalloc(1, sizeof (variable));
+    struct variable *tmp = xmalloc(1, sizeof(variable));
     if (global.variable == NULL)
         tmp->next = NULL;
     else
@@ -33,7 +33,6 @@ char *get_variable(char *name)
     return NULL;
 }
 
-
 void remove_variable(char *name)
 {
     if (global.variable == NULL)
@@ -45,7 +44,8 @@ void remove_variable(char *name)
         xfree(tmp);
         return;
     }
-    if (global.variable->next == NULL && strcmp(global.variable->name, name) != 0)
+    if (global.variable->next == NULL
+        && strcmp(global.variable->name, name) != 0)
         return;
     while (tmp->next && strcmp(tmp->next->name, name) != 0)
         tmp = tmp->next;

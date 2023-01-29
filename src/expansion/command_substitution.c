@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
-#include <xalloc.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <xalloc.h>
 
 #define BUFFER_SIZE 512
 
@@ -40,7 +40,7 @@ static char **split_command(char *input)
 /**
  * Performs command substitution and saves result as string.
  * NULL returned otherwise.
-*/
+ */
 char *command_substitution(char *input)
 {
     if (input == NULL)
@@ -99,7 +99,7 @@ char *command_substitution(char *input)
             if (input[0] == '`')
                 input++;
             else
-                input += 2;            
+                input += 2;
 
             // Split command into command itself and parameters.
             char **argv = split_command(input);
