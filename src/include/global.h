@@ -79,5 +79,4 @@ void remove_variable(char *name);
  */
 void update_variable(char *name, char *value);
 
-
 #endif /* GLOBAL_H */

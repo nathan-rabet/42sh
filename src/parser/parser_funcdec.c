@@ -11,7 +11,6 @@ struct ast *parser_funcdec(struct token_list *tokens)
     name = tokens->current_token->value;
     eat(tokens, WORD);
 
-
     if (tokens->current_token && strcmp(tokens->current_token->value, "(") == 0
         && strcmp(tokens->current_token->next->value, ")") == 0)
     {

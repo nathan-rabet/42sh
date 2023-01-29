@@ -22,7 +22,8 @@ static void expand_arguments(int argc, char **argv)
         char *argument = argv[i];
         // Check if elements are quoted.
         size_t current_arg_len = strlen(argv[i]);
-        if (current_arg_len > 1 && (argv[i][0] == '"' && argv[i][current_arg_len - 1] == '"'))
+        if (current_arg_len > 1
+            && (argv[i][0] == '"' && argv[i][current_arg_len - 1] == '"'))
         {
             argv[i][current_arg_len - 1] = '\0';
             argument++;
@@ -56,7 +57,6 @@ static void expand_arguments(int argc, char **argv)
         }
     }
 }
-
 
 int exec_builtins(char **argv)
 {

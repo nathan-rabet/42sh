@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
-#include <xalloc.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <xalloc.h>
 
 #define BUFFER_SIZE 512
 
@@ -40,18 +40,18 @@ static char **split_command(char *input)
 /**
  * Performs command substitution and saves result as string.
  * NULL returned otherwise.
-*/
+ */
 char *command_substitution(char *input)
 {
     if (input == NULL)
         return NULL;
 
-    char *substitution = xcalloc(1, sizeof(char));
-    size_t substitution_length = 0;
-
     // Check if input is command substitution.
     if (strncmp(input, "$(", 2) == 0 || strncmp(input, "`", 1) == 0)
     {
+        char *substitution = xcalloc(1, sizeof(char));
+        size_t substitution_length = 0;
+
         int fd[2];
         pipe(fd);
 
@@ -99,14 +99,16 @@ char *command_substitution(char *input)
             if (input[0] == '`')
                 input++;
             else
-                input += 2;            
+                input += 2;
 
             // Split command into command itself and parameters.
             char **argv = split_command(input);
             execvp(argv[0], argv);
             err(1, "Command substitution: Execution failed in child process");
         }
+
+        return substitution;
     }
 
-    return substitution;
+    return NULL;
 }

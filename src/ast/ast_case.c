@@ -38,7 +38,8 @@ int case_run(struct ast *ast)
         for (size_t j = 0; j < case_ast->case_item[i]->nb_word; j++)
         {
             if (strcmp(case_ast->name, case_ast->case_item[i]->word[j]) == 0)
-                status = case_ast->case_item[i]->to_execute->vtable->run(case_ast->case_item[i]->to_execute);
+                status = case_ast->case_item[i]->to_execute->vtable->run(
+                    case_ast->case_item[i]->to_execute);
         }
     }
 

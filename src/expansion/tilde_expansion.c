@@ -15,10 +15,11 @@ char *tilde_expansion(char *input)
     {
         if (input[1] == '/' || input[1] == '\0')
         {
-        char *home = getenv("HOME");
-        size_t expanded_path_len = strlen(home) + strlen(input + 1);
-        expanded_path = xcalloc(expanded_path_len + 1, sizeof(char));
-        snprintf(expanded_path, expanded_path_len + 1, "%s%s", home, input + 1);
+            char *home = getenv("HOME");
+            size_t expanded_path_len = strlen(home) + strlen(input + 1);
+            expanded_path = xcalloc(expanded_path_len + 1, sizeof(char));
+            snprintf(expanded_path, expanded_path_len + 1, "%s%s", home,
+                     input + 1);
         }
         else
         {
@@ -36,7 +37,8 @@ char *tilde_expansion(char *input)
                 char *prefix = "/home/";
                 size_t expanded_path_len = strlen(prefix) + strlen(input + 1);
                 expanded_path = xcalloc(expanded_path_len + 1, sizeof(char));
-                snprintf(expanded_path, expanded_path_len + 1, "%s%s", prefix, input + 1);
+                snprintf(expanded_path, expanded_path_len + 1, "%s%s", prefix,
+                         input + 1);
             }
             else
             {

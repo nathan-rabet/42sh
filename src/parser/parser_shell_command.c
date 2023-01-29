@@ -35,7 +35,8 @@ struct ast *parser_shell_command(struct token_list *tokens)
     {
         eat(tokens, TOKEN_UNDEFINED);
         ast = ast_subshell_init(parser_compound_list(tokens));
-        if (tokens->current_token && strcmp(tokens->current_token->value, ")") == 0)
+        if (tokens->current_token
+            && strcmp(tokens->current_token->value, ")") == 0)
             eat(tokens, TOKEN_UNDEFINED);
         else
             parser_grammar_return_error_2(tokens->current_token);
